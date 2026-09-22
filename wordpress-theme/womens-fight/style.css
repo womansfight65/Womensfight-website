@@ -3,7 +3,7 @@ Theme Name: Women's Fight Agency
 Theme URI: https://womensfight.agency
 Author: Women's Fight
 Description: Dark, vivid multi-page agency theme for Women's Fight, built around the brand's real pink-magenta-to-blue logo mark, fully in Bangla, with real editable WordPress Pages (Block Editor and Elementor ready out of the box) and an interactive AI Agent audience-estimator tool.
-Version: 3.1
+Version: 3.2
 Requires at least: 5.9
 Requires PHP: 7.4
 Requires Plugins: elementor
@@ -101,6 +101,20 @@ header.nav{position:sticky; top:0; z-index:60; background:rgba(10,8,23,.82); bac
 .hero-glow-1{width:480px; height:480px; background:rgba(243,20,123,.35); top:-200px; right:-140px;}
 .hero-glow-2{width:420px; height:420px; background:rgba(0,191,253,.28); bottom:-220px; left:-160px;}
 .hero-grid{position:relative; z-index:1; display:grid; grid-template-columns:1.1fr .9fr; gap:56px; align-items:center;}
+.hero-brand{margin-bottom:16px;}
+.hero-brand-text{
+  display:inline-block;
+  font-family:'Noto Serif Bengali',Georgia,serif;
+  font-size:clamp(2.4rem,5.4vw,4rem);
+  font-weight:700;
+  letter-spacing:.015em;
+  line-height:1.08;
+  background:var(--grad-text);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  filter:drop-shadow(0 10px 30px rgba(243,20,123,.4));
+}
 .hero h1{font-size:clamp(2.2rem,4.6vw,3.5rem); line-height:1.24; font-weight:700;}
 .hero p.lead{font-size:1.1rem; max-width:48ch; margin-top:18px;}
 .hero-ctas{display:flex; flex-wrap:wrap; gap:14px; margin-top:30px;}
