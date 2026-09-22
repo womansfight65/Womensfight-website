@@ -32,6 +32,24 @@ Pages, so it can be edited two ways — pick whichever is easier for you.
   below, or around it, or click the HTML widget itself to edit its code
   directly from Elementor's built-in code panel.
 
+## Troubleshooting: a page (often Home) shows blank
+
+Some hosting providers' one-click WordPress installers pre-create a
+placeholder page at a common slug — most often `home` — before this theme
+is ever activated. Older versions of this theme saw that placeholder,
+assumed it was already set up, and skipped filling it in, leaving it
+permanently empty. This is now fixed: on every setup run the theme fills
+in any page that is genuinely empty (and only if nobody has since built
+it out in Elementor), and republishes it if it was sitting in Draft or
+Trash.
+
+If a page is still showing blank on a site created with an older version
+of this theme, go to `Appearance → Themes` and click **"পেজ ও মেনু আবার
+সিঙ্ক করুন"** (visible once setup has already run once). It is safe to
+run any number of times — it only ever fills in genuinely empty pages or
+republishes an unpublished one, and never touches a page with real
+content or real Elementor work.
+
 ## Contact form
 
 The form on the Contact page is layout-only (see `inc/content/contact.php`)

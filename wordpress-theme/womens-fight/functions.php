@@ -190,6 +190,43 @@ function womensfight_install_pages_and_menu() {
 		$existing = get_page_by_path( $slug );
 		if ( $existing ) {
 			$slug_to_id[ $slug ] = $existing->ID;
+
+			// Some hosting providers' one-click WordPress installers
+			// pre-create a placeholder page at a common slug (most often
+			// "home") before this theme ever runs. get_page_by_path()
+			// finds that placeholder and, without this check, the real
+			// content below would be skipped forever, leaving that page
+			// permanently empty. Fill it in — but only if it is genuinely
+			// empty and nobody has since built it out in Elementor, so a
+			// page with real content or real Elementor work is never
+			// touched.
+			$is_empty = '' === trim( wp_strip_all_tags( $existing->post_content ) );
+			$has_elementor_work = (bool) get_post_meta( $existing->ID, '_elementor_data', true );
+
+			if ( $is_empty && ! $has_elementor_work ) {
+				$content_file = get_template_directory() . '/inc/content/' . $slug . '.php';
+				$content      = file_exists( $content_file ) ? include $content_file : '';
+				if ( '' !== $content ) {
+					wp_update_post(
+						array(
+							'ID'           => $existing->ID,
+							'post_title'   => $existing->post_title ? $existing->post_title : $title,
+							'post_content' => $content,
+							'post_status'  => 'publish',
+						)
+					);
+				}
+			} elseif ( 'publish' !== $existing->post_status ) {
+				// A page we depend on (e.g. as the front page) shouldn't
+				// silently sit in Draft/Trash — that makes it vanish from
+				// the live site even though it still technically "exists".
+				wp_update_post(
+					array(
+						'ID'          => $existing->ID,
+						'post_status' => 'publish',
+					)
+				);
+			}
 			continue;
 		}
 
@@ -312,15 +349,30 @@ add_action( 'after_switch_theme', 'womensfight_install_pages_and_menu' );
  * Fallback: if the pages/menu were never created (for example the theme
  * was uploaded and activated before this version, or a host skipped the
  * activation hook), show an admin notice with a one-click button to run
- * setup manually.
+ * setup manually. Once setup has run at least once, the same button stays
+ * available in a lower-key form on the Themes screen — re-running it is
+ * always safe (see womensfight_install_pages_and_menu()) and is the way
+ * to repair a page a hosting installer left empty, or the front page if
+ * it ever ends up unpublished, without needing to deactivate/reactivate
+ * the theme.
  */
 function womensfight_admin_setup_notice() {
-	if ( get_option( 'womensfight_setup_done' ) || ! current_user_can( 'manage_options' ) ) {
+	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
 	$url = wp_nonce_url( admin_url( 'themes.php?womensfight_run_setup=1' ), 'womensfight_run_setup' );
-	echo '<div class="notice notice-info"><p><strong>Women\'s Fight থিম:</strong> সাইটের পেজ ও মেনু এখনো তৈরি হয়নি। ';
-	echo '<a href="' . esc_url( $url ) . '" class="button button-primary">এখনই সেটআপ করুন</a></p></div>';
+
+	if ( ! get_option( 'womensfight_setup_done' ) ) {
+		echo '<div class="notice notice-info"><p><strong>Women\'s Fight থিম:</strong> সাইটের পেজ ও মেনু এখনো তৈরি হয়নি। ';
+		echo '<a href="' . esc_url( $url ) . '" class="button button-primary">এখনই সেটআপ করুন</a></p></div>';
+		return;
+	}
+
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	if ( $screen && 'themes' === $screen->id ) {
+		echo '<div class="notice notice-info"><p><strong>Women\'s Fight থিম:</strong> কোনো পেজ (যেমন হোম) ফাঁকা দেখালে ';
+		echo '<a href="' . esc_url( $url ) . '">এখানে ক্লিক করে পেজ ও মেনু আবার সিঙ্ক করুন</a> — এটা নিরাপদ, বিদ্যমান কনটেন্ট মুছবে না।</p></div>';
+	}
 }
 add_action( 'admin_notices', 'womensfight_admin_setup_notice' );
 
