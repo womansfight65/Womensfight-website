@@ -75,6 +75,17 @@ return <<<'HTML'
   </div>
 </section>
 
+<section class="tight wrap">
+  <div class="cta-band">
+    <div>
+      <div class="ico" style="background:rgba(255,255,255,.18); box-shadow:none; margin-bottom:14px;"><svg><use href="#i-target"/></svg></div>
+      <h2>AI Agent দিয়ে ক্যাম্পেইনের আগেই অডিয়েন্স জেনে নিন</h2>
+      <p>লোকেশন, বয়স, লিঙ্গ ও প্ল্যাটফর্ম বেছে নিন — মুহূর্তেই সম্ভাব্য অ্যাড অডিয়েন্স দেখুন, একদম বিনামূল্যে, কোনো সাইনআপ ছাড়াই।</p>
+    </div>
+    <a class="btn btn-ghost" href="##LINK:ai-agent##">এখনই হিসাব করুন →</a>
+  </div>
+</section>
+
 <section class="tight alt">
   <div class="wrap">
     <div class="section-head">
