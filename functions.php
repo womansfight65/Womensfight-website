@@ -194,7 +194,7 @@ function womensfight_page_definitions() {
 		'case-study'           => 'Case Study',
 		'portfolio'            => 'Portfolio',
 		'action-plan'          => 'Action Plan',
-		'package'              => 'Package',
+		'package'              => 'Product',
 		'ai-agent'             => 'AI Agent',
 		'contact'              => 'Contact Us',
 	);
@@ -216,7 +216,7 @@ function womensfight_menu_structure() {
 		array( 'title' => 'Case Study', 'slug' => 'case-study' ),
 		array( 'title' => 'Portfolio', 'slug' => 'portfolio' ),
 		array( 'title' => 'Action Plan', 'slug' => 'action-plan' ),
-		array( 'title' => 'Package', 'slug' => 'package' ),
+		array( 'title' => 'Product', 'slug' => 'package' ),
 		array( 'title' => 'AI Agent', 'slug' => 'ai-agent' ),
 		array( 'title' => 'Contact Us', 'slug' => 'contact' ),
 	);

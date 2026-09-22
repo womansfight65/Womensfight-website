@@ -38,7 +38,7 @@ $logo_full = esc_url( get_template_directory_uri() . '/assets/img/logo-full.png'
     <div class="foot-col">
       <h4>টুলস</h4>
       <a href="<?php echo esc_url( womensfight_page_url( 'ai-agent' ) ); ?>">AI Agent — অডিয়েন্স ক্যালকুলেটর</a>
-      <a href="<?php echo esc_url( womensfight_page_url( 'package' ) ); ?>">Package</a>
+      <a href="<?php echo esc_url( womensfight_page_url( 'package' ) ); ?>">Product</a>
       <a href="<?php echo esc_url( womensfight_page_url( 'contact' ) ); ?>">Contact Us</a>
     </div>
     <div class="foot-col">
