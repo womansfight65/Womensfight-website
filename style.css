@@ -210,6 +210,17 @@ section.alt{background:var(--bg-2); border-block:1px solid var(--border);}
 .pkg li svg{width:17px; height:17px; stroke:var(--blue-light); flex:none; margin-top:3px;}
 .note{font-size:.84rem; color:var(--ink-faint); margin-top:-10px;}
 
+/* SaaS product catalog (Package/product page) */
+.prod-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:18px;}
+.prod-card{background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:24px 20px; display:flex; flex-direction:column; gap:12px; position:relative; text-align:left; transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;}
+.prod-card:hover{transform:translateY(-4px); border-color:var(--pink); box-shadow:var(--shadow);}
+.prod-badge{position:absolute; top:-12px; right:16px; background:var(--grad); color:#fff; font-size:.62rem; font-weight:800; padding:5px 12px; border-radius:999px; letter-spacing:.02em;}
+.prod-card h3{font-size:.98rem; font-weight:700;}
+.prod-card p{font-size:.82rem;}
+.prod-price{font-family:'Noto Serif Bengali',serif; font-size:1.1rem; font-weight:700; color:var(--pink-light); margin-top:auto;}
+.prod-price span{font-size:.68rem; color:var(--ink-faint); font-family:'Hind Siliguri',sans-serif; font-weight:600;}
+.prod-card .btn{padding:10px 16px; font-size:.82rem;}
+
 .cs-grid, .pf-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px;}
 .cs-card{background:var(--surface); border:1px solid var(--border); border-radius:22px; overflow:hidden; display:flex; flex-direction:column;}
 .cs-thumb{aspect-ratio:16/9; background:var(--grad); opacity:.9; position:relative; display:flex; align-items:center; justify-content:center;}
@@ -294,6 +305,7 @@ footer.site-footer{background:var(--bg-2); color:var(--ink); margin-top:40px; bo
   .hero-grid{grid-template-columns:1fr;} .hero-visual{max-width:340px; margin-inline:auto; order:-1;}
   .benefits{grid-template-columns:repeat(2,1fr);}
   .svc-grid, .feat-grid, .pkg-grid, .testi-row, .stat-row{grid-template-columns:1fr 1fr;}
+  .prod-grid{grid-template-columns:repeat(3,1fr);}
   .cs-grid, .pf-grid{grid-template-columns:1fr 1fr;}
   .consult, .calc-wrap{grid-template-columns:1fr;}
   .calc-result{position:static;}
@@ -307,6 +319,7 @@ footer.site-footer{background:var(--bg-2); color:var(--ink); margin-top:40px; bo
 }
 @media (max-width:640px){
   .benefits, .svc-grid, .feat-grid, .pkg-grid, .testi-row, .cs-grid, .pf-grid, .stat-row{grid-template-columns:1fr;}
+  .prod-grid{grid-template-columns:1fr 1fr;}
   .frow{grid-template-columns:1fr;}
   .foot-top{grid-template-columns:1fr 1fr;}
   .tl-step{grid-template-columns:44px 1fr;}
