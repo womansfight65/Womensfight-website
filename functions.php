@@ -65,6 +65,51 @@ function womensfight_assets() {
 add_action( 'wp_enqueue_scripts', 'womensfight_assets' );
 
 /**
+ * Handle the Contact page form submit — no plugin needed. Wired through
+ * admin-post.php (WordPress's standard way to handle a public form POST),
+ * emails the site admin, and bounces the visitor back to wherever they
+ * submitted from with a ?womensfight_sent=1/0 flag that assets/js/main.js
+ * reads to show a real success/error message.
+ */
+function womensfight_handle_contact_submit() {
+	$redirect_to = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+
+	// Honeypot: real visitors never fill this hidden field; most bots do.
+	if ( ! empty( $_POST['fwebsite'] ) ) {
+		wp_safe_redirect( esc_url_raw( add_query_arg( 'womensfight_sent', '1', $redirect_to ) ) );
+		exit;
+	}
+
+	$name    = isset( $_POST['fname'] ) ? sanitize_text_field( wp_unslash( $_POST['fname'] ) ) : '';
+	$company = isset( $_POST['fcompany'] ) ? sanitize_text_field( wp_unslash( $_POST['fcompany'] ) ) : '';
+	$service = isset( $_POST['fservice'] ) ? sanitize_text_field( wp_unslash( $_POST['fservice'] ) ) : '';
+	$mobile  = isset( $_POST['fmobile'] ) ? sanitize_text_field( wp_unslash( $_POST['fmobile'] ) ) : '';
+	$email   = isset( $_POST['femail'] ) ? sanitize_email( wp_unslash( $_POST['femail'] ) ) : '';
+	$message = isset( $_POST['fmsg'] ) ? sanitize_textarea_field( wp_unslash( $_POST['fmsg'] ) ) : '';
+
+	if ( '' === $name || '' === $mobile || ! is_email( $email ) ) {
+		wp_safe_redirect( esc_url_raw( add_query_arg( 'womensfight_sent', '0', $redirect_to ) ) );
+		exit;
+	}
+
+	$subject = sprintf( '[Women\'s Fight] নতুন কনসালটেশন রিকোয়েস্ট — %s', $name );
+	$body    = "নাম: {$name}\n"
+		. "কোম্পানি: {$company}\n"
+		. "সার্ভিস: {$service}\n"
+		. "মোবাইল: {$mobile}\n"
+		. "ইমেইল: {$email}\n\n"
+		. "বার্তা:\n{$message}\n";
+	$headers = array( 'Reply-To: ' . $name . ' <' . $email . '>' );
+
+	$sent = wp_mail( get_option( 'admin_email' ), $subject, $body, $headers );
+
+	wp_safe_redirect( esc_url_raw( add_query_arg( 'womensfight_sent', $sent ? '1' : '0', $redirect_to ) ) );
+	exit;
+}
+add_action( 'admin_post_nopriv_womensfight_contact_submit', 'womensfight_handle_contact_submit' );
+add_action( 'admin_post_womensfight_contact_submit', 'womensfight_handle_contact_submit' );
+
+/**
  * Look up a page's URL by its slug, safely. Returns '#' if the page
  * doesn't exist yet (e.g. setup hasn't run).
  */

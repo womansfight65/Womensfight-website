@@ -117,14 +117,18 @@
       });
     }
 
-    /* contact form (demo — no backend wired up yet) */
-    var form = document.getElementById('consultForm');
-    if (form) {
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var msg = document.getElementById('formMsg');
-        if (msg) msg.classList.add('show');
-      });
+    /* contact form: submits for real to admin-post.php (see functions.php);
+       this just reports the ?womensfight_sent=1/0 result on the way back. */
+    var sentStatus = new URLSearchParams(window.location.search).get('womensfight_sent');
+    if (sentStatus !== null) {
+      var msg = document.getElementById('formMsg');
+      if (msg) {
+        msg.textContent = sentStatus === '1'
+          ? 'ধন্যবাদ — আপনার বার্তা পাঠানো হয়েছে, আমরা শীঘ্রই যোগাযোগ করব।'
+          : 'দুঃখিত, বার্তাটি পাঠানো যায়নি। সরাসরি ইমেইল বা ফোনে যোগাযোগ করুন, অথবা আবার চেষ্টা করুন।';
+        msg.classList.add('show');
+        if (sentStatus !== '1') { msg.style.color = 'var(--pink-light)'; }
+      }
     }
 
     /* AI Agent calculator */
