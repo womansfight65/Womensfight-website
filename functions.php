@@ -422,12 +422,12 @@ add_action( 'admin_init', 'womensfight_maybe_run_manual_setup' );
 function womensfight_refresh_page_from_code( $slug ) {
 	$page = get_page_by_path( $slug );
 	if ( ! $page ) {
-		return false;
+		return array( 'ok' => false, 'reason' => 'no_page_found_for_slug' );
 	}
 
 	$content_file = get_template_directory() . '/inc/content/' . $slug . '.php';
 	if ( ! file_exists( $content_file ) ) {
-		return false;
+		return array( 'ok' => false, 'reason' => 'content_file_missing', 'path' => $content_file );
 	}
 	$content = include $content_file;
 
@@ -449,12 +449,13 @@ function womensfight_refresh_page_from_code( $slug ) {
 	);
 	$content = str_replace( '##LOGO_ICON##', esc_url( get_template_directory_uri() . '/assets/img/logo-icon.png' ), $content );
 
-	wp_update_post(
+	$update_result = wp_update_post(
 		array(
 			'ID'           => $page->ID,
 			'post_content' => $content,
 			'post_status'  => 'publish',
-		)
+		),
+		true // return WP_Error on failure instead of 0
 	);
 
 	update_post_meta( $page->ID, '_elementor_data', wp_slash( wp_json_encode( womensfight_elementor_widget_data( $content ) ) ) );
@@ -462,7 +463,22 @@ function womensfight_refresh_page_from_code( $slug ) {
 	update_post_meta( $page->ID, '_elementor_template_type', 'wp-page' );
 	update_post_meta( $page->ID, '_elementor_version', '3.7.0' );
 
-	return true;
+	// Re-fetch straight from the database (bypassing any object cache) to
+	// see what actually landed, not just what we attempted to write.
+	clean_post_cache( $page->ID );
+	$refetched      = get_post( $page->ID );
+	$stored_content = $refetched ? $refetched->post_content : '';
+
+	return array(
+		'ok'                  => ! is_wp_error( $update_result ),
+		'error'               => is_wp_error( $update_result ) ? $update_result->get_error_message() : '',
+		'page_id'             => $page->ID,
+		'attempted_length'    => strlen( $content ),
+		'stored_length'       => strlen( $stored_content ),
+		'stored_has_wordmark' => false !== strpos( $stored_content, 'hero-brand-text' ),
+		'stored_has_svg'      => false !== strpos( $stored_content, '<svg' ),
+		'stored_snippet'      => mb_substr( wp_strip_all_tags( $stored_content ), 0, 120 ),
+	);
 }
 
 /**
@@ -492,16 +508,49 @@ function womensfight_maybe_refresh_home() {
 		return;
 	}
 	check_admin_referer( 'womensfight_refresh_home' );
-	womensfight_refresh_page_from_code( 'home' );
+	$result = womensfight_refresh_page_from_code( 'home' );
+	set_transient( 'womensfight_refresh_result', $result, MINUTE_IN_SECONDS );
 	wp_safe_redirect( admin_url( 'themes.php?womensfight_refreshed=home' ) );
 	exit;
 }
 add_action( 'admin_init', 'womensfight_maybe_refresh_home' );
 
+/**
+ * Shows exactly what the refresh action actually did — not just "it ran"
+ * but what ended up stored in the database once re-read fresh, so a
+ * mismatch (a caching layer, a security plugin stripping tags, etc.) is
+ * visible immediately instead of guessed at.
+ */
 function womensfight_refresh_done_notice() {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_GET['womensfight_refreshed'] ) ) {
 		return;
 	}
-	echo '<div class="notice notice-success is-dismissible"><p><strong>Women\'s Fight থিম:</strong> হোম পেজ থিমের সর্বশেষ কোড থেকে রিফ্রেশ হয়ে গেছে।</p></div>';
+	$r = get_transient( 'womensfight_refresh_result' );
+	delete_transient( 'womensfight_refresh_result' );
+
+	if ( ! is_array( $r ) ) {
+		echo '<div class="notice notice-error"><p><strong>Women\'s Fight থিম:</strong> রিফ্রেশ রেজাল্ট পাওয়া যায়নি (transient ফেল করেছে) — আবার চেষ্টা করুন।</p></div>';
+		return;
+	}
+	if ( ! $r['ok'] ) {
+		echo '<div class="notice notice-error"><p><strong>Women\'s Fight থিম:</strong> রিফ্রেশ ব্যর্থ হয়েছে। কারণ: <code>' . esc_html( $r['reason'] ?? $r['error'] ?? 'unknown' ) . '</code></p></div>';
+		return;
+	}
+
+	$class = ( $r['attempted_length'] === $r['stored_length'] && $r['stored_has_wordmark'] ) ? 'notice-success' : 'notice-error';
+
+	echo '<div class="notice ' . esc_attr( $class ) . ' is-dismissible"><p><strong>Women\'s Fight থিম — রিফ্রেশ ডায়াগনস্টিক:</strong></p>';
+	echo '<ul style="list-style:disc;margin-left:20px;">';
+	echo '<li>Page ID: ' . (int) $r['page_id'] . '</li>';
+	echo '<li>যা লিখতে চেয়েছি (attempted): ' . (int) $r['attempted_length'] . ' bytes</li>';
+	echo '<li>ডাটাবেসে আসলে যা আছে (stored, fresh re-read): ' . (int) $r['stored_length'] . ' bytes</li>';
+	echo '<li>Stored content-এ wordmark class আছে কিনা: ' . ( $r['stored_has_wordmark'] ? 'হ্যাঁ' : '<strong>না</strong>' ) . '</li>';
+	echo '<li>Stored content-এ &lt;svg&gt; টিকে আছে কিনা: ' . ( $r['stored_has_svg'] ? 'হ্যাঁ' : '<strong>না (KSES filter সন্দেহজনক)</strong>' ) . '</li>';
+	echo '<li>Stored content-এর প্রথম অংশ (প্লেইন টেক্সট): <code>' . esc_html( $r['stored_snippet'] ) . '</code></li>';
+	echo '</ul>';
+	if ( 'notice-error' === $class ) {
+		echo '<p>এই স্ক্রিনশটটা Claude-কে দিন — এখান থেকেই আসল কারণ বোঝা যাবে।</p>';
+	}
+	echo '</div>';
 }
 add_action( 'admin_notices', 'womensfight_refresh_done_notice' );
