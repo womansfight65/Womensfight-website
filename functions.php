@@ -482,13 +482,13 @@ function womensfight_refresh_page_from_code( $slug ) {
 }
 
 /**
- * Admin notice + one-click action: reset the Home page to the theme's
- * current inc/content/home.php. Shown on the Themes screen next to the
- * general sync notice. This one deliberately overwrites Home's content,
- * so it's a separate, explicitly-labelled button rather than part of the
- * safe general sync.
+ * Admin notice + one-click action: reset any page to the theme's current
+ * inc/content/{slug}.php. Shown on the Themes screen next to the general
+ * sync notice. This deliberately overwrites that page's content, so it's
+ * a separate, explicitly-labelled form rather than part of the safe
+ * general sync (which never touches a page that already has content).
  */
-function womensfight_refresh_home_notice() {
+function womensfight_refresh_page_notice() {
 	if ( ! current_user_can( 'manage_options' ) || ! get_option( 'womensfight_setup_done' ) ) {
 		return;
 	}
@@ -496,24 +496,39 @@ function womensfight_refresh_home_notice() {
 	if ( ! $screen || 'themes' !== $screen->id ) {
 		return;
 	}
-	$url = wp_nonce_url( admin_url( 'themes.php?womensfight_refresh_home=1' ), 'womensfight_refresh_home' );
-	echo '<div class="notice notice-warning"><p><strong>Women\'s Fight থিম:</strong> হোম পেজে থিমের সর্বশেষ ডিজাইন (নতুন Women&rsquo;s Fight ওয়ার্ডমার্ক ও AI Agent স্পটলাইট) আনতে চাইলে ';
-	echo '<a href="' . esc_url( $url ) . '" class="button">হোম পেজ কোড থেকে রিফ্রেশ করুন</a> — ';
-	echo 'সতর্কতা: এটা হোম পেজে wp-admin থেকে করা যেকোনো ম্যানুয়াল এডিট মুছে দেবে।</p></div>';
+	echo '<div class="notice notice-warning"><p><strong>Women\'s Fight থিম:</strong> কোনো পেজে থিমের সর্বশেষ কোড (inc/content/) থেকে ডিজাইন/কনটেন্ট আনতে চাইলে পেজ বেছে নিয়ে রিফ্রেশ করুন — ';
+	echo 'সতর্কতা: এটা সেই পেজে wp-admin থেকে করা যেকোনো ম্যানুয়াল এডিট মুছে দেবে।</p>';
+	echo '<form method="get" action="' . esc_url( admin_url( 'themes.php' ) ) . '" style="display:flex;gap:8px;align-items:center;">';
+	wp_nonce_field( 'womensfight_refresh_page', '_wpnonce', true, true );
+	echo '<select name="womensfight_refresh_slug">';
+	foreach ( womensfight_page_definitions() as $slug => $title ) {
+		echo '<option value="' . esc_attr( $slug ) . '">' . esc_html( $title . ' (' . $slug . ')' ) . '</option>';
+	}
+	echo '</select> ';
+	echo '<button type="submit" class="button">এই পেজ কোড থেকে রিফ্রেশ করুন</button>';
+	echo '</form></div>';
 }
-add_action( 'admin_notices', 'womensfight_refresh_home_notice' );
+add_action( 'admin_notices', 'womensfight_refresh_page_notice' );
 
-function womensfight_maybe_refresh_home() {
-	if ( ! isset( $_GET['womensfight_refresh_home'] ) || ! current_user_can( 'manage_options' ) ) {
+function womensfight_maybe_refresh_page() {
+	if ( ! isset( $_GET['womensfight_refresh_slug'] ) || ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
-	check_admin_referer( 'womensfight_refresh_home' );
-	$result = womensfight_refresh_page_from_code( 'home' );
+	check_admin_referer( 'womensfight_refresh_page' );
+
+	$slug = sanitize_title( wp_unslash( $_GET['womensfight_refresh_slug'] ) );
+	if ( ! array_key_exists( $slug, womensfight_page_definitions() ) ) {
+		wp_safe_redirect( admin_url( 'themes.php' ) );
+		exit;
+	}
+
+	$result = womensfight_refresh_page_from_code( $slug );
 	set_transient( 'womensfight_refresh_result', $result, MINUTE_IN_SECONDS );
-	wp_safe_redirect( admin_url( 'themes.php?womensfight_refreshed=home' ) );
+	set_transient( 'womensfight_refresh_slug', $slug, MINUTE_IN_SECONDS );
+	wp_safe_redirect( admin_url( 'themes.php?womensfight_refreshed=1' ) );
 	exit;
 }
-add_action( 'admin_init', 'womensfight_maybe_refresh_home' );
+add_action( 'admin_init', 'womensfight_maybe_refresh_page' );
 
 /**
  * Shows exactly what the refresh action actually did — not just "it ran"
@@ -525,8 +540,10 @@ function womensfight_refresh_done_notice() {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_GET['womensfight_refreshed'] ) ) {
 		return;
 	}
-	$r = get_transient( 'womensfight_refresh_result' );
+	$r    = get_transient( 'womensfight_refresh_result' );
+	$slug = get_transient( 'womensfight_refresh_slug' );
 	delete_transient( 'womensfight_refresh_result' );
+	delete_transient( 'womensfight_refresh_slug' );
 
 	if ( ! is_array( $r ) ) {
 		echo '<div class="notice notice-error"><p><strong>Women\'s Fight থিম:</strong> রিফ্রেশ রেজাল্ট পাওয়া যায়নি (transient ফেল করেছে) — আবার চেষ্টা করুন।</p></div>';
@@ -537,14 +554,16 @@ function womensfight_refresh_done_notice() {
 		return;
 	}
 
-	$class = ( $r['attempted_length'] === $r['stored_length'] && $r['stored_has_wordmark'] ) ? 'notice-success' : 'notice-error';
+	$class = ( $r['attempted_length'] === $r['stored_length'] ) ? 'notice-success' : 'notice-error';
 
-	echo '<div class="notice ' . esc_attr( $class ) . ' is-dismissible"><p><strong>Women\'s Fight থিম — রিফ্রেশ ডায়াগনস্টিক:</strong></p>';
+	echo '<div class="notice ' . esc_attr( $class ) . ' is-dismissible"><p><strong>Women\'s Fight থিম — রিফ্রেশ ডায়াগনস্টিক (' . esc_html( $slug ? $slug : '?' ) . '):</strong></p>';
 	echo '<ul style="list-style:disc;margin-left:20px;">';
 	echo '<li>Page ID: ' . (int) $r['page_id'] . '</li>';
 	echo '<li>যা লিখতে চেয়েছি (attempted): ' . (int) $r['attempted_length'] . ' bytes</li>';
 	echo '<li>ডাটাবেসে আসলে যা আছে (stored, fresh re-read): ' . (int) $r['stored_length'] . ' bytes</li>';
-	echo '<li>Stored content-এ wordmark class আছে কিনা: ' . ( $r['stored_has_wordmark'] ? 'হ্যাঁ' : '<strong>না</strong>' ) . '</li>';
+	if ( 'home' === $slug ) {
+		echo '<li>Stored content-এ wordmark class আছে কিনা: ' . ( $r['stored_has_wordmark'] ? 'হ্যাঁ' : '<strong>না</strong>' ) . '</li>';
+	}
 	echo '<li>Stored content-এ &lt;svg&gt; টিকে আছে কিনা: ' . ( $r['stored_has_svg'] ? 'হ্যাঁ' : '<strong>না (KSES filter সন্দেহজনক)</strong>' ) . '</li>';
 	echo '<li>Stored content-এর প্রথম অংশ (প্লেইন টেক্সট): <code>' . esc_html( $r['stored_snippet'] ) . '</code></li>';
 	echo '</ul>';
