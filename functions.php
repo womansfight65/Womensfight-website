@@ -1025,3 +1025,88 @@ function womensfight_maybe_export_leads_csv() {
 	exit;
 }
 add_action( 'admin_init', 'womensfight_maybe_export_leads_csv' );
+
+/* =======================================================================
+ * Local SEO — targets "Ramganj" / "Lakshmipur" agency searches:
+ * per-page <title>/meta description and a LocalBusiness schema block.
+ * ===================================================================== */
+
+/**
+ * Per-page-slug meta descriptions, each naturally including the target
+ * local keywords. Falls back to the home page's description.
+ */
+function womensfight_seo_meta_descriptions() {
+	return array(
+		'home'                 => "Ramganj, Lakshmipur-ভিত্তিক ক্রিয়েটিভ ও ডিজিটাল মার্কেটিং এজেন্সি Women's Fight — ফেসবুক মার্কেটিং, ওয়েবসাইট ডেভেলপমেন্ট, ব্র্যান্ডিং ও AI সল্যুশন, ফ্রি কনসালটেশনসহ।",
+		'digital-marketing'    => 'Ramganj, Lakshmipur-এ সেরা Digital Marketing সার্ভিস — Facebook Ads, পেইড ও অর্গানিক ক্যাম্পেইন Women&rsquo;s Fight-এর সাথে।',
+		'website-development'  => 'Ramganj, Lakshmipur থেকে প্রফেশনাল Website Development — দ্রুত, সুন্দর ও ব্যবসার জন্য কার্যকর ওয়েবসাইট।',
+		'landing-page'         => 'Ramganj, Lakshmipur-এ হাই-কনভার্সন Landing Page ডিজাইন — ক্যাম্পেইন বা প্রোডাক্ট লঞ্চের জন্য।',
+		'video-production'     => 'Ramganj, Lakshmipur থেকে Video Production সার্ভিস — TVC, OVC ও কর্পোরেট ভিডিও, কনসেপ্ট থেকে ফাইনাল কাট।',
+		'ai-agency'            => 'Ramganj, Lakshmipur-এর AI Agency — AI-চালিত অটোমেশন, চ্যাটবট ও কনটেন্ট টুল দিয়ে মার্কেটিং দ্রুততর করুন।',
+		'case-study'           => "Women's Fight-এর রিয়েল ক্যাম্পেইন Case Study — Ramganj, Lakshmipur ও এর বাইরের ব্র্যান্ডদের সাফল্যের গল্প।",
+		'portfolio'            => "Ramganj, Lakshmipur-ভিত্তিক এজেন্সি Women's Fight-এর কাজের Portfolio দেখুন।",
+		'action-plan'          => 'আপনার ব্র্যান্ডের জন্য কাস্টম Action Plan — Ramganj, Lakshmipur-এর Women&rsquo;s Fight এজেন্সির সাথে।',
+		'package'              => 'Ramganj, Lakshmipur-এ ডিজিটাল মার্কেটিং Package ও প্রাইসিং — আপনার বাজেট অনুযায়ী সল্যুশন।',
+		'ai-agent'             => 'ফ্রি AI Agent দিয়ে আপনার লোকেশন অনুযায়ী অডিয়েন্স হিসাব করুন — Ramganj, Lakshmipur-এর Women&rsquo;s Fight এজেন্সি থেকে।',
+		'contact'              => "Women's Fight-এর সাথে যোগাযোগ করুন — City Plaza, Ramganj, Lakshmipur। ফ্রি কনসালটেশন বুক করুন।",
+		'lead-form'            => 'Ramganj, Lakshmipur-এর Women&rsquo;s Fight এজেন্সিকে আপনার তথ্য জানান — আমরা দ্রুত যোগাযোগ করব।',
+	);
+}
+
+function womensfight_meta_description() {
+	$descriptions = womensfight_seo_meta_descriptions();
+	$slug         = is_page() ? get_post_field( 'post_name', get_queried_object_id() ) : '';
+	$description  = isset( $descriptions[ $slug ] ) ? $descriptions[ $slug ] : $descriptions['home'];
+	echo '<meta name="description" content="' . esc_attr( $description ) . '">' . "\n";
+}
+add_action( 'wp_head', 'womensfight_meta_description', 1 );
+
+/**
+ * Browser-tab / search-result title, with the target location worked in
+ * naturally — separate from the on-page H1 and nav labels, which stay
+ * unchanged.
+ */
+function womensfight_seo_title( $title ) {
+	if ( is_front_page() ) {
+		return "Women's Fight — Ramganj, Lakshmipur-এর সেরা ডিজিটাল মার্কেটিং এজেন্সি";
+	}
+	if ( is_page() ) {
+		return get_the_title( get_queried_object_id() ) . ' — Ramganj, Lakshmipur | Women&rsquo;s Fight';
+	}
+	return $title;
+}
+add_filter( 'pre_get_document_title', 'womensfight_seo_title' );
+
+/**
+ * LocalBusiness structured data (JSON-LD) — tells Google directly that
+ * this is a local agency based in Ramganj, Lakshmipur, which is the main
+ * technical signal for appearing in local map-pack results for that area.
+ */
+function womensfight_local_business_schema() {
+	$schema = array(
+		'@context'   => 'https://schema.org',
+		'@type'      => 'ProfessionalService',
+		'name'       => "Women's Fight Agency",
+		'image'      => esc_url( get_template_directory_uri() . '/assets/img/logo-full.png' ),
+		'url'        => home_url( '/' ),
+		'telephone'  => '+8801748133740',
+		'email'      => 'Womansfight65@gmail.com',
+		'address'    => array(
+			'@type'           => 'PostalAddress',
+			'streetAddress'   => 'City Plaza, Lift-3',
+			'addressLocality' => 'Ramganj',
+			'addressRegion'   => 'Lakshmipur',
+			'addressCountry'  => 'BD',
+		),
+		'areaServed' => array( 'Ramganj', 'Lakshmipur', 'Bangladesh' ),
+		'priceRange' => '৳৳',
+		'sameAs'     => array(
+			'https://www.facebook.com/womensfight',
+			'https://www.instagram.com/womensfight',
+			'https://www.tiktok.com/@womensfight',
+			'https://www.youtube.com/@womensfight',
+		),
+	);
+	echo '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . '</script>' . "\n";
+}
+add_action( 'wp_head', 'womensfight_local_business_schema' );
