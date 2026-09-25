@@ -990,6 +990,9 @@ function womensfight_maybe_export_leads_csv() {
 	if ( ! isset( $_GET['wf_export_csv'] ) || ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
+	if ( ! isset( $_GET['post_type'] ) || 'wf_lead' !== $_GET['post_type'] ) {
+		return;
+	}
 	check_admin_referer( 'womensfight_export_leads' );
 
 	$posts = get_posts(
@@ -1026,6 +1029,245 @@ function womensfight_maybe_export_leads_csv() {
 	exit;
 }
 add_action( 'admin_init', 'womensfight_maybe_export_leads_csv' );
+
+/* =======================================================================
+ * Contact Page Form — separate from the Lead Form / Customer
+ * Submissions above on purpose: same "always fresh, never baked into
+ * static content" architecture, but its own fields, its own post type
+ * (wf_contact_msg) and its own wp-admin screen, so the two never mix.
+ * ===================================================================== */
+
+function womensfight_register_contact_cpt() {
+	register_post_type(
+		'wf_contact_msg',
+		array(
+			'labels'          => array(
+				'name'          => 'Contact Messages',
+				'singular_name' => 'Contact Message',
+				'menu_name'     => 'Contact Messages',
+				'all_items'     => 'All Messages',
+			),
+			'public'          => false,
+			'show_ui'         => true,
+			'show_in_menu'    => true,
+			'menu_icon'       => 'dashicons-email-alt',
+			'menu_position'   => 27,
+			'supports'        => array( 'title' ),
+			'capability_type' => 'post',
+			'map_meta_cap'    => true,
+		)
+	);
+}
+add_action( 'init', 'womensfight_register_contact_cpt' );
+
+function womensfight_contact_fields() {
+	return array(
+		'cf_name'    => 'নাম',
+		'cf_company' => 'কোম্পানির নাম',
+		'cf_service' => 'কোন সার্ভিস প্রয়োজন',
+		'cf_mobile'  => 'মোবাইল নম্বর',
+		'cf_email'   => 'ইমেইল',
+		'cf_message' => 'প্রজেক্ট সম্পর্কে',
+	);
+}
+
+function womensfight_contact_services() {
+	return array(
+		'ডিজিটাল মার্কেটিং',
+		'ওয়েবসাইট ডেভেলপমেন্ট',
+		'ল্যান্ডিং পেজ',
+		'ভিডিও প্রোডাকশন',
+		'AI Agency',
+		'AI Agent (অডিয়েন্স ক্যালকুলেটর)',
+		'অন্যান্য',
+	);
+}
+
+function womensfight_render_contact_form() {
+	ob_start();
+
+	if ( isset( $_GET['cf_submitted'] ) && '1' === $_GET['cf_submitted'] ) {
+		?>
+		<div class="wf-cform-success" id="contactForm">
+			<p>ধন্যবাদ। আপনার তথ্য আমরা পেয়েছি। আমাদের টিম খুব দ্রুত আপনার সাথে যোগাযোগ করবে।</p>
+		</div>
+		<script>
+		(function(){
+			window.dataLayer = window.dataLayer || [];
+			window.dataLayer.push({ event: 'lead_submit' });
+			if ( typeof fbq === 'function' ) { fbq('track', 'Lead'); }
+			if ( typeof gtag === 'function' ) { gtag('event', 'generate_lead'); }
+		})();
+		</script>
+		<?php
+		return ob_get_clean();
+	}
+
+	$services = womensfight_contact_services();
+	?>
+	<form class="consult-form" id="contactForm" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate>
+		<input type="hidden" name="action" value="womensfight_submit_contact_form">
+		<input type="hidden" name="cf_redirect" value="<?php echo esc_url( get_permalink() ); ?>">
+		<?php wp_nonce_field( 'womensfight_contact_form', 'womensfight_contact_form_nonce' ); ?>
+
+		<div class="frow">
+			<div><label for="cf_name">নাম</label><input id="cf_name" name="cf_name" placeholder="আপনার পূর্ণ নাম"></div>
+			<div><label for="cf_company">কোম্পানির নাম</label><input id="cf_company" name="cf_company" placeholder="আপনার প্রতিষ্ঠানের নাম"></div>
+		</div>
+		<div class="frow">
+			<div>
+				<label for="cf_service">কোন সার্ভিস প্রয়োজন?</label>
+				<select id="cf_service" name="cf_service">
+					<?php foreach ( $services as $service ) : ?>
+						<option value="<?php echo esc_attr( $service ); ?>"><?php echo esc_html( $service ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+			<div><label for="cf_mobile">মোবাইল নম্বর</label><input id="cf_mobile" name="cf_mobile" type="tel" placeholder="+880 1XXX-XXXXXX"></div>
+		</div>
+		<div><label for="cf_email">ইমেইল</label><input id="cf_email" name="cf_email" type="email" placeholder="you@example.com"></div>
+		<div><label for="cf_message">আপনার প্রজেক্ট সম্পর্কে বলুন</label><textarea id="cf_message" name="cf_message" placeholder="আপনি কী অর্জন করতে চান?"></textarea></div>
+
+		<button class="btn btn-primary" type="submit">কনসালটেশন রিকোয়েস্ট করুন</button>
+	</form>
+	<?php
+	return ob_get_clean();
+}
+
+function womensfight_handle_contact_form_submit() {
+	if (
+		! isset( $_POST['womensfight_contact_form_nonce'] ) ||
+		! wp_verify_nonce( wp_unslash( $_POST['womensfight_contact_form_nonce'] ), 'womensfight_contact_form' )
+	) {
+		wp_die( 'Security check failed. দয়া করে পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' );
+	}
+
+	$data = array();
+	foreach ( womensfight_contact_fields() as $key => $label ) {
+		$data[ $key ] = isset( $_POST[ $key ] ) ? sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) : '';
+	}
+
+	if ( '' !== $data['cf_name'] ) {
+		$title = $data['cf_name'];
+	} elseif ( '' !== $data['cf_mobile'] ) {
+		$title = $data['cf_mobile'];
+	} elseif ( '' !== $data['cf_email'] ) {
+		$title = $data['cf_email'];
+	} else {
+		$title = 'Message — ' . current_time( 'Y-m-d H:i' );
+	}
+
+	$post_id = wp_insert_post(
+		array(
+			'post_type'   => 'wf_contact_msg',
+			'post_title'  => $title,
+			'post_status' => 'publish',
+		)
+	);
+
+	if ( $post_id && ! is_wp_error( $post_id ) ) {
+		foreach ( $data as $key => $value ) {
+			update_post_meta( $post_id, $key, $value );
+		}
+	}
+
+	$redirect = isset( $_POST['cf_redirect'] ) ? esc_url_raw( wp_unslash( $_POST['cf_redirect'] ) ) : home_url( '/' );
+	wp_safe_redirect( add_query_arg( 'cf_submitted', '1', $redirect ) . '#contactForm' );
+	exit;
+}
+add_action( 'admin_post_womensfight_submit_contact_form', 'womensfight_handle_contact_form_submit' );
+add_action( 'admin_post_nopriv_womensfight_submit_contact_form', 'womensfight_handle_contact_form_submit' );
+
+function womensfight_contact_columns( $columns ) {
+	return array(
+		'cb'         => $columns['cb'],
+		'title'      => 'নাম / টাইটেল',
+		'cf_mobile'  => 'Mobile',
+		'cf_email'   => 'Email',
+		'cf_company' => 'Company',
+		'cf_service' => 'Service',
+		'date'       => $columns['date'],
+	);
+}
+add_filter( 'manage_wf_contact_msg_posts_columns', 'womensfight_contact_columns' );
+
+function womensfight_contact_column_content( $column, $post_id ) {
+	if ( in_array( $column, array( 'cf_mobile', 'cf_email', 'cf_company', 'cf_service' ), true ) ) {
+		echo esc_html( get_post_meta( $post_id, $column, true ) );
+	}
+}
+add_action( 'manage_wf_contact_msg_posts_custom_column', 'womensfight_contact_column_content', 10, 2 );
+
+function womensfight_register_contact_detail_box() {
+	add_meta_box(
+		'womensfight_contact_details',
+		'Message Details',
+		'womensfight_render_contact_detail_box',
+		'wf_contact_msg',
+		'normal',
+		'high'
+	);
+}
+add_action( 'add_meta_boxes_wf_contact_msg', 'womensfight_register_contact_detail_box' );
+
+function womensfight_render_contact_detail_box( $post ) {
+	echo '<table class="widefat striped"><tbody>';
+	foreach ( womensfight_contact_fields() as $key => $label ) {
+		$value = get_post_meta( $post->ID, $key, true );
+		echo '<tr><th style="width:220px;">' . esc_html( $label ) . '</th><td>' . nl2br( esc_html( $value ) ) . '</td></tr>';
+	}
+	echo '</tbody></table>';
+}
+
+add_action( 'admin_notices', function() {
+	$screen = get_current_screen();
+	if ( $screen && 'edit-wf_contact_msg' === $screen->id ) {
+		$url = wp_nonce_url( admin_url( 'edit.php?post_type=wf_contact_msg&wf_export_csv=1' ), 'womensfight_export_contact' );
+		echo '<p><a href="' . esc_url( $url ) . '" class="button button-primary">সব মেসেজ CSV হিসেবে Export করুন</a></p>';
+	}
+} );
+
+function womensfight_maybe_export_contact_csv() {
+	if ( ! isset( $_GET['wf_export_csv'] ) || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	if ( ! isset( $_GET['post_type'] ) || 'wf_contact_msg' !== $_GET['post_type'] ) {
+		return;
+	}
+	check_admin_referer( 'womensfight_export_contact' );
+
+	$posts = get_posts(
+		array(
+			'post_type'      => 'wf_contact_msg',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'orderby'        => 'date',
+			'order'          => 'DESC',
+		)
+	);
+
+	nocache_headers();
+	header( 'Content-Type: text/csv; charset=utf-8' );
+	header( 'Content-Disposition: attachment; filename=contact-messages-' . gmdate( 'Y-m-d' ) . '.csv' );
+
+	$out = fopen( 'php://output', 'w' );
+	fputs( $out, "\xEF\xBB\xBF" );
+
+	$fields = womensfight_contact_fields();
+	fputcsv( $out, array_merge( array( 'Submitted At' ), array_values( $fields ) ) );
+
+	foreach ( $posts as $post ) {
+		$row = array( get_the_date( 'Y-m-d H:i', $post ) );
+		foreach ( array_keys( $fields ) as $key ) {
+			$row[] = get_post_meta( $post->ID, $key, true );
+		}
+		fputcsv( $out, $row );
+	}
+
+	fclose( $out );
+	exit;
+}
+add_action( 'admin_init', 'womensfight_maybe_export_contact_csv' );
 
 /* =======================================================================
  * Local SEO — targets "Ramganj" / "Lakshmipur" agency searches:

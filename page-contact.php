@@ -3,11 +3,13 @@
  * Dedicated template for the Contact page (slug: contact).
  *
  * The consult-side info panel stays static here, but the form itself is
- * rendered by calling womensfight_render_customer_form() directly (the
- * same function used on the Lead Form page) instead of the old static,
- * unwired form — so submissions here now save to Customer Submissions
- * in wp-admin too, with a fresh security nonce on every request instead
- * of one baked into stored page content.
+ * rendered by calling womensfight_render_contact_form() directly —
+ * its own separate form (name, company, service, mobile, email,
+ * message), saving to its own "Contact Messages" post type, kept
+ * deliberately independent of the Lead Form page's form/CPT so the two
+ * never mix in wp-admin. Rendered via PHP instead of the_content() so
+ * it bypasses Elementor's content override and always gets a fresh
+ * security nonce, never one baked into stored page content.
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -46,7 +48,7 @@ get_header();
         <a href="https://www.youtube.com/@womensfight" aria-label="YouTube" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="4"></rect><path d="M11 10.2 14.5 12 11 13.8Z" fill="currentColor" stroke="none"></path></svg></a>
       </div>
     </div>
-    <?php echo womensfight_render_customer_form(); ?>
+    <?php echo womensfight_render_contact_form(); ?>
   </div>
 </section>
 </main>
