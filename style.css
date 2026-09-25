@@ -3,7 +3,7 @@ Theme Name: Women's Fight Agency
 Theme URI: https://womensfight.agency
 Author: Women's Fight
 Description: Dark, vivid multi-page agency theme for Women's Fight, built around the brand's real pink-magenta-to-blue logo mark, fully in Bangla, with real editable WordPress Pages (Block Editor and Elementor ready out of the box) and an interactive AI Agent audience-estimator tool.
-Version: 3.7
+Version: 3.8
 Requires at least: 5.9
 Requires PHP: 7.4
 Requires Plugins: elementor
@@ -249,9 +249,13 @@ section.alt{background:var(--bg-2); border-block:1px solid var(--border);}
 .calc-assump{margin-top:22px; padding-top:18px; border-top:1px solid var(--border); font-size:.78rem; color:var(--ink-faint); line-height:1.7;}
 
 .consult{display:grid; grid-template-columns:.9fr 1.1fr; border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow);}
-.consult-side{background:linear-gradient(120deg, rgba(243,20,123,.55) 0%, rgba(195,28,156,.55) 35%, rgba(154,31,174,.55) 55%, rgba(58,111,224,.55) 78%, rgba(0,191,253,.55) 100%), var(--surface); padding:44px 38px; color:#fff; display:flex; flex-direction:column; justify-content:space-between; gap:24px;}
+.consult-side{position:relative; overflow:hidden; background:var(--bg-2); padding:44px 38px; color:#fff; display:flex; flex-direction:column; justify-content:space-between; gap:24px;}
+.consult-side::before, .consult-side::after{content:""; position:absolute; border-radius:50%; filter:blur(90px); z-index:0;}
+.consult-side::before{width:320px; height:320px; background:rgba(243,20,123,.30); top:-150px; right:-110px;}
+.consult-side::after{width:280px; height:280px; background:rgba(0,191,253,.24); bottom:-150px; left:-110px;}
+.consult-side > *{position:relative; z-index:1;}
 .consult-side h2{color:#fff; font-size:1.65rem;}
-.consult-side p{color:rgba(255,255,255,.88);}
+.consult-side p{color:rgba(255,255,255,.78);}
 .consult-points{display:flex; flex-direction:column; gap:12px; margin-top:6px;}
 .consult-points div{display:flex; gap:10px; align-items:flex-start; font-size:.88rem; font-weight:600;}
 .consult-points svg{width:18px; height:18px; flex:none; margin-top:1px;}

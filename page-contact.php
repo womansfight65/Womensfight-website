@@ -27,7 +27,7 @@ get_header();
   <div class="consult">
     <div class="consult-side">
       <div>
-        <span class="eyebrow" style="color:#fff;">শুরু করুন</span>
+        <span class="eyebrow">শুরু করুন</span>
         <h2>ফ্রি কনসালটেশন বুক করুন</h2>
         <p>ফর্মটি পূরণ করুন, আমাদের টিম শীঘ্রই যোগাযোগ করবে।</p>
       </div>
