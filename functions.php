@@ -202,6 +202,7 @@ function womensfight_install_pages_and_menu() {
 
 	$slug_to_id = array();
 	$logo_icon  = esc_url( get_template_directory_uri() . '/assets/img/logo-icon.png' );
+	$hero_img   = esc_url( get_template_directory_uri() . '/assets/img/hero-team.webp' );
 
 	foreach ( womensfight_page_definitions() as $slug => $title ) {
 		$existing = get_page_by_path( $slug );
@@ -282,6 +283,7 @@ function womensfight_install_pages_and_menu() {
 			$content
 		);
 		$new_content = str_replace( '##LOGO_ICON##', $logo_icon, $new_content );
+		$new_content = str_replace( '##HERO_IMG##', $hero_img, $new_content );
 
 		if ( $new_content !== $content ) {
 			wp_update_post(
@@ -481,6 +483,7 @@ function womensfight_sync_one_page( $slug ) {
 	$slug_to_id[ $slug ] = $id;
 
 	$logo_icon   = esc_url( get_template_directory_uri() . '/assets/img/logo-icon.png' );
+	$hero_img    = esc_url( get_template_directory_uri() . '/assets/img/hero-team.webp' );
 	$new_content = preg_replace_callback(
 		'/##LINK:([a-z0-9-]+)##/',
 		function ( $m ) use ( $slug_to_id ) {
@@ -489,6 +492,7 @@ function womensfight_sync_one_page( $slug ) {
 		$content
 	);
 	$new_content = str_replace( '##LOGO_ICON##', $logo_icon, $new_content );
+	$new_content = str_replace( '##HERO_IMG##', $hero_img, $new_content );
 
 	wp_update_post(
 		array(

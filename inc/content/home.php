@@ -21,7 +21,7 @@ return <<<'HTML'
     </div>
     <div class="hero-visual">
       <div class="ring"></div><div class="ring2"></div>
-      <div class="card"><img src="##LOGO_ICON##" alt="Women's Fight লোগো"></div>
+      <div class="card photo"><img src="##HERO_IMG##" alt="Women's Fight টিম"></div>
       <div class="float f1"><span class="dot"></span>স্ট্র্যাটেজি-ফার্স্ট অ্যাপ্রোচ</div>
       <div class="float f2"><span class="dot"></span>AI-চালিত ইনসাইট</div>
     </div>
