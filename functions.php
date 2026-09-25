@@ -39,6 +39,23 @@ function womensfight_setup() {
 }
 add_action( 'after_setup_theme', 'womensfight_setup' );
 
+/**
+ * This theme's pages hold complete, pre-built HTML (nested divs, anchors
+ * wrapping headings, etc — see inc/content/*.php), not blog-style prose.
+ * WordPress's default wpautop filter inserts <p>/<br> at blank lines and
+ * breaks that nested markup apart (e.g. splitting a .svc-card link into
+ * two separate boxes). Skip wpautop for pages only, so normal blog posts
+ * (if any are ever added) keep the usual auto-paragraph behavior.
+ */
+function womensfight_skip_wpautop_on_pages( $content ) {
+	if ( 'page' === get_post_type() ) {
+		return $content;
+	}
+	return wpautop( $content );
+}
+remove_filter( 'the_content', 'wpautop' );
+add_filter( 'the_content', 'womensfight_skip_wpautop_on_pages', 10 );
+
 function womensfight_assets() {
 	wp_enqueue_style(
 		'womensfight-google-fonts',
