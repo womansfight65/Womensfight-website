@@ -788,7 +788,7 @@ function womensfight_render_customer_form() {
 
 	$services = womensfight_lead_services();
 	?>
-	<form class="wf-cform" id="wf-cform" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate>
+	<form class="wf-cform" id="wf-cform" method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate>
 		<input type="hidden" name="action" value="womensfight_submit_customer_form">
 		<input type="hidden" name="wf_redirect" value="<?php echo esc_url( get_permalink() ); ?>">
 		<?php wp_nonce_field( 'womensfight_customer_form', 'womensfight_customer_form_nonce' ); ?>
@@ -805,13 +805,17 @@ function womensfight_render_customer_form() {
 			<div><label for="wf_business">Business Name</label><input type="text" id="wf_business" name="wf_business" placeholder="আপনার ব্যবসার নাম"></div>
 			<div>
 				<label for="wf_service">কোন Service নিতে চান</label>
-				<select id="wf_service" name="wf_service">
+				<select id="wf_service" name="wf_service" onchange="document.getElementById('wf_service_other_wrap').style.display = (this.value === 'Other') ? 'block' : 'none';">
 					<option value="">সিলেক্ট করুন</option>
 					<?php foreach ( $services as $service ) : ?>
 						<option value="<?php echo esc_attr( $service ); ?>"><?php echo esc_html( $service ); ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
+		</div>
+		<div id="wf_service_other_wrap" style="display:none;">
+			<label for="wf_service_other">Service-টা কী লিখে দিন</label>
+			<input type="text" id="wf_service_other" name="wf_service_other" placeholder="আপনার প্রয়োজনীয় Service লিখুন">
 		</div>
 		<div class="frow">
 			<div><label for="wf_budget">Budget</label><input type="text" id="wf_budget" name="wf_budget" placeholder="যেমন: ১০,০০০ - ২০,০০০ টাকা"></div>
@@ -822,6 +826,7 @@ function womensfight_render_customer_form() {
 			<div><label for="wf_ad_post_link">Ads চালানোর Facebook Post Link</label><input type="url" id="wf_ad_post_link" name="wf_ad_post_link" placeholder="https://facebook.com/.../posts/..."></div>
 		</div>
 		<div><label for="wf_message">Message / Requirement</label><textarea id="wf_message" name="wf_message" rows="4" placeholder="আপনার প্রয়োজন সম্পর্কে লিখুন (ঐচ্ছিক)"></textarea></div>
+		<div><label for="wf_image">ছবি যুক্ত করুন (ঐচ্ছিক)</label><input type="file" id="wf_image" name="wf_image" accept="image/*"></div>
 
 		<button class="btn btn-primary" type="submit">Submit করুন</button>
 	</form>
@@ -849,6 +854,11 @@ function womensfight_handle_customer_form_submit() {
 		$data[ $key ] = isset( $_POST[ $key ] ) ? sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) : '';
 	}
 
+	// If "Other" was picked, use the customer's own typed-in service name.
+	if ( 'Other' === $data['wf_service'] && ! empty( $_POST['wf_service_other'] ) ) {
+		$data['wf_service'] = sanitize_text_field( wp_unslash( $_POST['wf_service_other'] ) );
+	}
+
 	if ( '' !== $data['wf_name'] ) {
 		$title = $data['wf_name'];
 	} elseif ( '' !== $data['wf_mobile'] ) {
@@ -870,6 +880,16 @@ function womensfight_handle_customer_form_submit() {
 	if ( $post_id && ! is_wp_error( $post_id ) ) {
 		foreach ( $data as $key => $value ) {
 			update_post_meta( $post_id, $key, $value );
+		}
+
+		if ( ! empty( $_FILES['wf_image']['name'] ) ) {
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			require_once ABSPATH . 'wp-admin/includes/media.php';
+			$attachment_id = media_handle_upload( 'wf_image', $post_id );
+			if ( ! is_wp_error( $attachment_id ) ) {
+				update_post_meta( $post_id, 'wf_image_id', $attachment_id );
+			}
 		}
 	}
 
@@ -893,6 +913,7 @@ function womensfight_lead_columns( $columns ) {
 		'wf_email'    => 'Email',
 		'wf_business' => 'Business',
 		'wf_service'  => 'Service',
+		'wf_image'    => 'ছবি',
 		'date'        => $columns['date'],
 	);
 	return $new;
@@ -902,9 +923,55 @@ add_filter( 'manage_wf_lead_posts_columns', 'womensfight_lead_columns' );
 function womensfight_lead_column_content( $column, $post_id ) {
 	if ( in_array( $column, array( 'wf_mobile', 'wf_whatsapp', 'wf_email', 'wf_business', 'wf_service' ), true ) ) {
 		echo esc_html( get_post_meta( $post_id, $column, true ) );
+		return;
+	}
+	if ( 'wf_image' === $column ) {
+		$image_id = get_post_meta( $post_id, 'wf_image_id', true );
+		if ( $image_id ) {
+			echo wp_get_attachment_image( $image_id, array( 50, 50 ) );
+		} else {
+			echo '—';
+		}
 	}
 }
 add_action( 'manage_wf_lead_posts_custom_column', 'womensfight_lead_column_content', 10, 2 );
+
+/**
+ * A read-only "Submission Details" box on each Customer Submission's edit
+ * screen, showing every field (plus the uploaded image, if any) in one
+ * place — since the post type has no content editor, this is otherwise
+ * only visible one field at a time via the list-table columns or CSV.
+ */
+function womensfight_register_lead_detail_box() {
+	add_meta_box(
+		'womensfight_lead_details',
+		'Submission Details',
+		'womensfight_render_lead_detail_box',
+		'wf_lead',
+		'normal',
+		'high'
+	);
+}
+add_action( 'add_meta_boxes_wf_lead', 'womensfight_register_lead_detail_box' );
+
+function womensfight_render_lead_detail_box( $post ) {
+	echo '<table class="widefat striped"><tbody>';
+	foreach ( womensfight_lead_fields() as $key => $label ) {
+		$value = get_post_meta( $post->ID, $key, true );
+		echo '<tr><th style="width:220px;">' . esc_html( $label ) . '</th><td>' . nl2br( esc_html( $value ) ) . '</td></tr>';
+	}
+
+	$image_id = get_post_meta( $post->ID, 'wf_image_id', true );
+	echo '<tr><th>ছবি</th><td>';
+	if ( $image_id ) {
+		echo wp_get_attachment_image( $image_id, 'medium' );
+		echo '<br><a href="' . esc_url( wp_get_attachment_url( $image_id ) ) . '" target="_blank" rel="noopener">পূর্ণ সাইজে দেখুন</a>';
+	} else {
+		echo '<em>কোনো ছবি দেওয়া হয়নি</em>';
+	}
+	echo '</td></tr>';
+	echo '</tbody></table>';
+}
 
 /**
  * CSV export — a button on the Customer Submissions list screen that
@@ -942,13 +1009,15 @@ function womensfight_maybe_export_leads_csv() {
 	fputs( $out, "\xEF\xBB\xBF" ); // UTF-8 BOM so Bangla text opens correctly in Excel.
 
 	$fields = womensfight_lead_fields();
-	fputcsv( $out, array_merge( array( 'Submitted At' ), array_values( $fields ) ) );
+	fputcsv( $out, array_merge( array( 'Submitted At' ), array_values( $fields ), array( 'Image URL' ) ) );
 
 	foreach ( $posts as $post ) {
 		$row = array( get_the_date( 'Y-m-d H:i', $post ) );
 		foreach ( array_keys( $fields ) as $key ) {
 			$row[] = get_post_meta( $post->ID, $key, true );
 		}
+		$image_id = get_post_meta( $post->ID, 'wf_image_id', true );
+		$row[]    = $image_id ? wp_get_attachment_url( $image_id ) : '';
 		fputcsv( $out, $row );
 	}
 
