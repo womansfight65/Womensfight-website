@@ -735,17 +735,48 @@ add_action( 'init', 'womensfight_register_lead_cpt' );
  */
 function womensfight_lead_fields() {
 	return array(
-		'wf_name'         => 'নাম',
-		'wf_mobile'       => 'Mobile Number',
-		'wf_whatsapp'     => 'WhatsApp Number',
-		'wf_email'        => 'Email',
-		'wf_business'     => 'Business Name',
-		'wf_service'      => 'Service',
-		'wf_budget'       => 'Budget',
-		'wf_location'     => 'Business Location',
-		'wf_fb_link'      => 'Facebook Page / Website Link',
-		'wf_ad_post_link' => 'Ads Post Link',
-		'wf_message'      => 'Message / Requirement',
+		'wf_name'               => 'নাম',
+		'wf_mobile'             => 'Mobile Number',
+		'wf_whatsapp'           => 'WhatsApp Number',
+		'wf_email'              => 'Email',
+		'wf_business'           => 'Business Name',
+		'wf_service'            => 'Service',
+		'wf_budget'             => 'Budget',
+		'wf_location'           => 'Business Location',
+		'wf_fb_link'            => 'Facebook Page / Website Link',
+		'wf_message'            => 'Message / Requirement',
+		// Facebook Ads only
+		'wf_ad_post_link'       => 'Ads Post Link',
+		'wf_ad_budget'          => 'Ad Budget',
+		'wf_target_location'    => 'Target Location',
+		'wf_campaign_objective' => 'Campaign Objective',
+		// Website Development only
+		'wf_ref_website'        => 'Reference Website',
+		'wf_pages_needed'       => 'Number of Pages',
+		'wf_domain_status'      => 'Domain/Hosting Status',
+		// Graphic Design only
+		'wf_design_type'        => 'Design Type',
+		'wf_brand_guideline'    => 'Brand Guideline Available',
+		'wf_deliverable_count'  => 'Number of Designs Needed',
+		// Video Editing only
+		'wf_footage_link'       => 'Raw Footage Link',
+		'wf_video_duration'     => 'Video Duration',
+		'wf_style_reference'    => 'Style Reference Link',
+	);
+}
+
+/**
+ * Which of the fields above belong to which service — drives both the
+ * show/hide JS on the form and which fields the admin detail box
+ * bothers to print (skipping the ones irrelevant to that project's
+ * service instead of showing a wall of blank rows).
+ */
+function womensfight_service_specific_fields() {
+	return array(
+		'Facebook Ads'         => array( 'wf_ad_post_link', 'wf_ad_budget', 'wf_target_location', 'wf_campaign_objective' ),
+		'Website Development'  => array( 'wf_ref_website', 'wf_pages_needed', 'wf_domain_status' ),
+		'Graphic Design'       => array( 'wf_design_type', 'wf_brand_guideline', 'wf_deliverable_count' ),
+		'Video Editing'        => array( 'wf_footage_link', 'wf_video_duration', 'wf_style_reference' ),
 	);
 }
 
@@ -806,7 +837,7 @@ function womensfight_render_customer_form() {
 			<div><label for="wf_business">Business Name</label><input type="text" id="wf_business" name="wf_business" placeholder="আপনার ব্যবসার নাম"></div>
 			<div>
 				<label for="wf_service">কোন Service নিতে চান</label>
-				<select id="wf_service" name="wf_service" onchange="document.getElementById('wf_service_other_wrap').style.display = (this.value === 'Other') ? 'block' : 'none';">
+				<select id="wf_service" name="wf_service" onchange="wfToggleServiceFields(this.value);">
 					<option value="">সিলেক্ট করুন</option>
 					<?php foreach ( $services as $service ) : ?>
 						<option value="<?php echo esc_attr( $service ); ?>"><?php echo esc_html( $service ); ?></option>
@@ -822,15 +853,90 @@ function womensfight_render_customer_form() {
 			<div><label for="wf_budget">Budget</label><input type="text" id="wf_budget" name="wf_budget" placeholder="যেমন: ১০,০০০ - ২০,০০০ টাকা"></div>
 			<div><label for="wf_location">Business Location</label><input type="text" id="wf_location" name="wf_location" placeholder="শহর / এলাকা"></div>
 		</div>
-		<div class="frow">
-			<div><label for="wf_fb_link">Facebook Page / Website Link</label><input type="url" id="wf_fb_link" name="wf_fb_link" placeholder="https://facebook.com/..."></div>
-			<div><label for="wf_ad_post_link">Ads চালানোর Facebook Post Link</label><input type="url" id="wf_ad_post_link" name="wf_ad_post_link" placeholder="https://facebook.com/.../posts/..."></div>
+		<div><label for="wf_fb_link">Facebook Page / Website Link</label><input type="url" id="wf_fb_link" name="wf_fb_link" placeholder="https://facebook.com/..."></div>
+
+		<div id="wf_svc_Facebook Ads" class="wf-svc-fields" style="display:none;">
+			<div class="frow">
+				<div><label for="wf_ad_post_link">যে পোস্টে Ads চালাবেন তার Link</label><input type="url" id="wf_ad_post_link" name="wf_ad_post_link" placeholder="https://facebook.com/.../posts/..."></div>
+				<div><label for="wf_ad_budget">Ad Budget</label><input type="text" id="wf_ad_budget" name="wf_ad_budget" placeholder="যেমন: ৫,০০০ টাকা/মাস"></div>
+			</div>
+			<div class="frow">
+				<div><label for="wf_target_location">Target Location</label><input type="text" id="wf_target_location" name="wf_target_location" placeholder="কোন এলাকার অডিয়েন্স টার্গেট করবেন"></div>
+				<div>
+					<label for="wf_campaign_objective">Campaign Objective</label>
+					<select id="wf_campaign_objective" name="wf_campaign_objective">
+						<option value="">সিলেক্ট করুন</option>
+						<option>Awareness</option>
+						<option>Traffic</option>
+						<option>Leads</option>
+						<option>Messages</option>
+						<option>Sales</option>
+					</select>
+				</div>
+			</div>
 		</div>
+
+		<div id="wf_svc_Website Development" class="wf-svc-fields" style="display:none;">
+			<div><label for="wf_ref_website">Reference Website (যদি থাকে)</label><input type="url" id="wf_ref_website" name="wf_ref_website" placeholder="https://example.com"></div>
+			<div class="frow">
+				<div><label for="wf_pages_needed">কতগুলো Page লাগবে</label><input type="text" id="wf_pages_needed" name="wf_pages_needed" placeholder="যেমন: ৫টি পেজ"></div>
+				<div>
+					<label for="wf_domain_status">Domain/Hosting আছে কিনা</label>
+					<select id="wf_domain_status" name="wf_domain_status">
+						<option value="">সিলেক্ট করুন</option>
+						<option>হ্যাঁ, আছে</option>
+						<option>নেই, লাগবে</option>
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<div id="wf_svc_Graphic Design" class="wf-svc-fields" style="display:none;">
+			<div class="frow">
+				<div>
+					<label for="wf_design_type">কী ধরনের Design</label>
+					<select id="wf_design_type" name="wf_design_type">
+						<option value="">সিলেক্ট করুন</option>
+						<option>লোগো</option>
+						<option>ব্যানার</option>
+						<option>সোশ্যাল মিডিয়া পোস্ট</option>
+						<option>ব্রোশিওর</option>
+						<option>অন্যান্য</option>
+					</select>
+				</div>
+				<div><label for="wf_deliverable_count">কতগুলো Design লাগবে</label><input type="text" id="wf_deliverable_count" name="wf_deliverable_count" placeholder="যেমন: ১০টি"></div>
+			</div>
+			<div>
+				<label for="wf_brand_guideline">Brand Guideline আছে কিনা</label>
+				<select id="wf_brand_guideline" name="wf_brand_guideline">
+					<option value="">সিলেক্ট করুন</option>
+					<option>হ্যাঁ, আছে</option>
+					<option>নেই</option>
+				</select>
+			</div>
+		</div>
+
+		<div id="wf_svc_Video Editing" class="wf-svc-fields" style="display:none;">
+			<div><label for="wf_footage_link">Raw Footage Link (যদি থাকে)</label><input type="url" id="wf_footage_link" name="wf_footage_link" placeholder="Google Drive / Dropbox লিংক"></div>
+			<div class="frow">
+				<div><label for="wf_video_duration">ভিডিও কত মিনিটের</label><input type="text" id="wf_video_duration" name="wf_video_duration" placeholder="যেমন: ৩ মিনিট"></div>
+				<div><label for="wf_style_reference">Style Reference Link</label><input type="url" id="wf_style_reference" name="wf_style_reference" placeholder="উদাহরণস্বরূপ কোনো ভিডিও লিংক"></div>
+			</div>
+		</div>
+
 		<div><label for="wf_message">Message / Requirement</label><textarea id="wf_message" name="wf_message" rows="4" placeholder="আপনার প্রয়োজন সম্পর্কে লিখুন (ঐচ্ছিক)"></textarea></div>
 		<div><label for="wf_image">ছবি যুক্ত করুন (ঐচ্ছিক)</label><input type="file" id="wf_image" name="wf_image" accept="image/*"></div>
 
 		<button class="btn btn-primary" type="submit">Submit করুন</button>
 	</form>
+	<script>
+	function wfToggleServiceFields(selected) {
+		document.getElementById('wf_service_other_wrap').style.display = (selected === 'Other') ? 'block' : 'none';
+		document.querySelectorAll('.wf-svc-fields').forEach(function(el){ el.style.display = 'none'; });
+		var target = document.getElementById('wf_svc_' + selected);
+		if (target) { target.style.display = 'block'; }
+	}
+	</script>
 	<?php
 	return ob_get_clean();
 }
@@ -838,9 +944,10 @@ add_shortcode( 'wf_customer_form', 'womensfight_render_customer_form' );
 
 /**
  * Handles the form POST: every field is optional (sanitized, never
- * required), saved as a wf_lead post + postmeta, then redirects back to
- * the same page with ?wf_submitted=1 so the shortcode above can show the
- * thank-you message and fire the tracking events exactly once.
+ * required), saved as a wf_project post (status "lead") + postmeta,
+ * then redirects back to the same page with ?wf_submitted=1 so the
+ * shortcode above can show the thank-you message and fire the
+ * tracking events exactly once.
  */
 function womensfight_handle_customer_form_submit() {
 	if (
@@ -1493,18 +1600,28 @@ function womensfight_render_project_detail_box( $post ) {
 	wp_nonce_field( 'womensfight_save_project', 'womensfight_project_nonce' );
 
 	$info_fields = array(
-		'wf_p_name'         => 'নাম',
-		'wf_p_mobile'       => 'Mobile',
-		'wf_p_whatsapp'     => 'WhatsApp',
-		'wf_p_email'        => 'Email',
-		'wf_p_business'     => 'Business',
-		'wf_p_service'      => 'Service',
-		'wf_p_budget'       => 'Budget',
-		'wf_p_location'     => 'Business Location',
-		'wf_p_fb_link'      => 'Facebook Page / Website Link',
-		'wf_p_ad_post_link' => 'Ads Post Link',
-		'wf_p_message'      => 'Message / Requirement',
+		'wf_p_name'     => 'নাম',
+		'wf_p_mobile'   => 'Mobile',
+		'wf_p_whatsapp' => 'WhatsApp',
+		'wf_p_email'    => 'Email',
+		'wf_p_business' => 'Business',
+		'wf_p_service'  => 'Service',
+		'wf_p_budget'   => 'Budget',
+		'wf_p_location' => 'Business Location',
+		'wf_p_fb_link'  => 'Facebook Page / Website Link',
+		'wf_p_message'  => 'Message / Requirement',
 	);
+
+	// Append only the fields belonging to this project's actual service,
+	// instead of a wall of blank rows for every other service's fields.
+	$service     = get_post_meta( $post->ID, 'wf_p_service', true );
+	$service_map = womensfight_service_specific_fields();
+	$all_labels  = womensfight_lead_fields();
+	if ( isset( $service_map[ $service ] ) ) {
+		foreach ( $service_map[ $service ] as $field_key ) {
+			$info_fields[ str_replace( 'wf_', 'wf_p_', $field_key ) ] = isset( $all_labels[ $field_key ] ) ? $all_labels[ $field_key ] : $field_key;
+		}
+	}
 
 	echo '<table class="widefat striped"><tbody>';
 	foreach ( $info_fields as $key => $label ) {
