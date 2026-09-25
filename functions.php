@@ -239,6 +239,7 @@ function womensfight_page_definitions() {
 		'ai-agent'             => 'AI Agent',
 		'contact'              => 'Contact Us',
 		'lead-form'            => 'Lead Form',
+		'project'              => 'Client Dashboard',
 	);
 }
 
@@ -1418,6 +1419,17 @@ function womensfight_meta_description() {
 add_action( 'wp_head', 'womensfight_meta_description', 1 );
 
 /**
+ * The Client Dashboard is a private, token-only page — keep it out of
+ * search engines entirely.
+ */
+function womensfight_noindex_private_pages() {
+	if ( is_page( 'project' ) ) {
+		echo '<meta name="robots" content="noindex,nofollow">' . "\n";
+	}
+}
+add_action( 'wp_head', 'womensfight_noindex_private_pages', 1 );
+
+/**
  * Browser-tab / search-result title, with the target location worked in
  * naturally — separate from the on-page H1 and nav labels, which stay
  * unchanged.
@@ -1518,6 +1530,24 @@ function womensfight_project_payment_statuses() {
 		'partial' => 'Partial',
 		'paid'    => 'Paid',
 	);
+}
+
+/**
+ * Every project's private client-dashboard access key. Generated once
+ * (on first access) and stored as postmeta, never a WordPress login —
+ * the URL itself, built from this token, is the client's only key.
+ */
+function womensfight_get_project_token( $post_id ) {
+	$token = get_post_meta( $post_id, 'wf_p_token', true );
+	if ( ! $token ) {
+		$token = wp_generate_password( 24, false, false );
+		update_post_meta( $post_id, 'wf_p_token', $token );
+	}
+	return $token;
+}
+
+function womensfight_get_project_dashboard_url( $post_id ) {
+	return add_query_arg( 'token', womensfight_get_project_token( $post_id ), womensfight_page_url( 'project' ) );
 }
 
 /**
@@ -1623,6 +1653,12 @@ function womensfight_render_project_detail_box( $post ) {
 		}
 	}
 
+	$dashboard_url = womensfight_get_project_dashboard_url( $post->ID );
+	echo '<div style="background:#f0f6fc; border:1px solid #c3dcf0; border-radius:6px; padding:12px 14px; margin-bottom:14px;">';
+	echo '<strong>Client Dashboard Link</strong> (এই লিংক client-কে WhatsApp/Email করে দিন):<br>';
+	echo '<input type="text" readonly value="' . esc_url( $dashboard_url ) . '" style="width:100%; margin-top:6px;" onclick="this.select();">';
+	echo '</div>';
+
 	echo '<table class="widefat striped"><tbody>';
 	foreach ( $info_fields as $key => $label ) {
 		$value = get_post_meta( $post->ID, $key, true );
@@ -1652,7 +1688,73 @@ function womensfight_render_project_detail_box( $post ) {
 		echo '<option value="' . esc_attr( $value ) . '"' . selected( $payment, $value, false ) . '>' . esc_html( $label ) . '</option>';
 	}
 	echo '</select></td></tr>';
+
+	$approved = get_post_meta( $post->ID, 'wf_p_client_approved', true );
+	echo '<tr><th>Client Approval</th><td>';
+	if ( $approved ) {
+		echo '✅ Approved on ' . esc_html( get_post_meta( $post->ID, 'wf_p_approved_at', true ) );
+	} else {
+		echo '<em>এখনো client অ্যাপ্রুভ করেননি</em>';
+	}
+	echo '</td></tr>';
 	echo '</tbody></table>';
+
+	// Onboarding info, submitted by the client on the dashboard.
+	$onboarding_submitted = get_post_meta( $post->ID, 'wf_p_onboarding_submitted', true );
+	echo '<h4 style="margin-top:18px;">Onboarding তথ্য</h4>';
+	if ( $onboarding_submitted ) {
+		$onboarding_fields = array(
+			'wf_p_onboarding_address'      => 'ঠিকানা',
+			'wf_p_onboarding_assets_link'  => 'Brand Assets Link',
+			'wf_p_onboarding_access_notes' => 'Access/Login তথ্য',
+			'wf_p_onboarding_notes'        => 'অতিরিক্ত নোট',
+		);
+		echo '<table class="widefat striped"><tbody>';
+		foreach ( $onboarding_fields as $key => $label ) {
+			echo '<tr><th style="width:220px;">' . esc_html( $label ) . '</th><td>' . nl2br( esc_html( get_post_meta( $post->ID, $key, true ) ) ) . '</td></tr>';
+		}
+		echo '</tbody></table>';
+	} else {
+		echo '<p><em>Client এখনো Onboarding ফর্ম পূরণ করেননি।</em></p>';
+	}
+
+	// Deliverable files — admin uploads here, client sees/downloads them
+	// on the dashboard.
+	echo '<h4 style="margin-top:18px;">Deliverable Files</h4>';
+	$deliverables = get_post_meta( $post->ID, 'wf_p_deliverable', false );
+	if ( $deliverables ) {
+		echo '<ul>';
+		foreach ( $deliverables as $attachment_id ) {
+			echo '<li><a href="' . esc_url( wp_get_attachment_url( $attachment_id ) ) . '" target="_blank" rel="noopener">' . esc_html( basename( get_attached_file( $attachment_id ) ) ) . '</a></li>';
+		}
+		echo '</ul>';
+	} else {
+		echo '<p><em>এখনো কোনো ফাইল আপলোড করা হয়নি।</em></p>';
+	}
+	echo '<form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+	echo '<input type="hidden" name="action" value="womensfight_upload_deliverable">';
+	echo '<input type="hidden" name="project_id" value="' . esc_attr( $post->ID ) . '">';
+	wp_nonce_field( 'womensfight_upload_deliverable_' . $post->ID );
+	echo '<input type="file" name="wf_deliverable[]" multiple> ';
+	echo '<button type="submit" class="button">ফাইল আপলোড করুন</button>';
+	echo '</form>';
+
+	// Revision requests submitted by the client — read-only reference.
+	echo '<h4 style="margin-top:18px;">Revision Requests</h4>';
+	$revisions = get_post_meta( $post->ID, 'wf_p_revision', false );
+	if ( $revisions ) {
+		echo '<table class="widefat striped"><tbody>';
+		foreach ( array_reverse( $revisions ) as $revision ) {
+			echo '<tr><th style="width:140px;">' . esc_html( $revision['date'] ) . '</th><td>' . nl2br( esc_html( $revision['note'] ) );
+			if ( ! empty( $revision['file'] ) ) {
+				echo '<br><a href="' . esc_url( wp_get_attachment_url( $revision['file'] ) ) . '" target="_blank" rel="noopener">সংযুক্ত ফাইল দেখুন</a>';
+			}
+			echo '</td></tr>';
+		}
+		echo '</tbody></table>';
+	} else {
+		echo '<p><em>এখনো কোনো Revision Request আসেনি।</em></p>';
+	}
 }
 
 function womensfight_save_project_meta( $post_id ) {
@@ -1673,3 +1775,166 @@ function womensfight_save_project_meta( $post_id ) {
 	}
 }
 add_action( 'save_post_wf_project', 'womensfight_save_project_meta' );
+
+/* =======================================================================
+ * Client Dashboard — private token-link access (no login required).
+ * Onboarding form, deliverable file list, revision requests and final
+ * approval all live on page-project.php (/project/?token=...), looked
+ * up fresh on every request via the token below (never a bare post ID,
+ * so a client can't guess another client's project by changing a number
+ * in the URL).
+ * ===================================================================== */
+
+function womensfight_get_project_by_token( $token ) {
+	$token = sanitize_text_field( $token );
+	if ( '' === $token ) {
+		return null;
+	}
+	$posts = get_posts(
+		array(
+			'post_type'      => 'wf_project',
+			'meta_key'       => 'wf_p_token',
+			'meta_value'     => $token,
+			'posts_per_page' => 1,
+		)
+	);
+	return $posts ? $posts[0] : null;
+}
+
+function womensfight_handle_onboarding_submit() {
+	$token   = isset( $_POST['wf_token'] ) ? sanitize_text_field( wp_unslash( $_POST['wf_token'] ) ) : '';
+	$project = womensfight_get_project_by_token( $token );
+	if ( ! $project ) {
+		wp_die( 'প্রজেক্ট খুঁজে পাওয়া যায়নি। লিংকটি চেক করুন।' );
+	}
+	if (
+		! isset( $_POST['womensfight_onboarding_nonce'] ) ||
+		! wp_verify_nonce( wp_unslash( $_POST['womensfight_onboarding_nonce'] ), 'womensfight_onboarding_' . $token )
+	) {
+		wp_die( 'Security check failed. দয়া করে পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' );
+	}
+
+	$fields = array(
+		'wf_p_onboarding_address'      => 'sanitize_textarea_field',
+		'wf_p_onboarding_assets_link'  => 'esc_url_raw',
+		'wf_p_onboarding_access_notes' => 'sanitize_textarea_field',
+		'wf_p_onboarding_notes'        => 'sanitize_textarea_field',
+	);
+	foreach ( $fields as $key => $sanitizer ) {
+		$value = isset( $_POST[ $key ] ) ? wp_unslash( $_POST[ $key ] ) : '';
+		update_post_meta( $project->ID, $key, call_user_func( $sanitizer, $value ) );
+	}
+	update_post_meta( $project->ID, 'wf_p_onboarding_submitted', '1' );
+
+	wp_safe_redirect( add_query_arg( 'submitted', 'onboarding', womensfight_get_project_dashboard_url( $project->ID ) ) . '#wf-dash' );
+	exit;
+}
+add_action( 'admin_post_womensfight_submit_onboarding', 'womensfight_handle_onboarding_submit' );
+add_action( 'admin_post_nopriv_womensfight_submit_onboarding', 'womensfight_handle_onboarding_submit' );
+
+function womensfight_handle_revision_submit() {
+	$token   = isset( $_POST['wf_token'] ) ? sanitize_text_field( wp_unslash( $_POST['wf_token'] ) ) : '';
+	$project = womensfight_get_project_by_token( $token );
+	if ( ! $project ) {
+		wp_die( 'প্রজেক্ট খুঁজে পাওয়া যায়নি। লিংকটি চেক করুন।' );
+	}
+	if (
+		! isset( $_POST['womensfight_revision_nonce'] ) ||
+		! wp_verify_nonce( wp_unslash( $_POST['womensfight_revision_nonce'] ), 'womensfight_revision_' . $token )
+	) {
+		wp_die( 'Security check failed. দয়া করে পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' );
+	}
+
+	$note = isset( $_POST['wf_revision_note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['wf_revision_note'] ) ) : '';
+	if ( '' !== $note ) {
+		$file_id = 0;
+		if ( ! empty( $_FILES['wf_revision_file']['name'] ) ) {
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			require_once ABSPATH . 'wp-admin/includes/media.php';
+			$attachment_id = media_handle_upload( 'wf_revision_file', $project->ID );
+			if ( ! is_wp_error( $attachment_id ) ) {
+				$file_id = $attachment_id;
+			}
+		}
+		add_post_meta(
+			$project->ID,
+			'wf_p_revision',
+			array(
+				'note' => $note,
+				'file' => $file_id,
+				'date' => current_time( 'Y-m-d H:i' ),
+			)
+		);
+	}
+
+	wp_safe_redirect( add_query_arg( 'submitted', 'revision', womensfight_get_project_dashboard_url( $project->ID ) ) . '#wf-dash' );
+	exit;
+}
+add_action( 'admin_post_womensfight_submit_revision', 'womensfight_handle_revision_submit' );
+add_action( 'admin_post_nopriv_womensfight_submit_revision', 'womensfight_handle_revision_submit' );
+
+function womensfight_handle_final_approval() {
+	$token   = isset( $_POST['wf_token'] ) ? sanitize_text_field( wp_unslash( $_POST['wf_token'] ) ) : '';
+	$project = womensfight_get_project_by_token( $token );
+	if ( ! $project ) {
+		wp_die( 'প্রজেক্ট খুঁজে পাওয়া যায়নি। লিংকটি চেক করুন।' );
+	}
+	if (
+		! isset( $_POST['womensfight_approval_nonce'] ) ||
+		! wp_verify_nonce( wp_unslash( $_POST['womensfight_approval_nonce'] ), 'womensfight_approval_' . $token )
+	) {
+		wp_die( 'Security check failed. দয়া করে পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' );
+	}
+
+	update_post_meta( $project->ID, 'wf_p_client_approved', '1' );
+	update_post_meta( $project->ID, 'wf_p_approved_at', current_time( 'Y-m-d H:i' ) );
+	update_post_meta( $project->ID, 'wf_p_status', 'approved' );
+
+	wp_safe_redirect( add_query_arg( 'submitted', 'approved', womensfight_get_project_dashboard_url( $project->ID ) ) . '#wf-dash' );
+	exit;
+}
+add_action( 'admin_post_womensfight_submit_approval', 'womensfight_handle_final_approval' );
+add_action( 'admin_post_nopriv_womensfight_submit_approval', 'womensfight_handle_final_approval' );
+
+/**
+ * Admin-only: upload deliverable file(s) for a project from its edit
+ * screen (mini upload form in the meta box below). Attachment IDs are
+ * appended to the project's wf_p_deliverable postmeta (one row per
+ * file), which the client dashboard lists as downloads.
+ */
+function womensfight_handle_deliverable_upload() {
+	$project_id = isset( $_POST['project_id'] ) ? (int) $_POST['project_id'] : 0;
+	if ( ! $project_id || ! current_user_can( 'edit_post', $project_id ) ) {
+		wp_die( 'Permission denied.' );
+	}
+	check_admin_referer( 'womensfight_upload_deliverable_' . $project_id );
+
+	if ( ! empty( $_FILES['wf_deliverable']['name'][0] ) ) {
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+
+		$files = $_FILES['wf_deliverable'];
+		foreach ( $files['name'] as $i => $name ) {
+			if ( empty( $name ) ) {
+				continue;
+			}
+			$_FILES['wf_deliverable_single'] = array(
+				'name'     => $files['name'][ $i ],
+				'type'     => $files['type'][ $i ],
+				'tmp_name' => $files['tmp_name'][ $i ],
+				'error'    => $files['error'][ $i ],
+				'size'     => $files['size'][ $i ],
+			);
+			$attachment_id = media_handle_upload( 'wf_deliverable_single', $project_id );
+			if ( ! is_wp_error( $attachment_id ) ) {
+				add_post_meta( $project_id, 'wf_p_deliverable', $attachment_id );
+			}
+		}
+	}
+
+	wp_safe_redirect( admin_url( 'post.php?post=' . $project_id . '&action=edit' ) );
+	exit;
+}
+add_action( 'admin_post_womensfight_upload_deliverable', 'womensfight_handle_deliverable_upload' );
