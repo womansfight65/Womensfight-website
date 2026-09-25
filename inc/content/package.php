@@ -35,6 +35,19 @@ return <<<'HTML'
       <a class="btn btn-primary btn-block" href="##LINK:contact##">শুরু করুন</a>
     </div>
     <div class="pkg">
+      <div class="ico sm"><svg><use href="#i-brain"/></svg></div>
+      <h3>প্রো</h3>
+      <div class="price">নমুনা মূল্য <span>কাস্টম কোটের জন্য যোগাযোগ করুন</span></div>
+      <ul>
+        <li><svg><use href="#i-check"/></svg>মাল্টি-প্ল্যাটফর্ম সোশ্যাল মিডিয়া + পেইড অ্যাড</li>
+        <li><svg><use href="#i-check"/></svg>ল্যান্ডিং পেজ (৩টি পর্যন্ত)</li>
+        <li><svg><use href="#i-check"/></svg>মাসিক ভিডিও কনটেন্ট (২টি)</li>
+        <li><svg><use href="#i-check"/></svg>AI Agency অটোমেশন সেটআপ</li>
+        <li><svg><use href="#i-check"/></svg>পাক্ষিক স্ট্র্যাটেজি রিভিউ</li>
+      </ul>
+      <a class="btn btn-ghost btn-block" href="##LINK:contact##">শুরু করুন</a>
+    </div>
+    <div class="pkg">
       <div class="ico sm"><svg><use href="#i-layers"/></svg></div>
       <h3>এন্টারপ্রাইজ</h3>
       <div class="price">নমুনা মূল্য <span>কাস্টম কোটের জন্য যোগাযোগ করুন</span></div>
