@@ -548,6 +548,41 @@ function womensfight_render_page_sync_screen() {
 
 	echo '<div class="wrap">';
 	echo '<h1>Women\'s Fight — পেজ সিঙ্ক</h1>';
+
+	$theme        = wp_get_theme();
+	$deploy_files = array(
+		'functions.php' => get_template_directory() . '/functions.php',
+		'style.css'     => get_template_directory() . '/style.css',
+		'contact.php'   => get_template_directory() . '/inc/content/contact.php',
+	);
+	$commit_hash  = '';
+	$head_file    = get_template_directory() . '/.git/HEAD';
+	if ( is_readable( $head_file ) ) {
+		$head = trim( (string) file_get_contents( $head_file ) );
+		if ( 0 === strpos( $head, 'ref: ' ) ) {
+			$ref_file = get_template_directory() . '/.git/' . trim( substr( $head, 5 ) );
+			if ( is_readable( $ref_file ) ) {
+				$commit_hash = substr( trim( (string) file_get_contents( $ref_file ) ), 0, 7 );
+			}
+		} elseif ( $head ) {
+			$commit_hash = substr( $head, 0, 7 );
+		}
+	}
+
+	echo '<div class="notice notice-info" style="padding:12px 16px;"><p style="margin:.3em 0;"><strong>এই সার্ভারে এখন যে কোড চলছে:</strong></p>';
+	echo '<p style="margin:.3em 0;">Theme Version: <code>' . esc_html( $theme->get( 'Version' ) ) . '</code>';
+	if ( $commit_hash ) {
+		echo ' &middot; Git commit: <code>' . esc_html( $commit_hash ) . '</code>';
+	}
+	echo '</p>';
+	foreach ( $deploy_files as $label => $path ) {
+		if ( file_exists( $path ) ) {
+			echo '<p style="margin:.3em 0;">' . esc_html( $label ) . ' সর্বশেষ আপডেট হয়েছে: <code>' . esc_html( date_i18n( 'Y-m-d H:i:s', filemtime( $path ) ) ) . '</code></p>';
+		}
+	}
+	echo '<p style="margin:.3em 0; color:var(--ink-faint,#787490);">GitHub-এ push করা নতুন commit-এর timestamp/hash-এর সাথে উপরের তথ্য মিলিয়ে দেখুন — মিললে বুঝবেন সর্বশেষ push এই সার্ভারে পৌঁছেছে।</p>';
+	echo '</div>';
+
 	echo '<p>নিচের যেকোনো একটা পেজের পাশে <strong>এই পেজ সিঙ্ক করুন</strong> চাপলে শুধু <em>সেই একটা পেজই</em> থিমের ডিফল্ট ডিজাইন দিয়ে রিসেট হবে — বাকি সব পেজ অপরিবর্তিত থাকবে। কোনো একটা পেজ ভাঙা বা ফাঁকা দেখালে এটা ব্যবহার করুন।</p>';
 
 	echo '<table class="widefat striped" style="max-width:900px;"><thead><tr><th>পেজ</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead><tbody>';
