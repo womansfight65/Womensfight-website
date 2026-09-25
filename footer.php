@@ -15,9 +15,10 @@ $logo_full = esc_url( get_template_directory_uri() . '/assets/img/logo-full.png'
       </a>
       <p>ঢাকাভিত্তিক একটি ক্রিয়েটিভ ও ডিজিটাল এজেন্সি — স্ট্র্যাটেজি, ডিজাইন, কনটেন্ট ও AI দিয়ে সাহসী ব্র্যান্ড তৈরি করি।</p>
       <div class="foot-social">
-        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 9h3V6h-3a4 4 0 0 0-4 4v2H7v3h3v6h3v-6h3l1-3h-4v-2a1 1 0 0 1 1-1Z"></path></svg></a>
-        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1"></circle></svg></a>
-        <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M7 10v7M7 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 13v4"></path></svg></a>
+        <a href="https://www.facebook.com/womensfight" aria-label="Facebook" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 9h3V6h-3a4 4 0 0 0-4 4v2H7v3h3v6h3v-6h3l1-3h-4v-2a1 1 0 0 1 1-1Z"></path></svg></a>
+        <a href="https://www.instagram.com/womensfight" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1"></circle></svg></a>
+        <a href="https://www.tiktok.com/@womensfight" aria-label="TikTok" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 3v10.8a3.7 3.7 0 1 1-3.2-3.67"></path><path d="M14 3c.6 2.4 2.3 4 4.6 4.3"></path></svg></a>
+        <a href="https://www.youtube.com/@womensfight" aria-label="YouTube" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="4"></rect><path d="M11 10.2 14.5 12 11 13.8Z" fill="currentColor" stroke="none"></path></svg></a>
       </div>
     </div>
     <div class="foot-col">
@@ -43,9 +44,9 @@ $logo_full = esc_url( get_template_directory_uri() . '/assets/img/logo-full.png'
     </div>
     <div class="foot-col">
       <h4>যোগাযোগ</h4>
-      <span style="display:block; margin-bottom:12px; color:var(--ink-soft); font-size:.9rem;">ঢাকা, বাংলাদেশ</span>
-      <a href="mailto:hello@womensfight.agency">hello@womensfight.agency</a>
-      <a href="tel:+8800000000000">+৮৮০ XXX-XXXXXX</a>
+      <span style="display:block; margin-bottom:12px; color:var(--ink-soft); font-size:.9rem;">City Plaza, Lift-3, Ramganj, Lakshmipur</span>
+      <a href="mailto:Womansfight65@gmail.com">Womansfight65@gmail.com</a>
+      <a href="tel:+8801748133740">+৮৮০ ১৭৪৮-১৩৩৭৪০</a>
     </div>
   </div>
   <div class="wrap foot-bottom">
