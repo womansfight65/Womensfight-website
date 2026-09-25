@@ -3,7 +3,7 @@ Theme Name: Women's Fight Agency
 Theme URI: https://womensfight.agency
 Author: Women's Fight
 Description: Dark, vivid multi-page agency theme for Women's Fight, built around the brand's real pink-magenta-to-blue logo mark, fully in Bangla, with real editable WordPress Pages (Block Editor and Elementor ready out of the box) and an interactive AI Agent audience-estimator tool.
-Version: 3.6
+Version: 3.7
 Requires at least: 5.9
 Requires PHP: 7.4
 Requires Plugins: elementor
@@ -264,6 +264,11 @@ input:focus, textarea:focus, select:focus{outline:none; border-color:var(--pink)
 input::placeholder, textarea::placeholder{color:var(--ink-faint);}
 .form-msg{font-size:.86rem; font-weight:700; color:var(--blue-light); display:none;}
 .form-msg.show{display:block;}
+
+.wf-cform{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:40px 38px; display:grid; gap:15px; max-width:720px; margin-inline:auto;}
+.wf-cform .btn{justify-self:start;}
+.wf-cform-success{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:48px 32px; text-align:center; max-width:720px; margin-inline:auto;}
+.wf-cform-success p{font-size:1.05rem; font-weight:700; color:var(--ink); line-height:1.6;}
 
 footer.site-footer{background:var(--bg-2); color:var(--ink); margin-top:40px; border-top:1px solid var(--border);}
 .foot-top{display:grid; grid-template-columns:1.3fr 1fr 1fr 1fr 1fr; gap:32px; padding-block:56px 36px;}

@@ -237,6 +237,7 @@ function womensfight_page_definitions() {
 		'package'              => 'Package',
 		'ai-agent'             => 'AI Agent',
 		'contact'              => 'Contact Us',
+		'lead-form'            => 'Lead Form',
 	);
 }
 
@@ -694,3 +695,264 @@ function womensfight_render_page_sync_screen() {
 	echo '<p style="margin-top:24px;"><a href="' . esc_url( $sync_all_url ) . '" class="button button-primary" onclick="return confirm(&#039;সব পেজ + মেনু একসাথে সিঙ্ক হবে (ফাঁকা পেজগুলো ভরা হবে)। এগিয়ে যাবেন?&#039;);">সব পেজ + মেনু একসাথে সিঙ্ক করুন</a></p>';
 	echo '</div>';
 }
+
+/* =======================================================================
+ * Customer Information Form — a simple, all-fields-optional lead form.
+ * Submissions are stored as a private "wf_lead" post type (visible +
+ * CSV-exportable from wp-admin), and successful submission fires
+ * GTM dataLayer / Meta Pixel / GA4 lead events exactly once, on the
+ * confirmation page load — never on a mere button click.
+ * ===================================================================== */
+
+function womensfight_register_lead_cpt() {
+	register_post_type(
+		'wf_lead',
+		array(
+			'labels'          => array(
+				'name'          => 'Customer Submissions',
+				'singular_name' => 'Customer Submission',
+				'menu_name'     => 'Customer Submissions',
+				'all_items'     => 'All Submissions',
+			),
+			'public'          => false,
+			'show_ui'         => true,
+			'show_in_menu'    => true,
+			'menu_icon'       => 'dashicons-clipboard',
+			'menu_position'   => 26,
+			'supports'        => array( 'title' ),
+			'capability_type' => 'post',
+			'map_meta_cap'    => true,
+		)
+	);
+}
+add_action( 'init', 'womensfight_register_lead_cpt' );
+
+/**
+ * The fields collected by the form, in order: meta_key => display label.
+ * Shared by the form markup, the submit handler, the admin list columns
+ * and the CSV export, so every place stays in sync automatically.
+ */
+function womensfight_lead_fields() {
+	return array(
+		'wf_name'         => 'নাম',
+		'wf_mobile'       => 'Mobile Number',
+		'wf_whatsapp'     => 'WhatsApp Number',
+		'wf_email'        => 'Email',
+		'wf_business'     => 'Business Name',
+		'wf_service'      => 'Service',
+		'wf_budget'       => 'Budget',
+		'wf_location'     => 'Business Location',
+		'wf_fb_link'      => 'Facebook Page / Website Link',
+		'wf_ad_post_link' => 'Ads Post Link',
+		'wf_message'      => 'Message / Requirement',
+	);
+}
+
+function womensfight_lead_services() {
+	return array(
+		'Facebook Ads',
+		'Digital Marketing',
+		'Website Development',
+		'Google Ads',
+		'Graphic Design',
+		'Video Editing',
+		'Branding',
+		'Other',
+	);
+}
+
+/**
+ * [wf_customer_form] — renders the form, or, right after a successful
+ * submit (detected via the ?wf_submitted=1 redirect flag), the thank-you
+ * message plus the one-time tracking snippet.
+ */
+function womensfight_render_customer_form() {
+	ob_start();
+
+	if ( isset( $_GET['wf_submitted'] ) && '1' === $_GET['wf_submitted'] ) {
+		?>
+		<div class="wf-cform-success" id="wf-cform">
+			<p>ধন্যবাদ। আপনার তথ্য আমরা পেয়েছি। আমাদের টিম খুব দ্রুত আপনার সাথে যোগাযোগ করবে।</p>
+		</div>
+		<script>
+		(function(){
+			window.dataLayer = window.dataLayer || [];
+			window.dataLayer.push({ event: 'lead_submit' });
+			if ( typeof fbq === 'function' ) { fbq('track', 'Lead'); }
+			if ( typeof gtag === 'function' ) { gtag('event', 'generate_lead'); }
+		})();
+		</script>
+		<?php
+		return ob_get_clean();
+	}
+
+	$services = womensfight_lead_services();
+	?>
+	<form class="wf-cform" id="wf-cform" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate>
+		<input type="hidden" name="action" value="womensfight_submit_customer_form">
+		<input type="hidden" name="wf_redirect" value="<?php echo esc_url( get_permalink() ); ?>">
+		<?php wp_nonce_field( 'womensfight_customer_form', 'womensfight_customer_form_nonce' ); ?>
+
+		<div class="frow">
+			<div><label for="wf_name">নাম</label><input type="text" id="wf_name" name="wf_name" placeholder="আপনার নাম"></div>
+			<div><label for="wf_mobile">Mobile Number</label><input type="tel" id="wf_mobile" name="wf_mobile" placeholder="01XXXXXXXXX"></div>
+		</div>
+		<div class="frow">
+			<div><label for="wf_whatsapp">WhatsApp Number</label><input type="tel" id="wf_whatsapp" name="wf_whatsapp" placeholder="01XXXXXXXXX"></div>
+			<div><label for="wf_email">Email</label><input type="email" id="wf_email" name="wf_email" placeholder="you@example.com"></div>
+		</div>
+		<div class="frow">
+			<div><label for="wf_business">Business Name</label><input type="text" id="wf_business" name="wf_business" placeholder="আপনার ব্যবসার নাম"></div>
+			<div>
+				<label for="wf_service">কোন Service নিতে চান</label>
+				<select id="wf_service" name="wf_service">
+					<option value="">সিলেক্ট করুন</option>
+					<?php foreach ( $services as $service ) : ?>
+						<option value="<?php echo esc_attr( $service ); ?>"><?php echo esc_html( $service ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+		</div>
+		<div class="frow">
+			<div><label for="wf_budget">Budget</label><input type="text" id="wf_budget" name="wf_budget" placeholder="যেমন: ১০,০০০ - ২০,০০০ টাকা"></div>
+			<div><label for="wf_location">Business Location</label><input type="text" id="wf_location" name="wf_location" placeholder="শহর / এলাকা"></div>
+		</div>
+		<div class="frow">
+			<div><label for="wf_fb_link">Facebook Page / Website Link</label><input type="url" id="wf_fb_link" name="wf_fb_link" placeholder="https://facebook.com/..."></div>
+			<div><label for="wf_ad_post_link">Ads চালানোর Facebook Post Link</label><input type="url" id="wf_ad_post_link" name="wf_ad_post_link" placeholder="https://facebook.com/.../posts/..."></div>
+		</div>
+		<div><label for="wf_message">Message / Requirement</label><textarea id="wf_message" name="wf_message" rows="4" placeholder="আপনার প্রয়োজন সম্পর্কে লিখুন (ঐচ্ছিক)"></textarea></div>
+
+		<button class="btn btn-primary" type="submit">Submit করুন</button>
+	</form>
+	<?php
+	return ob_get_clean();
+}
+add_shortcode( 'wf_customer_form', 'womensfight_render_customer_form' );
+
+/**
+ * Handles the form POST: every field is optional (sanitized, never
+ * required), saved as a wf_lead post + postmeta, then redirects back to
+ * the same page with ?wf_submitted=1 so the shortcode above can show the
+ * thank-you message and fire the tracking events exactly once.
+ */
+function womensfight_handle_customer_form_submit() {
+	if (
+		! isset( $_POST['womensfight_customer_form_nonce'] ) ||
+		! wp_verify_nonce( wp_unslash( $_POST['womensfight_customer_form_nonce'] ), 'womensfight_customer_form' )
+	) {
+		wp_die( 'Security check failed. দয়া করে পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' );
+	}
+
+	$data = array();
+	foreach ( womensfight_lead_fields() as $key => $label ) {
+		$data[ $key ] = isset( $_POST[ $key ] ) ? sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) : '';
+	}
+
+	if ( '' !== $data['wf_name'] ) {
+		$title = $data['wf_name'];
+	} elseif ( '' !== $data['wf_mobile'] ) {
+		$title = $data['wf_mobile'];
+	} elseif ( '' !== $data['wf_email'] ) {
+		$title = $data['wf_email'];
+	} else {
+		$title = 'Submission — ' . current_time( 'Y-m-d H:i' );
+	}
+
+	$post_id = wp_insert_post(
+		array(
+			'post_type'   => 'wf_lead',
+			'post_title'  => $title,
+			'post_status' => 'publish',
+		)
+	);
+
+	if ( $post_id && ! is_wp_error( $post_id ) ) {
+		foreach ( $data as $key => $value ) {
+			update_post_meta( $post_id, $key, $value );
+		}
+	}
+
+	$redirect = isset( $_POST['wf_redirect'] ) ? esc_url_raw( wp_unslash( $_POST['wf_redirect'] ) ) : home_url( '/' );
+	wp_safe_redirect( add_query_arg( 'wf_submitted', '1', $redirect ) . '#wf-cform' );
+	exit;
+}
+add_action( 'admin_post_womensfight_submit_customer_form', 'womensfight_handle_customer_form_submit' );
+add_action( 'admin_post_nopriv_womensfight_submit_customer_form', 'womensfight_handle_customer_form_submit' );
+
+/**
+ * wp-admin list table columns for Customer Submissions, so the important
+ * fields are visible at a glance without opening each entry.
+ */
+function womensfight_lead_columns( $columns ) {
+	$new = array(
+		'cb'          => $columns['cb'],
+		'title'       => 'নাম / টাইটেল',
+		'wf_mobile'   => 'Mobile',
+		'wf_whatsapp' => 'WhatsApp',
+		'wf_email'    => 'Email',
+		'wf_business' => 'Business',
+		'wf_service'  => 'Service',
+		'date'        => $columns['date'],
+	);
+	return $new;
+}
+add_filter( 'manage_wf_lead_posts_columns', 'womensfight_lead_columns' );
+
+function womensfight_lead_column_content( $column, $post_id ) {
+	if ( in_array( $column, array( 'wf_mobile', 'wf_whatsapp', 'wf_email', 'wf_business', 'wf_service' ), true ) ) {
+		echo esc_html( get_post_meta( $post_id, $column, true ) );
+	}
+}
+add_action( 'manage_wf_lead_posts_custom_column', 'womensfight_lead_column_content', 10, 2 );
+
+/**
+ * CSV export — a button on the Customer Submissions list screen that
+ * downloads every submission as a spreadsheet-ready CSV file.
+ */
+add_action( 'admin_notices', function() {
+	$screen = get_current_screen();
+	if ( $screen && 'edit-wf_lead' === $screen->id ) {
+		$url = wp_nonce_url( admin_url( 'edit.php?post_type=wf_lead&wf_export_csv=1' ), 'womensfight_export_leads' );
+		echo '<p><a href="' . esc_url( $url ) . '" class="button button-primary">সব সাবমিশন CSV হিসেবে Export করুন</a></p>';
+	}
+} );
+
+function womensfight_maybe_export_leads_csv() {
+	if ( ! isset( $_GET['wf_export_csv'] ) || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	check_admin_referer( 'womensfight_export_leads' );
+
+	$posts = get_posts(
+		array(
+			'post_type'      => 'wf_lead',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'orderby'        => 'date',
+			'order'          => 'DESC',
+		)
+	);
+
+	nocache_headers();
+	header( 'Content-Type: text/csv; charset=utf-8' );
+	header( 'Content-Disposition: attachment; filename=customer-submissions-' . gmdate( 'Y-m-d' ) . '.csv' );
+
+	$out = fopen( 'php://output', 'w' );
+	fputs( $out, "\xEF\xBB\xBF" ); // UTF-8 BOM so Bangla text opens correctly in Excel.
+
+	$fields = womensfight_lead_fields();
+	fputcsv( $out, array_merge( array( 'Submitted At' ), array_values( $fields ) ) );
+
+	foreach ( $posts as $post ) {
+		$row = array( get_the_date( 'Y-m-d H:i', $post ) );
+		foreach ( array_keys( $fields ) as $key ) {
+			$row[] = get_post_meta( $post->ID, $key, true );
+		}
+		fputcsv( $out, $row );
+	}
+
+	fclose( $out );
+	exit;
+}
+add_action( 'admin_init', 'womensfight_maybe_export_leads_csv' );
