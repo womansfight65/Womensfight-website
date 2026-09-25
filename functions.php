@@ -134,12 +134,18 @@ function womensfight_elementor_widget_data( $html ) {
 
 /**
  * Mark a page as an Elementor document and store its content as
- * Elementor data, mirroring what Elementor itself writes on save. Only
- * runs for pages that have no Elementor data yet, so it never overwrites
- * a page the user has since rebuilt or rearranged inside Elementor.
+ * Elementor data, mirroring what Elementor itself writes on save.
+ *
+ * By default this only runs for pages that have no Elementor data yet,
+ * so it never overwrites a page the user has since rebuilt or rearranged
+ * inside Elementor. Pass $force = true to reset it anyway — used by the
+ * explicit "sync this page" action, since once Elementor is active it
+ * renders _elementor_data instead of post_content on the front end, so a
+ * content update that only touches post_content would otherwise never
+ * actually appear on the live page.
  */
-function womensfight_save_elementor_data( $post_id, $html ) {
-	if ( get_post_meta( $post_id, '_elementor_data', true ) ) {
+function womensfight_save_elementor_data( $post_id, $html, $force = false ) {
+	if ( ! $force && get_post_meta( $post_id, '_elementor_data', true ) ) {
 		return;
 	}
 	update_post_meta( $post_id, '_elementor_data', wp_slash( wp_json_encode( womensfight_elementor_widget_data( $html ) ) ) );
@@ -503,9 +509,11 @@ function womensfight_sync_one_page( $slug ) {
 		)
 	);
 
-	// Elementor data keeps its usual safety check (only filled if empty),
-	// so real Elementor work on this page is never wiped by a sync.
-	womensfight_save_elementor_data( $id, $new_content );
+	// Force-reset Elementor data too: "sync this page" is an explicit
+	// request to reset this one page, and Elementor renders _elementor_data
+	// (not post_content) on the front end once it's active, so without
+	// this the content update above would silently never appear live.
+	womensfight_save_elementor_data( $id, $new_content, true );
 
 	if ( 'home' === $slug ) {
 		update_option( 'show_on_front', 'page' );
