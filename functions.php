@@ -1354,3 +1354,184 @@ function womensfight_local_business_schema() {
 	echo '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . '</script>' . "\n";
 }
 add_action( 'wp_head', 'womensfight_local_business_schema' );
+
+/* =======================================================================
+ * Projects — STEP 1 PREVIEW ONLY.
+ * A new "Project" post type for the Lead → Client → Payment →
+ * Onboarding → In Progress → Review → Approved → Completed pipeline
+ * discussed with the client. Nothing on the public site links to this
+ * yet — it's just the wp-admin foundation, with one demo entry so it's
+ * visible immediately without needing a real form submission.
+ * ===================================================================== */
+
+function womensfight_register_project_cpt() {
+	register_post_type(
+		'wf_project',
+		array(
+			'labels'          => array(
+				'name'          => 'Projects',
+				'singular_name' => 'Project',
+				'menu_name'     => 'Projects',
+				'all_items'     => 'All Projects',
+			),
+			'public'          => false,
+			'show_ui'         => true,
+			'show_in_menu'    => true,
+			'menu_icon'       => 'dashicons-portfolio',
+			'menu_position'   => 28,
+			'supports'        => array( 'title' ),
+			'capability_type' => 'post',
+			'map_meta_cap'    => true,
+		)
+	);
+}
+add_action( 'init', 'womensfight_register_project_cpt' );
+
+function womensfight_project_statuses() {
+	return array(
+		'lead'        => 'Lead',
+		'client'      => 'Client',
+		'payment'     => 'Payment',
+		'onboarding'  => 'Onboarding',
+		'in_progress' => 'In Progress',
+		'review'      => 'Review',
+		'approved'    => 'Approved',
+		'completed'   => 'Completed',
+	);
+}
+
+function womensfight_project_payment_statuses() {
+	return array(
+		'unpaid'  => 'Unpaid',
+		'partial' => 'Partial',
+		'paid'    => 'Paid',
+	);
+}
+
+/**
+ * One demo entry so the new "Projects" screen shows something real
+ * right away. Runs once — skipped forever after the first time it finds
+ * (or creates) a project titled "Test Project".
+ */
+function womensfight_seed_demo_project() {
+	if ( get_option( 'womensfight_demo_project_seeded' ) ) {
+		return;
+	}
+	$existing = get_page_by_title( 'Test Project', OBJECT, 'wf_project' );
+	if ( ! $existing ) {
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => 'wf_project',
+				'post_title'  => 'Test Project',
+				'post_status' => 'publish',
+			)
+		);
+		if ( $post_id && ! is_wp_error( $post_id ) ) {
+			update_post_meta( $post_id, 'wf_p_name', 'Test Client' );
+			update_post_meta( $post_id, 'wf_p_mobile', '01700000000' );
+			update_post_meta( $post_id, 'wf_p_email', 'test@example.com' );
+			update_post_meta( $post_id, 'wf_p_business', 'Demo Business' );
+			update_post_meta( $post_id, 'wf_p_service', 'Facebook Ads' );
+			update_post_meta( $post_id, 'wf_p_status', 'lead' );
+			update_post_meta( $post_id, 'wf_p_payment_status', 'unpaid' );
+		}
+	}
+	update_option( 'womensfight_demo_project_seeded', 1 );
+}
+add_action( 'init', 'womensfight_seed_demo_project', 20 );
+
+function womensfight_project_columns( $columns ) {
+	return array(
+		'cb'         => $columns['cb'],
+		'title'      => 'ক্লায়েন্ট / প্রজেক্ট',
+		'wf_service' => 'Service',
+		'wf_status'  => 'Status',
+		'wf_payment' => 'Payment',
+		'date'       => $columns['date'],
+	);
+}
+add_filter( 'manage_wf_project_posts_columns', 'womensfight_project_columns' );
+
+function womensfight_project_column_content( $column, $post_id ) {
+	$statuses          = womensfight_project_statuses();
+	$payment_statuses  = womensfight_project_payment_statuses();
+	if ( 'wf_service' === $column ) {
+		echo esc_html( get_post_meta( $post_id, 'wf_p_service', true ) );
+	} elseif ( 'wf_status' === $column ) {
+		$status = get_post_meta( $post_id, 'wf_p_status', true );
+		echo esc_html( isset( $statuses[ $status ] ) ? $statuses[ $status ] : $status );
+	} elseif ( 'wf_payment' === $column ) {
+		$payment = get_post_meta( $post_id, 'wf_p_payment_status', true );
+		echo esc_html( isset( $payment_statuses[ $payment ] ) ? $payment_statuses[ $payment ] : $payment );
+	}
+}
+add_action( 'manage_wf_project_posts_custom_column', 'womensfight_project_column_content', 10, 2 );
+
+/**
+ * Edit-screen meta box: contact/service info (read-only reference for
+ * now) plus the two dropdowns — Status and Payment Status — that move a
+ * project through the pipeline. Saved via a normal post-save nonce.
+ */
+function womensfight_register_project_detail_box() {
+	add_meta_box(
+		'womensfight_project_details',
+		'Project Details',
+		'womensfight_render_project_detail_box',
+		'wf_project',
+		'normal',
+		'high'
+	);
+}
+add_action( 'add_meta_boxes_wf_project', 'womensfight_register_project_detail_box' );
+
+function womensfight_render_project_detail_box( $post ) {
+	wp_nonce_field( 'womensfight_save_project', 'womensfight_project_nonce' );
+
+	$info_fields = array(
+		'wf_p_name'     => 'নাম',
+		'wf_p_mobile'   => 'Mobile',
+		'wf_p_email'    => 'Email',
+		'wf_p_business' => 'Business',
+		'wf_p_service'  => 'Service',
+	);
+
+	echo '<table class="widefat striped"><tbody>';
+	foreach ( $info_fields as $key => $label ) {
+		echo '<tr><th style="width:180px;">' . esc_html( $label ) . '</th><td>' . esc_html( get_post_meta( $post->ID, $key, true ) ) . '</td></tr>';
+	}
+
+	$status  = get_post_meta( $post->ID, 'wf_p_status', true );
+	$payment = get_post_meta( $post->ID, 'wf_p_payment_status', true );
+
+	echo '<tr><th>Status</th><td><select name="wf_p_status">';
+	foreach ( womensfight_project_statuses() as $value => $label ) {
+		echo '<option value="' . esc_attr( $value ) . '"' . selected( $status, $value, false ) . '>' . esc_html( $label ) . '</option>';
+	}
+	echo '</select></td></tr>';
+
+	echo '<tr><th>Payment Status</th><td><select name="wf_p_payment_status">';
+	foreach ( womensfight_project_payment_statuses() as $value => $label ) {
+		echo '<option value="' . esc_attr( $value ) . '"' . selected( $payment, $value, false ) . '>' . esc_html( $label ) . '</option>';
+	}
+	echo '</select></td></tr>';
+	echo '</tbody></table>';
+}
+
+function womensfight_save_project_meta( $post_id ) {
+	if (
+		! isset( $_POST['womensfight_project_nonce'] ) ||
+		! wp_verify_nonce( wp_unslash( $_POST['womensfight_project_nonce'] ), 'womensfight_save_project' )
+	) {
+		return;
+	}
+	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		return;
+	}
+	if ( isset( $_POST['wf_p_status'] ) && array_key_exists( wp_unslash( $_POST['wf_p_status'] ), womensfight_project_statuses() ) ) {
+		update_post_meta( $post_id, 'wf_p_status', sanitize_key( wp_unslash( $_POST['wf_p_status'] ) ) );
+	}
+	if ( isset( $_POST['wf_p_payment_status'] ) && array_key_exists( wp_unslash( $_POST['wf_p_payment_status'] ), womensfight_project_payment_statuses() ) ) {
+		update_post_meta( $post_id, 'wf_p_payment_status', sanitize_key( wp_unslash( $_POST['wf_p_payment_status'] ) ) );
+	}
+}
+add_action( 'save_post_wf_project', 'womensfight_save_project_meta' );
