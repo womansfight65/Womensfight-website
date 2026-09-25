@@ -3,7 +3,7 @@ Theme Name: Women's Fight Agency
 Theme URI: https://womensfight.agency
 Author: Women's Fight
 Description: Dark, vivid multi-page agency theme for Women's Fight, built around the brand's real pink-magenta-to-blue logo mark, fully in Bangla, with real editable WordPress Pages (Block Editor and Elementor ready out of the box) and an interactive AI Agent audience-estimator tool.
-Version: 4.0
+Version: 4.1
 Requires at least: 5.9
 Requires PHP: 7.4
 Requires Plugins: elementor
@@ -352,4 +352,38 @@ footer.site-footer{background:var(--bg-2); color:var(--ink); margin-top:40px; bo
 @media (max-width:640px){
   .wf-dash-header{padding:22px;}
   .wf-stepper{min-width:480px;}
+}
+
+/* Demo Website Library */
+.wf-demo-filters{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:28px;}
+.wf-demo-filter{background:var(--surface); border:1px solid var(--border); color:var(--ink-soft); padding:9px 18px; border-radius:999px; font-size:.85rem; font-weight:700; cursor:pointer; font-family:inherit; transition:border-color .15s ease, color .15s ease;}
+.wf-demo-filter:hover{border-color:var(--pink);}
+.wf-demo-filter.active{background:var(--grad); border-color:transparent; color:#fff;}
+
+.wf-demo-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+.wf-demo-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column;}
+.wf-demo-shot{position:relative; aspect-ratio:16/10; background:var(--bg-2); overflow:hidden;}
+.wf-demo-shot img{width:100%; height:100%; object-fit:cover; display:block;}
+.wf-demo-shot-placeholder{width:100%; height:100%; display:flex; align-items:center; justify-content:center;}
+.wf-demo-shot-placeholder svg{width:48px; height:48px; stroke:var(--ink-faint); fill:none; stroke-width:1.5;}
+.wf-demo-tag{position:absolute; top:12px; left:12px; background:rgba(10,8,23,.75); backdrop-filter:blur(4px); color:#fff; font-size:.7rem; font-weight:700; padding:5px 12px; border-radius:999px;}
+.wf-demo-body{padding:20px; display:flex; flex-direction:column; gap:8px; flex:1;}
+.wf-demo-body h3{font-size:1.05rem;}
+.wf-demo-pid{font-size:.76rem; color:var(--ink-faint); font-weight:700;}
+.wf-demo-body p{font-size:.86rem; color:var(--ink-soft); flex:1;}
+.wf-demo-actions{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;}
+.wf-demo-actions .btn{flex:1; text-align:center; white-space:nowrap;}
+
+.wf-modal-overlay{position:fixed; inset:0; background:rgba(5,4,12,.75); backdrop-filter:blur(3px); z-index:200; display:none; align-items:center; justify-content:center; padding:20px;}
+.wf-modal-overlay.open{display:flex;}
+.wf-modal{position:relative; max-width:520px; width:100%; max-height:90vh; overflow-y:auto;}
+.wf-modal .wf-cform{max-width:none; margin:0;}
+.wf-modal-close{position:absolute; top:-14px; right:-14px; width:34px; height:34px; border-radius:50%; background:var(--surface); border:1px solid var(--border); color:var(--ink); font-size:1.3rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:1;}
+
+@media (max-width:980px){
+  .wf-demo-grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:640px){
+  .wf-demo-grid{grid-template-columns:1fr;}
+  .wf-demo-actions .btn{flex:none; width:100%;}
 }

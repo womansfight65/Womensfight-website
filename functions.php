@@ -240,6 +240,7 @@ function womensfight_page_definitions() {
 		'contact'              => 'Contact Us',
 		'lead-form'            => 'Lead Form',
 		'project'              => 'Client Dashboard',
+		'demo-library'         => 'Demo Website Library',
 	);
 }
 
@@ -1945,3 +1946,262 @@ function womensfight_handle_deliverable_upload() {
 	exit;
 }
 add_action( 'admin_post_womensfight_upload_deliverable', 'womensfight_handle_deliverable_upload' );
+
+/* =======================================================================
+ * Demo Website Library — a catalog the admin manages entirely from
+ * wp-admin (no code needed to add a demo), shown on a public
+ * /demo-library/ page with category filters. "Choose This Design"
+ * opens a small form whose submissions land in a separate "Demo
+ * Requests" post type, kept apart from Leads/Contact/Projects.
+ * ===================================================================== */
+
+function womensfight_register_demo_cpt() {
+	register_post_type(
+		'wf_demo',
+		array(
+			'labels'          => array(
+				'name'          => 'Demo Websites',
+				'singular_name' => 'Demo Website',
+				'menu_name'     => 'Demo Websites',
+				'all_items'     => 'All Demos',
+				'add_new_item'  => 'Add New Demo',
+			),
+			'public'          => false,
+			'show_ui'         => true,
+			'show_in_menu'    => true,
+			'menu_icon'       => 'dashicons-screenoptions',
+			'menu_position'   => 29,
+			'supports'        => array( 'title' ),
+			'capability_type' => 'post',
+			'map_meta_cap'    => true,
+		)
+	);
+}
+add_action( 'init', 'womensfight_register_demo_cpt' );
+
+function womensfight_demo_categories() {
+	return array( 'Agency', 'Restaurant', 'E-commerce', 'Portfolio', 'Education', 'Real Estate', 'Local Business' );
+}
+
+function womensfight_register_demo_detail_box() {
+	add_meta_box( 'womensfight_demo_details', 'Demo Details', 'womensfight_render_demo_detail_box', 'wf_demo', 'normal', 'high' );
+}
+add_action( 'add_meta_boxes_wf_demo', 'womensfight_register_demo_detail_box' );
+
+function womensfight_render_demo_detail_box( $post ) {
+	wp_nonce_field( 'womensfight_save_demo', 'womensfight_demo_nonce' );
+
+	$project_id  = get_post_meta( $post->ID, 'wf_d_project_id', true );
+	$category    = get_post_meta( $post->ID, 'wf_d_category', true );
+	$description = get_post_meta( $post->ID, 'wf_d_description', true );
+	$live_url    = get_post_meta( $post->ID, 'wf_d_live_url', true );
+	$screenshot  = get_post_meta( $post->ID, 'wf_d_screenshot_id', true );
+	?>
+	<table class="widefat" style="margin-bottom:14px;">
+		<tbody>
+			<tr>
+				<th style="width:180px;">Project ID</th>
+				<td><input type="text" name="wf_d_project_id" value="<?php echo esc_attr( $project_id ); ?>" class="regular-text" placeholder="যেমন: WF-001"></td>
+			</tr>
+			<tr>
+				<th>Category</th>
+				<td>
+					<select name="wf_d_category">
+						<?php foreach ( womensfight_demo_categories() as $cat ) : ?>
+							<option value="<?php echo esc_attr( $cat ); ?>" <?php selected( $category, $cat ); ?>><?php echo esc_html( $cat ); ?></option>
+						<?php endforeach; ?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th>Live Preview URL</th>
+				<td><input type="url" name="wf_d_live_url" value="<?php echo esc_attr( $live_url ); ?>" class="regular-text" placeholder="https://..."></td>
+			</tr>
+			<tr>
+				<th>Short Description</th>
+				<td><textarea name="wf_d_description" rows="3" class="large-text"><?php echo esc_textarea( $description ); ?></textarea></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<p><strong>Screenshot</strong></p>
+	<?php if ( $screenshot ) : ?>
+		<div style="margin-bottom:8px;"><?php echo wp_get_attachment_image( $screenshot, 'medium' ); ?></div>
+	<?php endif; ?>
+	<input type="file" name="wf_d_screenshot" accept="image/*">
+	<p class="description">নতুন ছবি দিলে আগেরটা replace হয়ে যাবে। খালি রাখলে আগেরটাই থাকবে।</p>
+	<?php
+}
+
+function womensfight_save_demo_meta( $post_id ) {
+	if ( ! isset( $_POST['womensfight_demo_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['womensfight_demo_nonce'] ), 'womensfight_save_demo' ) ) {
+		return;
+	}
+	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		return;
+	}
+
+	if ( isset( $_POST['wf_d_project_id'] ) ) {
+		update_post_meta( $post_id, 'wf_d_project_id', sanitize_text_field( wp_unslash( $_POST['wf_d_project_id'] ) ) );
+	}
+	if ( isset( $_POST['wf_d_category'] ) && in_array( wp_unslash( $_POST['wf_d_category'] ), womensfight_demo_categories(), true ) ) {
+		update_post_meta( $post_id, 'wf_d_category', sanitize_text_field( wp_unslash( $_POST['wf_d_category'] ) ) );
+	}
+	if ( isset( $_POST['wf_d_live_url'] ) ) {
+		update_post_meta( $post_id, 'wf_d_live_url', esc_url_raw( wp_unslash( $_POST['wf_d_live_url'] ) ) );
+	}
+	if ( isset( $_POST['wf_d_description'] ) ) {
+		update_post_meta( $post_id, 'wf_d_description', sanitize_textarea_field( wp_unslash( $_POST['wf_d_description'] ) ) );
+	}
+
+	if ( ! empty( $_FILES['wf_d_screenshot']['name'] ) ) {
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		$attachment_id = media_handle_upload( 'wf_d_screenshot', $post_id );
+		if ( ! is_wp_error( $attachment_id ) ) {
+			update_post_meta( $post_id, 'wf_d_screenshot_id', $attachment_id );
+		}
+	}
+}
+add_action( 'save_post_wf_demo', 'womensfight_save_demo_meta' );
+
+function womensfight_demo_columns( $columns ) {
+	return array(
+		'cb'            => $columns['cb'],
+		'title'         => 'Demo Name',
+		'wf_project_id' => 'Project ID',
+		'wf_category'   => 'Category',
+		'date'          => $columns['date'],
+	);
+}
+add_filter( 'manage_wf_demo_posts_columns', 'womensfight_demo_columns' );
+
+function womensfight_demo_column_content( $column, $post_id ) {
+	if ( 'wf_project_id' === $column ) {
+		echo esc_html( get_post_meta( $post_id, 'wf_d_project_id', true ) );
+	} elseif ( 'wf_category' === $column ) {
+		echo esc_html( get_post_meta( $post_id, 'wf_d_category', true ) );
+	}
+}
+add_action( 'manage_wf_demo_posts_custom_column', 'womensfight_demo_column_content', 10, 2 );
+
+/**
+ * [wf_demo_library] rendering helper — every published demo, newest
+ * first, as plain data the template can loop over.
+ */
+function womensfight_get_demo_list() {
+	return get_posts(
+		array(
+			'post_type'      => 'wf_demo',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'orderby'        => 'date',
+			'order'          => 'DESC',
+		)
+	);
+}
+
+/* --- Demo Requests ("Choose This Design" submissions) --- */
+
+function womensfight_register_demo_request_cpt() {
+	register_post_type(
+		'wf_demo_request',
+		array(
+			'labels'          => array(
+				'name'          => 'Demo Requests',
+				'singular_name' => 'Demo Request',
+				'menu_name'     => 'Demo Requests',
+				'all_items'     => 'All Requests',
+			),
+			'public'          => false,
+			'show_ui'         => true,
+			'show_in_menu'    => true,
+			'menu_icon'       => 'dashicons-yes-alt',
+			'menu_position'   => 30,
+			'supports'        => array( 'title' ),
+			'capability_type' => 'post',
+			'map_meta_cap'    => true,
+		)
+	);
+}
+add_action( 'init', 'womensfight_register_demo_request_cpt' );
+
+function womensfight_demo_request_fields() {
+	return array(
+		'dr_name'         => 'নাম',
+		'dr_whatsapp'     => 'WhatsApp',
+		'dr_business'     => 'Business Name',
+		'dr_demo_name'    => 'Selected Demo',
+		'dr_project_id'   => 'Project ID',
+		'dr_requirement'  => 'Requirement / Changes',
+	);
+}
+
+function womensfight_handle_demo_request_submit() {
+	if (
+		! isset( $_POST['womensfight_demo_request_nonce'] ) ||
+		! wp_verify_nonce( wp_unslash( $_POST['womensfight_demo_request_nonce'] ), 'womensfight_demo_request' )
+	) {
+		wp_die( 'Security check failed. দয়া করে পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' );
+	}
+
+	$data = array();
+	foreach ( womensfight_demo_request_fields() as $key => $label ) {
+		$data[ $key ] = isset( $_POST[ $key ] ) ? sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) : '';
+	}
+
+	$title = '' !== $data['dr_name'] ? $data['dr_name'] . ' — ' . $data['dr_demo_name'] : 'Demo Request — ' . current_time( 'Y-m-d H:i' );
+
+	$post_id = wp_insert_post(
+		array(
+			'post_type'   => 'wf_demo_request',
+			'post_title'  => $title,
+			'post_status' => 'publish',
+		)
+	);
+
+	if ( $post_id && ! is_wp_error( $post_id ) ) {
+		foreach ( $data as $key => $value ) {
+			update_post_meta( $post_id, $key, $value );
+		}
+	}
+
+	$redirect = isset( $_POST['dr_redirect'] ) ? esc_url_raw( wp_unslash( $_POST['dr_redirect'] ) ) : home_url( '/' );
+	wp_safe_redirect( add_query_arg( 'demo_submitted', '1', $redirect ) . '#wf-demo-library' );
+	exit;
+}
+add_action( 'admin_post_womensfight_submit_demo_request', 'womensfight_handle_demo_request_submit' );
+add_action( 'admin_post_nopriv_womensfight_submit_demo_request', 'womensfight_handle_demo_request_submit' );
+
+function womensfight_demo_request_columns( $columns ) {
+	return array(
+		'cb'            => $columns['cb'],
+		'title'         => 'Client / Demo',
+		'dr_whatsapp'   => 'WhatsApp',
+		'dr_business'   => 'Business',
+		'dr_demo_name'  => 'Selected Demo',
+		'date'          => $columns['date'],
+	);
+}
+add_filter( 'manage_wf_demo_request_posts_columns', 'womensfight_demo_request_columns' );
+
+function womensfight_demo_request_column_content( $column, $post_id ) {
+	if ( in_array( $column, array( 'dr_whatsapp', 'dr_business', 'dr_demo_name' ), true ) ) {
+		echo esc_html( get_post_meta( $post_id, $column, true ) );
+	}
+}
+add_action( 'manage_wf_demo_request_posts_custom_column', 'womensfight_demo_request_column_content', 10, 2 );
+
+function womensfight_register_demo_request_detail_box() {
+	add_meta_box( 'womensfight_demo_request_details', 'Request Details', 'womensfight_render_demo_request_detail_box', 'wf_demo_request', 'normal', 'high' );
+}
+add_action( 'add_meta_boxes_wf_demo_request', 'womensfight_register_demo_request_detail_box' );
+
+function womensfight_render_demo_request_detail_box( $post ) {
+	echo '<table class="widefat striped"><tbody>';
+	foreach ( womensfight_demo_request_fields() as $key => $label ) {
+		echo '<tr><th style="width:220px;">' . esc_html( $label ) . '</th><td>' . nl2br( esc_html( get_post_meta( $post->ID, $key, true ) ) ) . '</td></tr>';
+	}
+	echo '</tbody></table>';
+}
