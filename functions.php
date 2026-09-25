@@ -109,6 +109,25 @@ src="https://www.facebook.com/tr?id=1458605546179763&ev=PageView&noscript=1"
 add_action( 'wp_head', 'womensfight_meta_pixel' );
 
 /**
+ * Google Analytics 4 (gtag.js) — loaded in <head> on every page.
+ * Measurement ID: G-ETB0CP1VVV.
+ */
+function womensfight_google_analytics() {
+	?>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ETB0CP1VVV"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-ETB0CP1VVV');
+</script>
+<!-- End Google tag (gtag.js) -->
+	<?php
+}
+add_action( 'wp_head', 'womensfight_google_analytics' );
+
+/**
  * Look up a page's URL by its slug, safely. Returns '#' if the page
  * doesn't exist yet (e.g. setup hasn't run).
  */
