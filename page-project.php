@@ -60,38 +60,67 @@ get_header();
     </div>
   <?php endif; ?>
 
-  <div class="pkg" style="margin-bottom:24px;">
-    <h3><?php echo esc_html( get_the_title( $wf_pid ) ); ?></h3>
-    <p style="color:var(--ink-faint);"><?php echo esc_html( get_post_meta( $wf_pid, 'wf_p_service', true ) ); ?></p>
-    <div class="frow" style="margin-top:10px;">
-      <div><label>Project Status</label><div class="price" style="font-size:1.05rem;"><?php echo esc_html( isset( $statuses[ $status ] ) ? $statuses[ $status ] : $status ); ?></div></div>
-      <div><label>Payment Status</label><div class="price" style="font-size:1.05rem;"><?php echo esc_html( isset( $payments[ $payment ] ) ? $payments[ $payment ] : $payment ); ?></div></div>
+  <div class="wf-dash-header">
+    <div class="wf-dash-top">
+      <div>
+        <h2><?php echo esc_html( get_the_title( $wf_pid ) ); ?></h2>
+        <div class="wf-dash-service"><?php echo esc_html( get_post_meta( $wf_pid, 'wf_p_service', true ) ); ?></div>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <span class="wf-badge <?php echo ( 'approved' === $status || 'completed' === $status ) ? 'status-done' : 'status-active'; ?>"><?php echo esc_html( isset( $statuses[ $status ] ) ? $statuses[ $status ] : $status ); ?></span>
+        <span class="wf-badge payment-<?php echo esc_attr( $payment ? $payment : 'unpaid' ); ?>"><?php echo esc_html( isset( $payments[ $payment ] ) ? $payments[ $payment ] : $payment ); ?></span>
+      </div>
+    </div>
+
+    <div class="wf-stepper-wrap">
+      <div class="wf-stepper">
+        <?php
+        $status_keys  = array_keys( $statuses );
+        $current_step = array_search( $status, $status_keys, true );
+        foreach ( $status_keys as $i => $key ) :
+			$state = '';
+        if ( false !== $current_step ) {
+			if ( $i < $current_step ) {
+				$state = 'done';
+			} elseif ( $i === $current_step ) {
+				$state = 'active';
+			}
+        }
+        ?>
+          <div class="wf-step <?php echo esc_attr( $state ); ?>">
+            <div class="wf-step-dot"><?php echo ( 'done' === $state ) ? '✓' : esc_html( $i + 1 ); ?></div>
+            <div class="wf-step-label"><?php echo esc_html( $statuses[ $key ] ); ?></div>
+          </div>
+        <?php endforeach; ?>
+      </div>
     </div>
   </div>
 
-  <?php if ( ! $onboarded ) : ?>
-  <div class="wf-cform" style="margin-bottom:28px;">
-    <h3 style="margin:0 0 6px;">Onboarding তথ্য দিন</h3>
-    <p style="color:var(--ink-faint); font-size:.88rem; margin:0 0 6px;">প্রজেক্ট শুরু করতে নিচের তথ্যগুলো পূরণ করুন।</p>
-    <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-      <input type="hidden" name="action" value="womensfight_submit_onboarding">
-      <input type="hidden" name="wf_token" value="<?php echo esc_attr( $wf_token ); ?>">
-      <?php wp_nonce_field( 'womensfight_onboarding_' . $wf_token, 'womensfight_onboarding_nonce' ); ?>
-      <div><label for="wf_p_onboarding_address">ঠিকানা</label><textarea id="wf_p_onboarding_address" name="wf_p_onboarding_address" rows="2"></textarea></div>
-      <div><label for="wf_p_onboarding_assets_link">Brand Assets Link (লোগো/ছবি, যদি থাকে)</label><input type="url" id="wf_p_onboarding_assets_link" name="wf_p_onboarding_assets_link" placeholder="Google Drive / Dropbox লিংক"></div>
-      <div><label for="wf_p_onboarding_access_notes">প্রয়োজনীয় Access/Login তথ্য (যদি লাগে)</label><textarea id="wf_p_onboarding_access_notes" name="wf_p_onboarding_access_notes" rows="2" placeholder="যেমন: ওয়েবসাইট হোস্টিং প্যানেল, ইত্যাদি"></textarea></div>
-      <div><label for="wf_p_onboarding_notes">অতিরিক্ত নোট</label><textarea id="wf_p_onboarding_notes" name="wf_p_onboarding_notes" rows="3"></textarea></div>
-      <button class="btn btn-primary" type="submit">জমা দিন</button>
-    </form>
+  <div class="wf-dash-section">
+    <?php if ( ! $onboarded ) : ?>
+    <div class="wf-cform">
+      <h3><span class="ico sm"><svg><use href="#i-form"/></svg></span>Onboarding তথ্য দিন</h3>
+      <p class="wf-dash-hint">প্রজেক্ট শুরু করতে নিচের তথ্যগুলো পূরণ করুন।</p>
+      <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+        <input type="hidden" name="action" value="womensfight_submit_onboarding">
+        <input type="hidden" name="wf_token" value="<?php echo esc_attr( $wf_token ); ?>">
+        <?php wp_nonce_field( 'womensfight_onboarding_' . $wf_token, 'womensfight_onboarding_nonce' ); ?>
+        <div><label for="wf_p_onboarding_address">ঠিকানা</label><textarea id="wf_p_onboarding_address" name="wf_p_onboarding_address" rows="2"></textarea></div>
+        <div><label for="wf_p_onboarding_assets_link">Brand Assets Link (লোগো/ছবি, যদি থাকে)</label><input type="url" id="wf_p_onboarding_assets_link" name="wf_p_onboarding_assets_link" placeholder="Google Drive / Dropbox লিংক"></div>
+        <div><label for="wf_p_onboarding_access_notes">প্রয়োজনীয় Access/Login তথ্য (যদি লাগে)</label><textarea id="wf_p_onboarding_access_notes" name="wf_p_onboarding_access_notes" rows="2" placeholder="যেমন: ওয়েবসাইট হোস্টিং প্যানেল, ইত্যাদি"></textarea></div>
+        <div><label for="wf_p_onboarding_notes">অতিরিক্ত নোট</label><textarea id="wf_p_onboarding_notes" name="wf_p_onboarding_notes" rows="3"></textarea></div>
+        <button class="btn btn-primary" type="submit">জমা দিন</button>
+      </form>
+    </div>
+    <?php else : ?>
+    <div class="wf-cform-success" style="padding:20px;">
+      <p>✅ Onboarding তথ্য জমা দেওয়া হয়ে গেছে।</p>
+    </div>
+    <?php endif; ?>
   </div>
-  <?php else : ?>
-  <div class="wf-cform-success" style="margin-bottom:28px; padding:20px;">
-    <p>✅ Onboarding তথ্য জমা দেওয়া হয়ে গেছে।</p>
-  </div>
-  <?php endif; ?>
 
-  <div style="margin-bottom:28px;">
-    <h3>Deliverable Files</h3>
+  <div class="wf-dash-section">
+    <h3><span class="ico sm"><svg><use href="#i-doc"/></svg></span>Deliverable Files</h3>
     <?php if ( $deliverables ) : ?>
       <ul style="display:flex; flex-direction:column; gap:8px; padding-left:0; list-style:none;">
         <?php foreach ( $deliverables as $attachment_id ) : ?>
@@ -103,48 +132,52 @@ get_header();
         <?php endforeach; ?>
       </ul>
     <?php else : ?>
-      <p style="color:var(--ink-faint);">এখনো কোনো ফাইল দেওয়া হয়নি — কাজ শেষ হলে এখানে দেখতে পাবেন।</p>
+      <p class="wf-dash-hint" style="margin:0;">এখনো কোনো ফাইল দেওয়া হয়নি — কাজ শেষ হলে এখানে দেখতে পাবেন।</p>
     <?php endif; ?>
   </div>
 
-  <div class="wf-cform" style="margin-bottom:28px;">
-    <h3 style="margin:0 0 6px;">Revision Request</h3>
-    <p style="color:var(--ink-faint); font-size:.88rem; margin:0 0 6px;">কোনো পরিবর্তন দরকার হলে এখানে জানান।</p>
-    <form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-      <input type="hidden" name="action" value="womensfight_submit_revision">
-      <input type="hidden" name="wf_token" value="<?php echo esc_attr( $wf_token ); ?>">
-      <?php wp_nonce_field( 'womensfight_revision_' . $wf_token, 'womensfight_revision_nonce' ); ?>
-      <div><label for="wf_revision_note">কী পরিবর্তন দরকার?</label><textarea id="wf_revision_note" name="wf_revision_note" rows="3" required></textarea></div>
-      <div><label for="wf_revision_file">ফাইল সংযুক্ত করুন (ঐচ্ছিক)</label><input type="file" id="wf_revision_file" name="wf_revision_file"></div>
-      <button class="btn btn-primary" type="submit">Revision Request পাঠান</button>
-    </form>
-
-    <?php if ( $revisions ) : ?>
-      <h4 style="margin-top:20px;">আগের Revision Request</h4>
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <?php foreach ( array_reverse( $revisions ) as $revision ) : ?>
-          <div style="border:1px solid var(--border); border-radius:12px; padding:12px 14px;">
-            <div style="font-size:.78rem; color:var(--ink-faint); margin-bottom:4px;"><?php echo esc_html( $revision['date'] ); ?></div>
-            <div><?php echo nl2br( esc_html( $revision['note'] ) ); ?></div>
-          </div>
-        <?php endforeach; ?>
-      </div>
-    <?php endif; ?>
-  </div>
-
-  <div class="wf-cform" style="text-align:center;">
-    <?php if ( $approved ) : ?>
-      <p style="font-size:1.05rem; font-weight:700;">✅ আপনি এই প্রজেক্ট অ্যাপ্রুভ করেছেন (<?php echo esc_html( get_post_meta( $wf_pid, 'wf_p_approved_at', true ) ); ?>)।</p>
-    <?php else : ?>
-      <h3 style="margin:0 0 10px;">সব ঠিক আছে?</h3>
-      <p style="color:var(--ink-faint); font-size:.88rem; margin:0 0 14px;">কাজ চূড়ান্তভাবে গ্রহণযোগ্য হলে নিচের বাটনে ক্লিক করুন।</p>
-      <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('আপনি কি নিশ্চিত এই প্রজেক্ট চূড়ান্তভাবে অ্যাপ্রুভ করতে চান?');">
-        <input type="hidden" name="action" value="womensfight_submit_approval">
+  <div class="wf-dash-section">
+    <div class="wf-cform">
+      <h3><span class="ico sm"><svg><use href="#i-edit"/></svg></span>Revision Request</h3>
+      <p class="wf-dash-hint">কোনো পরিবর্তন দরকার হলে এখানে জানান।</p>
+      <form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+        <input type="hidden" name="action" value="womensfight_submit_revision">
         <input type="hidden" name="wf_token" value="<?php echo esc_attr( $wf_token ); ?>">
-        <?php wp_nonce_field( 'womensfight_approval_' . $wf_token, 'womensfight_approval_nonce' ); ?>
-        <button class="btn btn-primary" type="submit">প্রজেক্ট অ্যাপ্রুভ করুন</button>
+        <?php wp_nonce_field( 'womensfight_revision_' . $wf_token, 'womensfight_revision_nonce' ); ?>
+        <div><label for="wf_revision_note">কী পরিবর্তন দরকার?</label><textarea id="wf_revision_note" name="wf_revision_note" rows="3" required></textarea></div>
+        <div><label for="wf_revision_file">ফাইল সংযুক্ত করুন (ঐচ্ছিক)</label><input type="file" id="wf_revision_file" name="wf_revision_file"></div>
+        <button class="btn btn-primary" type="submit">Revision Request পাঠান</button>
       </form>
-    <?php endif; ?>
+
+      <?php if ( $revisions ) : ?>
+        <h4 style="margin-top:20px;">আগের Revision Request</h4>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <?php foreach ( array_reverse( $revisions ) as $revision ) : ?>
+            <div style="border:1px solid var(--border); border-radius:12px; padding:12px 14px;">
+              <div style="font-size:.78rem; color:var(--ink-faint); margin-bottom:4px;"><?php echo esc_html( $revision['date'] ); ?></div>
+              <div><?php echo nl2br( esc_html( $revision['note'] ) ); ?></div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+    </div>
+  </div>
+
+  <div class="wf-dash-section">
+    <div class="wf-cform" style="text-align:center;">
+      <?php if ( $approved ) : ?>
+        <p style="font-size:1.05rem; font-weight:700;">✅ আপনি এই প্রজেক্ট অ্যাপ্রুভ করেছেন (<?php echo esc_html( get_post_meta( $wf_pid, 'wf_p_approved_at', true ) ); ?>)।</p>
+      <?php else : ?>
+        <h3 style="justify-content:center;"><span class="ico sm"><svg><use href="#i-check"/></svg></span>সব ঠিক আছে?</h3>
+        <p class="wf-dash-hint">কাজ চূড়ান্তভাবে গ্রহণযোগ্য হলে নিচের বাটনে ক্লিক করুন।</p>
+        <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('আপনি কি নিশ্চিত এই প্রজেক্ট চূড়ান্তভাবে অ্যাপ্রুভ করতে চান?');">
+          <input type="hidden" name="action" value="womensfight_submit_approval">
+          <input type="hidden" name="wf_token" value="<?php echo esc_attr( $wf_token ); ?>">
+          <?php wp_nonce_field( 'womensfight_approval_' . $wf_token, 'womensfight_approval_nonce' ); ?>
+          <button class="btn btn-primary" type="submit">প্রজেক্ট অ্যাপ্রুভ করুন</button>
+        </form>
+      <?php endif; ?>
+    </div>
   </div>
 
 <?php endif; ?>

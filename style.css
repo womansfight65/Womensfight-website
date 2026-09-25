@@ -3,7 +3,7 @@ Theme Name: Women's Fight Agency
 Theme URI: https://womensfight.agency
 Author: Women's Fight
 Description: Dark, vivid multi-page agency theme for Women's Fight, built around the brand's real pink-magenta-to-blue logo mark, fully in Bangla, with real editable WordPress Pages (Block Editor and Elementor ready out of the box) and an interactive AI Agent audience-estimator tool.
-Version: 3.9
+Version: 4.0
 Requires at least: 5.9
 Requires PHP: 7.4
 Requires Plugins: elementor
@@ -320,4 +320,36 @@ footer.site-footer{background:var(--bg-2); color:var(--ink); margin-top:40px; bo
   .tl-step:not(:last-child)::before{left:19px;}
   .cta-band{padding:30px;}
   .hero-stats div{padding-right:18px; margin-right:18px;}
+}
+
+/* Client Dashboard */
+.wf-dash-header{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:32px; box-shadow:var(--shadow); margin-bottom:28px;}
+.wf-dash-header .wf-dash-top{display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;}
+.wf-dash-header h2{font-size:1.35rem; margin-bottom:4px;}
+.wf-dash-header .wf-dash-service{color:var(--ink-faint); font-size:.9rem;}
+.wf-badge{display:inline-flex; align-items:center; gap:6px; padding:6px 16px; border-radius:999px; font-size:.8rem; font-weight:700; white-space:nowrap;}
+.wf-badge.payment-unpaid{background:rgba(243,20,123,.15); color:var(--pink-light);}
+.wf-badge.payment-partial{background:rgba(255,180,0,.15); color:#ffb400;}
+.wf-badge.payment-paid{background:rgba(0,200,120,.15); color:#2ecf85;}
+.wf-badge.status-active{background:rgba(58,111,224,.15); color:var(--blue-light);}
+.wf-badge.status-done{background:rgba(0,200,120,.15); color:#2ecf85;}
+
+.wf-stepper-wrap{margin-top:28px; overflow-x:auto; padding-bottom:4px;}
+.wf-stepper{display:flex; min-width:560px; position:relative;}
+.wf-stepper::before{content:""; position:absolute; top:13px; left:5%; right:5%; height:2px; background:var(--border); z-index:0;}
+.wf-step{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:8px; flex:1;}
+.wf-step-dot{width:26px; height:26px; border-radius:50%; background:var(--bg-2); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:800; color:var(--ink-faint);}
+.wf-step.done .wf-step-dot{background:var(--grad); border-color:transparent; color:#fff;}
+.wf-step.active .wf-step-dot{background:var(--surface); border-color:var(--pink); box-shadow:0 0 0 4px rgba(243,20,123,.18); color:var(--pink-light);}
+.wf-step-label{font-size:.66rem; color:var(--ink-faint); text-align:center; max-width:78px; line-height:1.3;}
+.wf-step.done .wf-step-label, .wf-step.active .wf-step-label{color:var(--ink); font-weight:700;}
+
+.wf-dash-section{margin-bottom:28px;}
+.wf-dash-section > h3{display:flex; align-items:center; gap:10px; font-size:1.1rem; margin-bottom:4px;}
+.wf-dash-section > h3 .ico.sm{width:34px; height:34px; border-radius:10px;}
+.wf-dash-section > p.wf-dash-hint{color:var(--ink-faint); font-size:.86rem; margin:0 0 14px;}
+
+@media (max-width:640px){
+  .wf-dash-header{padding:22px;}
+  .wf-stepper{min-width:480px;}
 }
