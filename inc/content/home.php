@@ -5,7 +5,6 @@ return <<<'HTML'
   <div class="hero-glow-1"></div><div class="hero-glow-2"></div>
   <div class="hero-grid">
     <div>
-      <div class="hero-brand"><span class="hero-brand-text">Women&rsquo;s Fight</span></div>
       <span class="eyebrow">ঢাকা &middot; ক্রিয়েটিভ, ডিজিটাল ও AI এজেন্সি</span>
       <h1>যে ব্র্যান্ড <span class="grad-text">আলাদা হতে ভয় পায় না,</span> তার জন্য সাহসী কৌশল।</h1>
       <p class="lead">Women&rsquo;s Fight একটি ফুল-সার্ভিস ক্রিয়েটিভ ও ডিজিটাল এজেন্সি — আমরা ব্র্যান্ড তৈরি করি, ক্যাম্পেইন চালাই, ভিডিও বানাই এবং AI টুল দিয়ে সিদ্ধান্ত নেওয়া সহজ করি।</p>
@@ -72,17 +71,6 @@ return <<<'HTML'
       <p>লোকেশন অনুযায়ী আপনার অ্যাডের সম্ভাব্য অডিয়েন্স মুহূর্তেই হিসাব করুন।</p>
       <span class="go">এখনই হিসাব করুন →</span>
     </a>
-  </div>
-</section>
-
-<section class="tight wrap">
-  <div class="cta-band">
-    <div>
-      <div class="ico" style="background:rgba(255,255,255,.18); box-shadow:none; margin-bottom:14px;"><svg><use href="#i-target"/></svg></div>
-      <h2>AI Agent দিয়ে ক্যাম্পেইনের আগেই অডিয়েন্স জেনে নিন</h2>
-      <p>লোকেশন, বয়স, লিঙ্গ ও প্ল্যাটফর্ম বেছে নিন — মুহূর্তেই সম্ভাব্য অ্যাড অডিয়েন্স দেখুন, একদম বিনামূল্যে, কোনো সাইনআপ ছাড়াই।</p>
-    </div>
-    <a class="btn btn-ghost" href="##LINK:ai-agent##">এখনই হিসাব করুন →</a>
   </div>
 </section>
 

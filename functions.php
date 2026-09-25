@@ -65,51 +65,6 @@ function womensfight_assets() {
 add_action( 'wp_enqueue_scripts', 'womensfight_assets' );
 
 /**
- * Handle the Contact page form submit — no plugin needed. Wired through
- * admin-post.php (WordPress's standard way to handle a public form POST),
- * emails the site admin, and bounces the visitor back to wherever they
- * submitted from with a ?womensfight_sent=1/0 flag that assets/js/main.js
- * reads to show a real success/error message.
- */
-function womensfight_handle_contact_submit() {
-	$redirect_to = wp_get_referer() ? wp_get_referer() : home_url( '/' );
-
-	// Honeypot: real visitors never fill this hidden field; most bots do.
-	if ( ! empty( $_POST['fwebsite'] ) ) {
-		wp_safe_redirect( esc_url_raw( add_query_arg( 'womensfight_sent', '1', $redirect_to ) ) );
-		exit;
-	}
-
-	$name    = isset( $_POST['fname'] ) ? sanitize_text_field( wp_unslash( $_POST['fname'] ) ) : '';
-	$company = isset( $_POST['fcompany'] ) ? sanitize_text_field( wp_unslash( $_POST['fcompany'] ) ) : '';
-	$service = isset( $_POST['fservice'] ) ? sanitize_text_field( wp_unslash( $_POST['fservice'] ) ) : '';
-	$mobile  = isset( $_POST['fmobile'] ) ? sanitize_text_field( wp_unslash( $_POST['fmobile'] ) ) : '';
-	$email   = isset( $_POST['femail'] ) ? sanitize_email( wp_unslash( $_POST['femail'] ) ) : '';
-	$message = isset( $_POST['fmsg'] ) ? sanitize_textarea_field( wp_unslash( $_POST['fmsg'] ) ) : '';
-
-	if ( '' === $name || '' === $mobile || ! is_email( $email ) ) {
-		wp_safe_redirect( esc_url_raw( add_query_arg( 'womensfight_sent', '0', $redirect_to ) ) );
-		exit;
-	}
-
-	$subject = sprintf( '[Women\'s Fight] নতুন কনসালটেশন রিকোয়েস্ট — %s', $name );
-	$body    = "নাম: {$name}\n"
-		. "কোম্পানি: {$company}\n"
-		. "সার্ভিস: {$service}\n"
-		. "মোবাইল: {$mobile}\n"
-		. "ইমেইল: {$email}\n\n"
-		. "বার্তা:\n{$message}\n";
-	$headers = array( 'Reply-To: ' . $name . ' <' . $email . '>' );
-
-	$sent = wp_mail( get_option( 'admin_email' ), $subject, $body, $headers );
-
-	wp_safe_redirect( esc_url_raw( add_query_arg( 'womensfight_sent', $sent ? '1' : '0', $redirect_to ) ) );
-	exit;
-}
-add_action( 'admin_post_nopriv_womensfight_contact_submit', 'womensfight_handle_contact_submit' );
-add_action( 'admin_post_womensfight_contact_submit', 'womensfight_handle_contact_submit' );
-
-/**
  * Look up a page's URL by its slug, safely. Returns '#' if the page
  * doesn't exist yet (e.g. setup hasn't run).
  */
@@ -194,7 +149,7 @@ function womensfight_page_definitions() {
 		'case-study'           => 'Case Study',
 		'portfolio'            => 'Portfolio',
 		'action-plan'          => 'Action Plan',
-		'package'              => 'Product',
+		'package'              => 'Package',
 		'ai-agent'             => 'AI Agent',
 		'contact'              => 'Contact Us',
 	);
@@ -216,7 +171,7 @@ function womensfight_menu_structure() {
 		array( 'title' => 'Case Study', 'slug' => 'case-study' ),
 		array( 'title' => 'Portfolio', 'slug' => 'portfolio' ),
 		array( 'title' => 'Action Plan', 'slug' => 'action-plan' ),
-		array( 'title' => 'Product', 'slug' => 'package' ),
+		array( 'title' => 'Package', 'slug' => 'package' ),
 		array( 'title' => 'AI Agent', 'slug' => 'ai-agent' ),
 		array( 'title' => 'Contact Us', 'slug' => 'contact' ),
 	);
@@ -456,165 +411,3 @@ function womensfight_maybe_run_manual_setup() {
 	exit;
 }
 add_action( 'admin_init', 'womensfight_maybe_run_manual_setup' );
-
-/**
- * Force a single page's content back to whatever inc/content/{slug}.php
- * currently returns, overwriting any live edits to that page. Unlike
- * womensfight_install_pages_and_menu() (which never touches a page that
- * already has content, to protect hand-made edits), this is an explicit,
- * deliberate "reset this page to the theme's latest design" action.
- */
-function womensfight_refresh_page_from_code( $slug ) {
-	$page = get_page_by_path( $slug );
-	if ( ! $page ) {
-		return array( 'ok' => false, 'reason' => 'no_page_found_for_slug' );
-	}
-
-	$content_file = get_template_directory() . '/inc/content/' . $slug . '.php';
-	if ( ! file_exists( $content_file ) ) {
-		return array( 'ok' => false, 'reason' => 'content_file_missing', 'path' => $content_file );
-	}
-	$content = include $content_file;
-
-	// Resolve ##LINK:slug## / ##LOGO_ICON## against every page that
-	// currently exists, the same way the installer does.
-	$slug_to_id = array();
-	foreach ( array_keys( womensfight_page_definitions() ) as $other_slug ) {
-		$other = get_page_by_path( $other_slug );
-		if ( $other ) {
-			$slug_to_id[ $other_slug ] = $other->ID;
-		}
-	}
-	$content = preg_replace_callback(
-		'/##LINK:([a-z0-9-]+)##/',
-		function ( $m ) use ( $slug_to_id ) {
-			return isset( $slug_to_id[ $m[1] ] ) ? esc_url( get_permalink( $slug_to_id[ $m[1] ] ) ) : '#';
-		},
-		$content
-	);
-	$content = str_replace( '##LOGO_ICON##', esc_url( get_template_directory_uri() . '/assets/img/logo-icon.png' ), $content );
-
-	$update_result = wp_update_post(
-		array(
-			'ID'           => $page->ID,
-			'post_content' => $content,
-			'post_status'  => 'publish',
-		),
-		true // return WP_Error on failure instead of 0
-	);
-
-	update_post_meta( $page->ID, '_elementor_data', wp_slash( wp_json_encode( womensfight_elementor_widget_data( $content ) ) ) );
-	update_post_meta( $page->ID, '_elementor_edit_mode', 'builder' );
-	update_post_meta( $page->ID, '_elementor_template_type', 'wp-page' );
-	update_post_meta( $page->ID, '_elementor_version', '3.7.0' );
-
-	// Re-fetch straight from the database (bypassing any object cache) to
-	// see what actually landed, not just what we attempted to write.
-	clean_post_cache( $page->ID );
-	$refetched      = get_post( $page->ID );
-	$stored_content = $refetched ? $refetched->post_content : '';
-
-	return array(
-		'ok'                  => ! is_wp_error( $update_result ),
-		'error'               => is_wp_error( $update_result ) ? $update_result->get_error_message() : '',
-		'page_id'             => $page->ID,
-		'attempted_length'    => strlen( $content ),
-		'stored_length'       => strlen( $stored_content ),
-		'stored_has_wordmark' => false !== strpos( $stored_content, 'hero-brand-text' ),
-		'stored_has_svg'      => false !== strpos( $stored_content, '<svg' ),
-		'stored_snippet'      => mb_substr( wp_strip_all_tags( $stored_content ), 0, 120 ),
-	);
-}
-
-/**
- * Admin notice + one-click action: reset any page to the theme's current
- * inc/content/{slug}.php. Shown on the Themes screen next to the general
- * sync notice. This deliberately overwrites that page's content, so it's
- * a separate, explicitly-labelled form rather than part of the safe
- * general sync (which never touches a page that already has content).
- */
-function womensfight_refresh_page_notice() {
-	if ( ! current_user_can( 'manage_options' ) || ! get_option( 'womensfight_setup_done' ) ) {
-		return;
-	}
-	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-	if ( ! $screen || 'themes' !== $screen->id ) {
-		return;
-	}
-	echo '<div class="notice notice-warning"><p><strong>Women\'s Fight থিম:</strong> কোনো পেজে থিমের সর্বশেষ কোড (inc/content/) থেকে ডিজাইন/কনটেন্ট আনতে চাইলে পেজ বেছে নিয়ে রিফ্রেশ করুন — ';
-	echo 'সতর্কতা: এটা সেই পেজে wp-admin থেকে করা যেকোনো ম্যানুয়াল এডিট মুছে দেবে।</p>';
-	echo '<form method="get" action="' . esc_url( admin_url( 'themes.php' ) ) . '" style="display:flex;gap:8px;align-items:center;">';
-	wp_nonce_field( 'womensfight_refresh_page', '_wpnonce', true, true );
-	echo '<select name="womensfight_refresh_slug">';
-	foreach ( womensfight_page_definitions() as $slug => $title ) {
-		echo '<option value="' . esc_attr( $slug ) . '">' . esc_html( $title . ' (' . $slug . ')' ) . '</option>';
-	}
-	echo '</select> ';
-	echo '<button type="submit" class="button">এই পেজ কোড থেকে রিফ্রেশ করুন</button>';
-	echo '</form></div>';
-}
-add_action( 'admin_notices', 'womensfight_refresh_page_notice' );
-
-function womensfight_maybe_refresh_page() {
-	if ( ! isset( $_GET['womensfight_refresh_slug'] ) || ! current_user_can( 'manage_options' ) ) {
-		return;
-	}
-	check_admin_referer( 'womensfight_refresh_page' );
-
-	$slug = sanitize_title( wp_unslash( $_GET['womensfight_refresh_slug'] ) );
-	if ( ! array_key_exists( $slug, womensfight_page_definitions() ) ) {
-		wp_safe_redirect( admin_url( 'themes.php' ) );
-		exit;
-	}
-
-	$result = womensfight_refresh_page_from_code( $slug );
-	set_transient( 'womensfight_refresh_result', $result, MINUTE_IN_SECONDS );
-	set_transient( 'womensfight_refresh_slug', $slug, MINUTE_IN_SECONDS );
-	wp_safe_redirect( admin_url( 'themes.php?womensfight_refreshed=1' ) );
-	exit;
-}
-add_action( 'admin_init', 'womensfight_maybe_refresh_page' );
-
-/**
- * Shows exactly what the refresh action actually did — not just "it ran"
- * but what ended up stored in the database once re-read fresh, so a
- * mismatch (a caching layer, a security plugin stripping tags, etc.) is
- * visible immediately instead of guessed at.
- */
-function womensfight_refresh_done_notice() {
-	if ( ! current_user_can( 'manage_options' ) || ! isset( $_GET['womensfight_refreshed'] ) ) {
-		return;
-	}
-	$r    = get_transient( 'womensfight_refresh_result' );
-	$slug = get_transient( 'womensfight_refresh_slug' );
-	delete_transient( 'womensfight_refresh_result' );
-	delete_transient( 'womensfight_refresh_slug' );
-
-	if ( ! is_array( $r ) ) {
-		echo '<div class="notice notice-error"><p><strong>Women\'s Fight থিম:</strong> রিফ্রেশ রেজাল্ট পাওয়া যায়নি (transient ফেল করেছে) — আবার চেষ্টা করুন।</p></div>';
-		return;
-	}
-	if ( ! $r['ok'] ) {
-		echo '<div class="notice notice-error"><p><strong>Women\'s Fight থিম:</strong> রিফ্রেশ ব্যর্থ হয়েছে। কারণ: <code>' . esc_html( $r['reason'] ?? $r['error'] ?? 'unknown' ) . '</code></p></div>';
-		return;
-	}
-
-	$class = ( $r['attempted_length'] === $r['stored_length'] ) ? 'notice-success' : 'notice-error';
-
-	echo '<div class="notice ' . esc_attr( $class ) . ' is-dismissible"><p><strong>Women\'s Fight থিম — রিফ্রেশ ডায়াগনস্টিক (' . esc_html( $slug ? $slug : '?' ) . '):</strong></p>';
-	echo '<ul style="list-style:disc;margin-left:20px;">';
-	echo '<li>Page ID: ' . (int) $r['page_id'] . '</li>';
-	echo '<li>যা লিখতে চেয়েছি (attempted): ' . (int) $r['attempted_length'] . ' bytes</li>';
-	echo '<li>ডাটাবেসে আসলে যা আছে (stored, fresh re-read): ' . (int) $r['stored_length'] . ' bytes</li>';
-	if ( 'home' === $slug ) {
-		echo '<li>Stored content-এ wordmark class আছে কিনা: ' . ( $r['stored_has_wordmark'] ? 'হ্যাঁ' : '<strong>না</strong>' ) . '</li>';
-	}
-	echo '<li>Stored content-এ &lt;svg&gt; টিকে আছে কিনা: ' . ( $r['stored_has_svg'] ? 'হ্যাঁ' : '<strong>না (KSES filter সন্দেহজনক)</strong>' ) . '</li>';
-	echo '<li>Stored content-এর প্রথম অংশ (প্লেইন টেক্সট): <code>' . esc_html( $r['stored_snippet'] ) . '</code></li>';
-	echo '</ul>';
-	if ( 'notice-error' === $class ) {
-		echo '<p>এই স্ক্রিনশটটা Claude-কে দিন — এখান থেকেই আসল কারণ বোঝা যাবে।</p>';
-	}
-	echo '</div>';
-}
-add_action( 'admin_notices', 'womensfight_refresh_done_notice' );

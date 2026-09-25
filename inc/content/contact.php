@@ -26,9 +26,7 @@ return <<<'HTML'
         <span><svg style="display:inline;width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2;vertical-align:-3px;margin-right:6px;"><use href="#i-phone"/></svg>+৮৮০ XXX-XXXXXX</span>
       </div>
     </div>
-    <form class="consult-form" id="consultForm" method="post" action="/wp-admin/admin-post.php">
-      <input type="hidden" name="action" value="womensfight_contact_submit">
-      <input type="text" name="fwebsite" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;">
+    <form class="consult-form" id="consultForm" method="post">
       <div class="frow">
         <div><label for="fname">নাম</label><input id="fname" name="fname" required placeholder="আপনার পূর্ণ নাম"></div>
         <div><label for="fcompany">কোম্পানির নাম</label><input id="fcompany" name="fcompany" placeholder="আপনার প্রতিষ্ঠানের নাম"></div>
@@ -50,7 +48,7 @@ return <<<'HTML'
       <div><label for="femail">ইমেইল</label><input id="femail" name="femail" type="email" required placeholder="you@example.com"></div>
       <div><label for="fmsg">আপনার প্রজেক্ট সম্পর্কে বলুন</label><textarea id="fmsg" name="fmsg" placeholder="আপনি কী অর্জন করতে চান?"></textarea></div>
       <button class="btn btn-primary" type="submit">কনসালটেশন রিকোয়েস্ট করুন</button>
-      <p class="form-msg" id="formMsg"></p>
+      <p class="form-msg" id="formMsg">ধন্যবাদ — এই ফর্মটি এখনো কোনো ইমেইল বা CRM-এর সাথে যুক্ত নয়। WordPress-এ Contact Form 7 বা WPForms প্লাগইন বসিয়ে এই ফর্মটিকে কার্যকর করে নিন।</p>
     </form>
   </div>
 </section>

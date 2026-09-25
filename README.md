@@ -3,13 +3,6 @@
 A dark, Bangla, multi-page agency theme. Content lives in real WordPress
 Pages, so it can be edited two ways — pick whichever is easier for you.
 
-This repository's root **is** the theme folder — Hostinger's Git
-auto-deploy (hPanel → Advanced → Git) clones this repo straight into
-`wp-content/themes/<folder>`, so every push to `main` updates the live
-site automatically, no zip upload needed. The `docs/` folder is a
-separate, unrelated static mirror of the home page served by GitHub
-Pages — it isn't part of the theme.
-
 ## First activation
 
 1. Upload and activate this theme (`Appearance → Themes`).

@@ -3,7 +3,7 @@ Theme Name: Women's Fight Agency
 Theme URI: https://womensfight.agency
 Author: Women's Fight
 Description: Dark, vivid multi-page agency theme for Women's Fight, built around the brand's real pink-magenta-to-blue logo mark, fully in Bangla, with real editable WordPress Pages (Block Editor and Elementor ready out of the box) and an interactive AI Agent audience-estimator tool.
-Version: 3.3
+Version: 3.1
 Requires at least: 5.9
 Requires PHP: 7.4
 Requires Plugins: elementor
@@ -101,20 +101,6 @@ header.nav{position:sticky; top:0; z-index:60; background:rgba(10,8,23,.82); bac
 .hero-glow-1{width:480px; height:480px; background:rgba(243,20,123,.35); top:-200px; right:-140px;}
 .hero-glow-2{width:420px; height:420px; background:rgba(0,191,253,.28); bottom:-220px; left:-160px;}
 .hero-grid{position:relative; z-index:1; display:grid; grid-template-columns:1.1fr .9fr; gap:56px; align-items:center;}
-.hero-brand{margin-bottom:16px;}
-.hero-brand-text{
-  display:inline-block;
-  font-family:'Noto Serif Bengali',Georgia,serif;
-  font-size:clamp(2.4rem,5.4vw,4rem);
-  font-weight:700;
-  letter-spacing:.015em;
-  line-height:1.08;
-  background:var(--grad-text);
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-  filter:drop-shadow(0 10px 30px rgba(243,20,123,.4));
-}
 .hero h1{font-size:clamp(2.2rem,4.6vw,3.5rem); line-height:1.24; font-weight:700;}
 .hero p.lead{font-size:1.1rem; max-width:48ch; margin-top:18px;}
 .hero-ctas{display:flex; flex-wrap:wrap; gap:14px; margin-top:30px;}
@@ -198,7 +184,7 @@ section.alt{background:var(--bg-2); border-block:1px solid var(--border);}
 .faq details[open] summary::after{content:"−";}
 .faq p{margin-top:12px; font-size:.9rem;}
 
-.pkg-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:22px;}
+.pkg-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
 .pkg{background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:32px; display:flex; flex-direction:column; gap:16px; position:relative;}
 .pkg.feat-pkg{border:2px solid var(--pink); box-shadow:var(--glow-pink);}
 .pkg-badge{position:absolute; top:-14px; right:26px; background:var(--grad); color:#fff; font-size:.72rem; font-weight:800; padding:6px 15px; border-radius:999px;}
@@ -209,17 +195,6 @@ section.alt{background:var(--bg-2); border-block:1px solid var(--border);}
 .pkg li{display:flex; gap:10px; align-items:flex-start; font-size:.88rem; color:var(--ink-soft);}
 .pkg li svg{width:17px; height:17px; stroke:var(--blue-light); flex:none; margin-top:3px;}
 .note{font-size:.84rem; color:var(--ink-faint); margin-top:-10px;}
-
-/* SaaS product catalog (Package/product page) */
-.prod-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:18px;}
-.prod-card{background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:24px 20px; display:flex; flex-direction:column; gap:12px; position:relative; text-align:left; transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;}
-.prod-card:hover{transform:translateY(-4px); border-color:var(--pink); box-shadow:var(--shadow);}
-.prod-badge{position:absolute; top:-12px; right:16px; background:var(--grad); color:#fff; font-size:.62rem; font-weight:800; padding:5px 12px; border-radius:999px; letter-spacing:.02em;}
-.prod-card h3{font-size:.98rem; font-weight:700;}
-.prod-card p{font-size:.82rem;}
-.prod-price{font-family:'Noto Serif Bengali',serif; font-size:1.1rem; font-weight:700; color:var(--pink-light); margin-top:auto;}
-.prod-price span{font-size:.68rem; color:var(--ink-faint); font-family:'Hind Siliguri',sans-serif; font-weight:600;}
-.prod-card .btn{padding:10px 16px; font-size:.82rem;}
 
 .cs-grid, .pf-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px;}
 .cs-card{background:var(--surface); border:1px solid var(--border); border-radius:22px; overflow:hidden; display:flex; flex-direction:column;}
@@ -305,7 +280,6 @@ footer.site-footer{background:var(--bg-2); color:var(--ink); margin-top:40px; bo
   .hero-grid{grid-template-columns:1fr;} .hero-visual{max-width:340px; margin-inline:auto; order:-1;}
   .benefits{grid-template-columns:repeat(2,1fr);}
   .svc-grid, .feat-grid, .pkg-grid, .testi-row, .stat-row{grid-template-columns:1fr 1fr;}
-  .prod-grid{grid-template-columns:repeat(3,1fr);}
   .cs-grid, .pf-grid{grid-template-columns:1fr 1fr;}
   .consult, .calc-wrap{grid-template-columns:1fr;}
   .calc-result{position:static;}
@@ -319,7 +293,6 @@ footer.site-footer{background:var(--bg-2); color:var(--ink); margin-top:40px; bo
 }
 @media (max-width:640px){
   .benefits, .svc-grid, .feat-grid, .pkg-grid, .testi-row, .cs-grid, .pf-grid, .stat-row{grid-template-columns:1fr;}
-  .prod-grid{grid-template-columns:1fr 1fr;}
   .frow{grid-template-columns:1fr;}
   .foot-top{grid-template-columns:1fr 1fr;}
   .tl-step{grid-template-columns:44px 1fr;}
