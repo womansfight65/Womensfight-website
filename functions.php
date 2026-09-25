@@ -706,6 +706,13 @@ function womensfight_render_page_sync_screen() {
  * confirmation page load — never on a mere button click.
  * ===================================================================== */
 
+/**
+ * wf_lead is legacy — Lead Form submissions now go straight into the
+ * Projects pipeline (see womensfight_handle_customer_form_submit()).
+ * Kept registered (show_ui/show_in_menu off) purely so old historical
+ * entries stay valid in the database instead of becoming orphaned;
+ * nothing writes to it anymore and it no longer shows in wp-admin.
+ */
 function womensfight_register_lead_cpt() {
 	register_post_type(
 		'wf_lead',
@@ -717,8 +724,8 @@ function womensfight_register_lead_cpt() {
 				'all_items'     => 'All Submissions',
 			),
 			'public'          => false,
-			'show_ui'         => true,
-			'show_in_menu'    => true,
+			'show_ui'         => false,
+			'show_in_menu'    => false,
 			'menu_icon'       => 'dashicons-clipboard',
 			'menu_position'   => 26,
 			'supports'        => array( 'title' ),
@@ -1493,9 +1500,9 @@ function womensfight_register_project_cpt() {
 		'wf_project',
 		array(
 			'labels'          => array(
-				'name'          => 'Projects',
-				'singular_name' => 'Project',
-				'menu_name'     => 'Projects',
+				'name'          => 'Client Projects',
+				'singular_name' => 'Client Project',
+				'menu_name'     => 'Client Projects',
 				'all_items'     => 'All Projects',
 			),
 			'public'          => false,
