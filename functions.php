@@ -385,10 +385,12 @@ function womensfight_admin_setup_notice() {
 		return;
 	}
 
-	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	$screen        = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	$page_sync_url = admin_url( 'themes.php?page=womensfight-page-sync' );
 	if ( $screen && 'themes' === $screen->id ) {
-		echo '<div class="notice notice-info"><p><strong>Women\'s Fight থিম:</strong> কোনো পেজ (যেমন হোম) ফাঁকা দেখালে ';
-		echo '<a href="' . esc_url( $url ) . '">এখানে ক্লিক করে পেজ ও মেনু আবার সিঙ্ক করুন</a> — এটা নিরাপদ, বিদ্যমান কনটেন্ট মুছবে না।</p></div>';
+		echo '<div class="notice notice-info"><p><strong>Women\'s Fight থিম:</strong> কোনো একটা পেজ (যেমন হোম) ভাঙা বা ফাঁকা দেখালে ';
+		echo '<a href="' . esc_url( $page_sync_url ) . '">Page Sync পেজে গিয়ে শুধু ওই পেজটাই আলাদাভাবে সিঙ্ক করুন</a> — বাকি পেজ অক্ষত থাকবে। অথবা ';
+		echo '<a href="' . esc_url( $url ) . '">সবগুলো একসাথে সিঙ্ক করতে এখানে ক্লিক করুন</a> — এটাও নিরাপদ, বিদ্যমান কনটেন্ট মুছবে না।</p></div>';
 	}
 }
 add_action( 'admin_notices', 'womensfight_admin_setup_notice' );
@@ -428,3 +430,158 @@ function womensfight_maybe_run_manual_setup() {
 	exit;
 }
 add_action( 'admin_init', 'womensfight_maybe_run_manual_setup' );
+
+/* ---------------------------------------------------------------------
+ * Per-page sync — resets a single page back to its theme default
+ * content, without touching any other page. Unlike
+ * womensfight_install_pages_and_menu() (which only fills pages that are
+ * still empty), this always overwrites the target page's content,
+ * because "sync this page" is an explicit request to reset a page that
+ * currently looks broken or wrong.
+ * ------------------------------------------------------------------- */
+function womensfight_sync_one_page( $slug ) {
+	$definitions = womensfight_page_definitions();
+	if ( ! isset( $definitions[ $slug ] ) ) {
+		return false;
+	}
+
+	$content_file = get_template_directory() . '/inc/content/' . $slug . '.php';
+	$content      = file_exists( $content_file ) ? include $content_file : '';
+	if ( '' === $content ) {
+		return false;
+	}
+
+	// Resolve ##LINK:slug## tokens against every other page that already
+	// exists, so this page's internal links keep working even though only
+	// this one page is being resynced.
+	$slug_to_id = array();
+	foreach ( $definitions as $s => $t ) {
+		$p = get_page_by_path( $s );
+		if ( $p ) {
+			$slug_to_id[ $s ] = $p->ID;
+		}
+	}
+
+	$existing = get_page_by_path( $slug );
+	if ( $existing ) {
+		$id = $existing->ID;
+	} else {
+		$id = wp_insert_post(
+			array(
+				'post_title'  => $definitions[ $slug ],
+				'post_name'   => $slug,
+				'post_status' => 'publish',
+				'post_type'   => 'page',
+			)
+		);
+		if ( ! $id || is_wp_error( $id ) ) {
+			return false;
+		}
+	}
+	$slug_to_id[ $slug ] = $id;
+
+	$logo_icon   = esc_url( get_template_directory_uri() . '/assets/img/logo-icon.png' );
+	$new_content = preg_replace_callback(
+		'/##LINK:([a-z0-9-]+)##/',
+		function ( $m ) use ( $slug_to_id ) {
+			return isset( $slug_to_id[ $m[1] ] ) ? esc_url( get_permalink( $slug_to_id[ $m[1] ] ) ) : '#';
+		},
+		$content
+	);
+	$new_content = str_replace( '##LOGO_ICON##', $logo_icon, $new_content );
+
+	wp_update_post(
+		array(
+			'ID'           => $id,
+			'post_title'   => $definitions[ $slug ],
+			'post_content' => $new_content,
+			'post_status'  => 'publish',
+		)
+	);
+
+	// Elementor data keeps its usual safety check (only filled if empty),
+	// so real Elementor work on this page is never wiped by a sync.
+	womensfight_save_elementor_data( $id, $new_content );
+
+	if ( 'home' === $slug ) {
+		update_option( 'show_on_front', 'page' );
+		update_option( 'page_on_front', $id );
+	}
+
+	return $id;
+}
+
+function womensfight_maybe_run_single_page_sync() {
+	if ( ! isset( $_GET['womensfight_sync_slug'] ) || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$slug = sanitize_title( wp_unslash( $_GET['womensfight_sync_slug'] ) );
+	check_admin_referer( 'womensfight_sync_' . $slug );
+	womensfight_sync_one_page( $slug );
+	wp_safe_redirect( admin_url( 'themes.php?page=womensfight-page-sync&womensfight_synced=' . $slug ) );
+	exit;
+}
+add_action( 'admin_init', 'womensfight_maybe_run_single_page_sync' );
+
+function womensfight_register_page_sync_screen() {
+	add_theme_page(
+		'Women\'s Fight — পেজ সিঙ্ক',
+		'Page Sync',
+		'manage_options',
+		'womensfight-page-sync',
+		'womensfight_render_page_sync_screen'
+	);
+}
+add_action( 'admin_menu', 'womensfight_register_page_sync_screen' );
+
+function womensfight_render_page_sync_screen() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	if ( ! empty( $_GET['womensfight_synced'] ) ) {
+		$synced_slug  = sanitize_title( wp_unslash( $_GET['womensfight_synced'] ) );
+		$definitions  = womensfight_page_definitions();
+		$synced_title = isset( $definitions[ $synced_slug ] ) ? $definitions[ $synced_slug ] : $synced_slug;
+		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $synced_title ) . ' পেজ সফলভাবে সিঙ্ক হয়েছে।</p></div>';
+	}
+
+	echo '<div class="wrap">';
+	echo '<h1>Women\'s Fight — পেজ সিঙ্ক</h1>';
+	echo '<p>নিচের যেকোনো একটা পেজের পাশে <strong>এই পেজ সিঙ্ক করুন</strong> চাপলে শুধু <em>সেই একটা পেজই</em> থিমের ডিফল্ট ডিজাইন দিয়ে রিসেট হবে — বাকি সব পেজ অপরিবর্তিত থাকবে। কোনো একটা পেজ ভাঙা বা ফাঁকা দেখালে এটা ব্যবহার করুন।</p>';
+
+	echo '<table class="widefat striped" style="max-width:900px;"><thead><tr><th>পেজ</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead><tbody>';
+
+	foreach ( womensfight_page_definitions() as $slug => $title ) {
+		$existing = get_page_by_path( $slug );
+
+		if ( $existing ) {
+			$status = 'publish' === $existing->post_status ? 'প্রকাশিত' : 'অপ্রকাশিত';
+			if ( '' === trim( wp_strip_all_tags( $existing->post_content ) ) ) {
+				$status .= ' — ফাঁকা';
+			}
+			$links = ' &middot; <a href="' . esc_url( get_permalink( $existing->ID ) ) . '" target="_blank" rel="noopener">দেখুন</a>' .
+				' &middot; <a href="' . esc_url( get_edit_post_link( $existing->ID ) ) . '">এডিট</a>';
+		} else {
+			$status = 'তৈরি হয়নি';
+			$links  = '';
+		}
+
+		$sync_url = wp_nonce_url(
+			admin_url( 'themes.php?page=womensfight-page-sync&womensfight_sync_slug=' . $slug ),
+			'womensfight_sync_' . $slug
+		);
+
+		echo '<tr>';
+		echo '<td><strong>' . esc_html( $title ) . '</strong><br><code>/' . esc_html( $slug ) . '/</code></td>';
+		echo '<td>' . esc_html( $status ) . $links . '</td>';
+		echo '<td><a href="' . esc_url( $sync_url ) . '" class="button button-secondary" onclick="return confirm(&#039;এই পেজটা থিমের মূল ডিজাইন দিয়ে রিসেট হবে, বর্তমান কনটেন্ট মুছে যাবে। এগিয়ে যাবেন?&#039;);">এই পেজ সিঙ্ক করুন</a></td>';
+		echo '</tr>';
+	}
+
+	echo '</tbody></table>';
+
+	$sync_all_url = wp_nonce_url( admin_url( 'themes.php?womensfight_run_setup=1' ), 'womensfight_run_setup' );
+	echo '<p style="margin-top:24px;"><a href="' . esc_url( $sync_all_url ) . '" class="button button-primary" onclick="return confirm(&#039;সব পেজ + মেনু একসাথে সিঙ্ক হবে (ফাঁকা পেজগুলো ভরা হবে)। এগিয়ে যাবেন?&#039;);">সব পেজ + মেনু একসাথে সিঙ্ক করুন</a></p>';
+	echo '</div>';
+}
