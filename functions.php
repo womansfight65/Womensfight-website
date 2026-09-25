@@ -91,6 +91,22 @@ function womensfight_page_url( $slug ) {
 }
 
 /**
+ * URL for a file in assets/img, with a cache-busting ?v= query string
+ * based on the file's last-modified time. Without this, browsers and
+ * hosting-level caches (e.g. Hostinger/LiteSpeed) can keep serving an
+ * old cached copy of an image after its content changes on disk, since
+ * the filename itself stays the same from one push to the next.
+ */
+function womensfight_asset_url( $filename ) {
+	$path = get_template_directory() . '/assets/img/' . $filename;
+	$url  = get_template_directory_uri() . '/assets/img/' . $filename;
+	if ( file_exists( $path ) ) {
+		$url .= '?v=' . filemtime( $path );
+	}
+	return $url;
+}
+
+/**
  * Build the Elementor element tree for a page: one full-width section,
  * one 100%-width column, one "HTML" widget holding the page's real
  * markup. This is the same shape Elementor itself would save, so the
@@ -208,7 +224,7 @@ function womensfight_install_pages_and_menu() {
 
 	$slug_to_id = array();
 	$logo_icon  = esc_url( get_template_directory_uri() . '/assets/img/logo-icon.png' );
-	$hero_img   = esc_url( get_template_directory_uri() . '/assets/img/hero-team.webp' );
+	$hero_img   = esc_url( womensfight_asset_url( 'hero-team.webp' ) );
 
 	foreach ( womensfight_page_definitions() as $slug => $title ) {
 		$existing = get_page_by_path( $slug );
@@ -489,7 +505,7 @@ function womensfight_sync_one_page( $slug ) {
 	$slug_to_id[ $slug ] = $id;
 
 	$logo_icon   = esc_url( get_template_directory_uri() . '/assets/img/logo-icon.png' );
-	$hero_img    = esc_url( get_template_directory_uri() . '/assets/img/hero-team.webp' );
+	$hero_img    = esc_url( womensfight_asset_url( 'hero-team.webp' ) );
 	$new_content = preg_replace_callback(
 		'/##LINK:([a-z0-9-]+)##/',
 		function ( $m ) use ( $slug_to_id ) {
