@@ -1,2 +1,2 @@
 Auto-deploy test — pushed via Claude Code
-Timestamp: 2026-09-25
+Timestamp: 2026-09-25 (verify #2, after theme path fix)
