@@ -3,7 +3,7 @@ Theme Name: Women's Fight Agency
 Theme URI: https://womensfight.agency
 Author: Women's Fight
 Description: Dark, vivid multi-page agency theme for Women's Fight, built around the brand's real pink-magenta-to-blue logo mark, fully in Bangla, with real editable WordPress Pages (Block Editor and Elementor ready out of the box) and an interactive AI Agent audience-estimator tool.
-Version: 3.8
+Version: 3.9
 Requires at least: 5.9
 Requires PHP: 7.4
 Requires Plugins: elementor
@@ -161,12 +161,16 @@ section.alt{background:var(--bg-2); border-block:1px solid var(--border);}
 .stat-row b{display:block; font-family:'Noto Serif Bengali',serif; font-size:1.9rem; font-weight:700; background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent;}
 .stat-row span{font-size:.82rem; color:var(--ink-faint);}
 
-.cta-band{background:var(--grad); border-radius:var(--radius-lg); padding:46px; display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; color:#fff; position:relative; overflow:hidden;}
+.cta-band{background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:46px; display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; color:#fff; position:relative; overflow:hidden;}
+.cta-band::before, .cta-band::after{content:""; position:absolute; border-radius:50%; filter:blur(90px); z-index:0;}
+.cta-band::before{width:340px; height:340px; background:rgba(243,20,123,.28); top:-160px; left:-120px;}
+.cta-band::after{width:300px; height:300px; background:rgba(0,191,253,.22); bottom:-160px; right:-100px;}
+.cta-band > *{position:relative; z-index:1;}
 .cta-band h2{color:#fff; font-size:1.65rem;}
-.cta-band p{color:rgba(255,255,255,.9); margin-top:8px;}
-.cta-band .btn-ghost{background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.45); color:#fff;}
-.cta-band .btn-ghost:hover{border-color:#fff; background:rgba(255,255,255,.22);}
-.cta-band .btn-primary{background:#fff; color:var(--purple); box-shadow:0 14px 30px -10px rgba(0,0,0,.35);}
+.cta-band p{color:rgba(255,255,255,.78); margin-top:8px;}
+.cta-band .btn-ghost{background:rgba(255,255,255,.08); border-color:var(--border); color:#fff;}
+.cta-band .btn-ghost:hover{border-color:var(--pink); background:rgba(255,255,255,.14);}
+.cta-band .btn-primary{background:var(--grad); color:#fff;}
 
 .timeline{display:flex; flex-direction:column; gap:0;}
 .tl-step{display:grid; grid-template-columns:60px 1fr; gap:24px; position:relative; padding-bottom:36px;}
