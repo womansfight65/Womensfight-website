@@ -1,6 +1,20 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) { exit; }
-return <<<'HTML'
+/**
+ * Dedicated template for the Contact page (slug: contact).
+ *
+ * The consult-side info panel stays static here, but the form itself is
+ * rendered by calling womensfight_render_customer_form() directly (the
+ * same function used on the Lead Form page) instead of the old static,
+ * unwired form — so submissions here now save to Customer Submissions
+ * in wp-admin too, with a fresh security nonce on every request instead
+ * of one baked into stored page content.
+ */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+get_header();
+?>
+<main>
 <div class="page-header wrap"><div class="inner">
   <div class="ico"><svg><use href="#i-mail"/></svg></div>
   <span class="eyebrow">যোগাযোগ</span>
@@ -32,30 +46,9 @@ return <<<'HTML'
         <a href="https://www.youtube.com/@womensfight" aria-label="YouTube" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="4"></rect><path d="M11 10.2 14.5 12 11 13.8Z" fill="currentColor" stroke="none"></path></svg></a>
       </div>
     </div>
-    <form class="consult-form" id="consultForm" method="post">
-      <div class="frow">
-        <div><label for="fname">নাম</label><input id="fname" name="fname" required placeholder="আপনার পূর্ণ নাম"></div>
-        <div><label for="fcompany">কোম্পানির নাম</label><input id="fcompany" name="fcompany" placeholder="আপনার প্রতিষ্ঠানের নাম"></div>
-      </div>
-      <div class="frow">
-        <div><label for="fservice">কোন সার্ভিস প্রয়োজন?</label>
-          <select id="fservice" name="fservice">
-            <option>ডিজিটাল মার্কেটিং</option>
-            <option>ওয়েবসাইট ডেভেলপমেন্ট</option>
-            <option>ল্যান্ডিং পেজ</option>
-            <option>ভিডিও প্রোডাকশন</option>
-            <option>AI Agency</option>
-            <option>AI Agent (অডিয়েন্স ক্যালকুলেটর)</option>
-            <option>অন্যান্য</option>
-          </select>
-        </div>
-        <div><label for="fmobile">মোবাইল নম্বর</label><input id="fmobile" name="fmobile" type="tel" required placeholder="+৮৮০ ১XXX-XXXXXX"></div>
-      </div>
-      <div><label for="femail">ইমেইল</label><input id="femail" name="femail" type="email" required placeholder="you@example.com"></div>
-      <div><label for="fmsg">আপনার প্রজেক্ট সম্পর্কে বলুন</label><textarea id="fmsg" name="fmsg" placeholder="আপনি কী অর্জন করতে চান?"></textarea></div>
-      <button class="btn btn-primary" type="submit">কনসালটেশন রিকোয়েস্ট করুন</button>
-      <p class="form-msg" id="formMsg">ধন্যবাদ — এই ফর্মটি এখনো কোনো ইমেইল বা CRM-এর সাথে যুক্ত নয়। WordPress-এ Contact Form 7 বা WPForms প্লাগইন বসিয়ে এই ফর্মটিকে কার্যকর করে নিন।</p>
-    </form>
+    <?php echo womensfight_render_customer_form(); ?>
   </div>
 </section>
-HTML;
+</main>
+<?php
+get_footer();

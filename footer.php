@@ -48,7 +48,7 @@ $logo_full = esc_url( get_template_directory_uri() . '/assets/img/logo-full.png'
       <h4>যোগাযোগ</h4>
       <span style="display:block; margin-bottom:12px; color:var(--ink-soft); font-size:.9rem;">City Plaza, Lift-3, Ramganj, Lakshmipur</span>
       <a href="mailto:Womansfight65@gmail.com">Womansfight65@gmail.com</a>
-      <a href="tel:+8801748133740">+৮৮০ ১৭৪৮-১৩৩৭৪০</a>
+      <a href="tel:+8801748133740">+880 1748-133740</a>
     </div>
   </div>
   <div class="wrap foot-bottom">
