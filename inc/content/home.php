@@ -81,11 +81,11 @@ return <<<'HTML'
       <h2>আমাদের সাথে কাজ করলে যা পাবেন</h2>
     </div>
     <div class="benefits">
-      <div class="benefit"><div class="ico sm"><svg><use href="#i-layers"/></svg></div><h3>বিস্তৃত অভিজ্ঞতা</h3><p>স্ট্র্যাটেজি, ডিজাইন, মিডিয়া বায়িং ও প্রোডাকশনে দক্ষ টিম।</p></div>
-      <div class="benefit"><div class="ico sm"><svg><use href="#i-shield"/></svg></div><h3>প্রমাণিত পদ্ধতি</h3><p>বহু ক্যাম্পেইনে যাচাই করা কৌশল ও কর্মপদ্ধতি অনুসরণ করি।</p></div>
-      <div class="benefit"><div class="ico sm"><svg><use href="#i-bulb"/></svg></div><h3>ইনোভেটিভ স্ট্র্যাটেজি</h3><p>AI ও নতুন ফরম্যাট নিয়ে আগেভাগে পরীক্ষা করি।</p></div>
-      <div class="benefit"><div class="ico sm"><svg><use href="#i-target"/></svg></div><h3>পার্সোনালাইজড সল্যুশন</h3><p>প্রতিটি পরিকল্পনা আপনার লক্ষ্য অনুযায়ী তৈরি, কোনো টেমপ্লেট নয়।</p></div>
-      <div class="benefit"><div class="ico sm"><svg><use href="#i-heart"/></svg></div><h3>ক্লায়েন্ট-কেন্দ্রিক সেবা</h3><p>একজন নির্দিষ্ট লিড, স্বচ্ছ রিপোর্টিং, কোনো লুকোচুরি নয়।</p></div>
+      <div class="benefit"><div class="ico sm"><svg><use href="#i-layers"/></svg></div><h3>৩৬০° গ্রোথ পার্টনার</h3><p>স্ট্র্যাটেজি থেকে প্রোডাকশন — এক ছাদের নিচে, একাধিক ভেন্ডরের ঝামেলা ছাড়াই।</p></div>
+      <div class="benefit"><div class="ico sm"><svg><use href="#i-shield"/></svg></div><h3>রেজাল্ট, অনুমান নয়</h3><p>প্রতিটি ক্যাম্পেইন ডেটা দিয়ে চালাই — প্রতিটি টাকার ROI আমরা ট্র্যাক করি, আপনার জন্য।</p></div>
+      <div class="benefit"><div class="ico sm"><svg><use href="#i-bulb"/></svg></div><h3>AI-প্রথম এজেন্সি</h3><p>প্রতিযোগীরা যা এখনো টেস্ট করছে না, সেই টুল ও ফরম্যাট আমরা আজই ব্যবহার করি।</p></div>
+      <div class="benefit"><div class="ico sm"><svg><use href="#i-target"/></svg></div><h3>কোনো টেমপ্লেট নয়</h3><p>আপনার ব্র্যান্ডের জন্য কাস্টম স্ট্র্যাটেজি — কপি-পেস্ট প্যাকেজ কখনোই নয়।</p></div>
+      <div class="benefit"><div class="ico sm"><svg><use href="#i-heart"/></svg></div><h3>১০০% স্বচ্ছতা</h3><p>একজন ডেডিকেটেড লিড, রিয়েল-টাইম রিপোর্টিং — কোনো লুকোচুরি নয়, কোনো অজুহাত নয়।</p></div>
     </div>
   </div>
 </section>
