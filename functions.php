@@ -870,9 +870,12 @@ function womensfight_handle_customer_form_submit() {
 		$title = 'Submission — ' . current_time( 'Y-m-d H:i' );
 	}
 
+	// Lead Form submissions now seed the Projects pipeline directly (as
+	// "wf_p_*" meta on a wf_project post, status "lead") instead of the
+	// older standalone wf_lead post type — see womensfight_project_statuses().
 	$post_id = wp_insert_post(
 		array(
-			'post_type'   => 'wf_lead',
+			'post_type'   => 'wf_project',
 			'post_title'  => $title,
 			'post_status' => 'publish',
 		)
@@ -880,8 +883,10 @@ function womensfight_handle_customer_form_submit() {
 
 	if ( $post_id && ! is_wp_error( $post_id ) ) {
 		foreach ( $data as $key => $value ) {
-			update_post_meta( $post_id, $key, $value );
+			update_post_meta( $post_id, str_replace( 'wf_', 'wf_p_', $key ), $value );
 		}
+		update_post_meta( $post_id, 'wf_p_status', 'lead' );
+		update_post_meta( $post_id, 'wf_p_payment_status', 'unpaid' );
 
 		if ( ! empty( $_FILES['wf_image']['name'] ) ) {
 			require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -889,7 +894,7 @@ function womensfight_handle_customer_form_submit() {
 			require_once ABSPATH . 'wp-admin/includes/media.php';
 			$attachment_id = media_handle_upload( 'wf_image', $post_id );
 			if ( ! is_wp_error( $attachment_id ) ) {
-				update_post_meta( $post_id, 'wf_image_id', $attachment_id );
+				update_post_meta( $post_id, 'wf_p_image_id', $attachment_id );
 			}
 		}
 	}
@@ -1488,17 +1493,33 @@ function womensfight_render_project_detail_box( $post ) {
 	wp_nonce_field( 'womensfight_save_project', 'womensfight_project_nonce' );
 
 	$info_fields = array(
-		'wf_p_name'     => 'নাম',
-		'wf_p_mobile'   => 'Mobile',
-		'wf_p_email'    => 'Email',
-		'wf_p_business' => 'Business',
-		'wf_p_service'  => 'Service',
+		'wf_p_name'         => 'নাম',
+		'wf_p_mobile'       => 'Mobile',
+		'wf_p_whatsapp'     => 'WhatsApp',
+		'wf_p_email'        => 'Email',
+		'wf_p_business'     => 'Business',
+		'wf_p_service'      => 'Service',
+		'wf_p_budget'       => 'Budget',
+		'wf_p_location'     => 'Business Location',
+		'wf_p_fb_link'      => 'Facebook Page / Website Link',
+		'wf_p_ad_post_link' => 'Ads Post Link',
+		'wf_p_message'      => 'Message / Requirement',
 	);
 
 	echo '<table class="widefat striped"><tbody>';
 	foreach ( $info_fields as $key => $label ) {
-		echo '<tr><th style="width:180px;">' . esc_html( $label ) . '</th><td>' . esc_html( get_post_meta( $post->ID, $key, true ) ) . '</td></tr>';
+		$value = get_post_meta( $post->ID, $key, true );
+		echo '<tr><th style="width:220px;">' . esc_html( $label ) . '</th><td>' . nl2br( esc_html( $value ) ) . '</td></tr>';
 	}
+
+	$image_id = get_post_meta( $post->ID, 'wf_p_image_id', true );
+	echo '<tr><th>ছবি</th><td>';
+	if ( $image_id ) {
+		echo wp_get_attachment_image( $image_id, 'medium' );
+	} else {
+		echo '<em>কোনো ছবি দেওয়া হয়নি</em>';
+	}
+	echo '</td></tr>';
 
 	$status  = get_post_meta( $post->ID, 'wf_p_status', true );
 	$payment = get_post_meta( $post->ID, 'wf_p_payment_status', true );
