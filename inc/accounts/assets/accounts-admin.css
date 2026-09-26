@@ -1,0 +1,32 @@
+/* WF Simple Accounts — wp-admin only styling. Loaded exclusively on
+   this module's own screens (see wfa_enqueue_admin_assets in
+   accounts-admin.php); never loaded on the public website. */
+
+.wfa-wrap .wfa-month-form{margin:16px 0; display:flex; align-items:center; gap:8px;}
+.wfa-wrap .wfa-actions{margin:16px 0;}
+.wfa-wrap .wfa-hint{color:#646970; font-size:.9em;}
+
+.wfa-cards{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:20px 0;}
+.wfa-card{background:#fff; border:1px solid #dcdcde; border-radius:6px; padding:16px 18px;}
+.wfa-card span{display:block; color:#646970; font-size:.85em; margin-bottom:6px;}
+.wfa-card b{display:block; font-size:1.4em; font-weight:600;}
+.wfa-card-good b{color:#00a32a;}
+.wfa-card-warn b{color:#d63638;}
+
+.wfa-progress{background:#f0f0f1; border:1px solid #dcdcde; border-radius:999px; height:16px; overflow:hidden; max-width:480px;}
+.wfa-progress-bar{background:#2271b1; height:100%;}
+.wfa-progress-bar.wfa-progress-over{background:#d63638;}
+
+.wfa-form{background:#fff; border:1px solid #dcdcde; border-radius:6px; padding:8px 20px; max-width:720px;}
+.wfa-budget-form{margin-top:12px;}
+
+.wfa-summary-table{max-width:520px;}
+.wfa-danger{color:#d63638;}
+
+@media (max-width:960px){
+  .wfa-cards{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:600px){
+  .wfa-cards{grid-template-columns:1fr;}
+  .wfa-wrap .wfa-month-form{flex-wrap:wrap;}
+}

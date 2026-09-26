@@ -31,6 +31,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 require_once get_template_directory() . '/inc/academy-leads.php';
 
+/**
+ * WF Simple Accounts — a private, admin-only internal accounting
+ * module (its own database tables, its own wp-admin screens),
+ * entirely self-contained in inc/accounts/. This is the only line in
+ * this file that knows it exists. See inc/accounts/accounts-core.php
+ * for the data model and inc/accounts/accounts-admin.php for the
+ * wp-admin screens.
+ */
+require_once get_template_directory() . '/inc/accounts/accounts-core.php';
+
 /* ---------------------------------------------------------------------
  * Theme setup
  * ------------------------------------------------------------------- */
