@@ -3,7 +3,7 @@ Theme Name: Women's Fight Agency
 Theme URI: https://womensfight.agency
 Author: Women's Fight
 Description: Dark, vivid multi-page agency theme for Women's Fight, built around the brand's real pink-magenta-to-blue logo mark, fully in Bangla, with real editable WordPress Pages (Block Editor and Elementor ready out of the box) and an interactive AI Agent audience-estimator tool.
-Version: 4.1
+Version: 4.2
 Requires at least: 5.9
 Requires PHP: 7.4
 Requires Plugins: elementor
@@ -386,4 +386,18 @@ footer.site-footer{background:var(--bg-2); color:var(--ink); margin-top:40px; bo
 @media (max-width:640px){
   .wf-demo-grid{grid-template-columns:1fr;}
   .wf-demo-actions .btn{flex:none; width:100%;}
+}
+
+/* WhatsApp Floating Button */
+.wf-whatsapp-float{position:fixed; bottom:24px; right:24px; width:58px; height:58px; background:#25D366; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px -6px rgba(37,211,102,.6); z-index:150; transition:transform .2s ease, box-shadow .2s ease; animation:wfWhatsappPulse 2.4s ease-in-out infinite;}
+.wf-whatsapp-float:hover{transform:scale(1.08); box-shadow:0 10px 28px -4px rgba(37,211,102,.7);}
+.wf-whatsapp-float svg{width:30px; height:30px; color:#fff;}
+@keyframes wfWhatsappPulse{
+  0%, 100%{box-shadow:0 8px 24px -6px rgba(37,211,102,.6), 0 0 0 0 rgba(37,211,102,.5);}
+  50%{box-shadow:0 8px 24px -6px rgba(37,211,102,.6), 0 0 0 10px rgba(37,211,102,0);}
+}
+@media (prefers-reduced-motion: reduce){ .wf-whatsapp-float{animation:none;} }
+@media (max-width:640px){
+  .wf-whatsapp-float{bottom:18px; right:18px; width:52px; height:52px;}
+  .wf-whatsapp-float svg{width:26px; height:26px;}
 }
