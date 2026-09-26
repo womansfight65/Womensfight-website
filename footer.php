@@ -11,7 +11,7 @@ $logo_full = esc_url( get_template_directory_uri() . '/assets/img/logo-full.png'
   <div class="wrap foot-top">
     <div class="foot-brand">
       <a href="<?php echo esc_url( home_url( '/' ) ); ?>" style="text-decoration:none;">
-        <img src="<?php echo $logo_full; ?>" alt="Women's Fight">
+        <img src="<?php echo $logo_full; ?>" alt="Women's Fight" loading="lazy" decoding="async">
       </a>
       <p>ঢাকাভিত্তিক একটি ক্রিয়েটিভ ও ডিজিটাল এজেন্সি — স্ট্র্যাটেজি, ডিজাইন, কনটেন্ট ও AI দিয়ে সাহসী ব্র্যান্ড তৈরি করি।</p>
       <div class="foot-social">
