@@ -58,16 +58,9 @@ add_filter( 'the_content', 'womensfight_skip_wpautop_on_pages', 10 );
 
 function womensfight_assets() {
 	wp_enqueue_style(
-		'womensfight-google-fonts',
-		'https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap',
-		array(),
-		null
-	);
-
-	wp_enqueue_style(
 		'womensfight-style',
 		get_stylesheet_uri(),
-		array( 'womensfight-google-fonts' ),
+		array(),
 		wp_get_theme()->get( 'Version' )
 	);
 
@@ -80,6 +73,23 @@ function womensfight_assets() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'womensfight_assets' );
+
+/**
+ * Google Fonts, loaded non-render-blocking. wp_enqueue_style() always
+ * prints a plain blocking <link rel="stylesheet">, which is what was
+ * costing ~3.4s of render-blocking time in PageSpeed — this is the
+ * standard preload-as-style trick (media="print" until onload swaps it
+ * to "all"), with preconnect hints and a <noscript> fallback.
+ */
+function womensfight_google_fonts_preload() {
+	$href = 'https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap';
+	echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
+	echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+	echo '<link rel="preload" as="style" href="' . esc_url( $href ) . '">' . "\n";
+	echo '<link rel="stylesheet" href="' . esc_url( $href ) . '" media="print" onload="this.media=&#039;all&#039;;this.onload=null;">' . "\n";
+	echo '<noscript><link rel="stylesheet" href="' . esc_url( $href ) . '"></noscript>' . "\n";
+}
+add_action( 'wp_head', 'womensfight_google_fonts_preload', 1 );
 
 /**
  * Meta (Facebook) Pixel — loaded in <head> on every page, tracking the
@@ -150,6 +160,17 @@ function womensfight_asset_url( $filename ) {
 		$url .= '?v=' . filemtime( $path );
 	}
 	return $url;
+}
+
+/**
+ * srcset string for the hero photo — 400px/700px versions for mobile
+ * and tablet, the full 1103px original for desktop, so phones don't
+ * download the same large file the desktop layout needs.
+ */
+function womensfight_hero_srcset() {
+	return womensfight_asset_url( 'hero-team-400.webp' ) . ' 400w, ' .
+		womensfight_asset_url( 'hero-team-700.webp' ) . ' 700w, ' .
+		womensfight_asset_url( 'hero-team.webp' ) . ' 1103w';
 }
 
 /**
@@ -356,6 +377,7 @@ function womensfight_install_pages_and_menu() {
 		);
 		$new_content = str_replace( '##LOGO_ICON##', $logo_icon, $new_content );
 		$new_content = str_replace( '##HERO_IMG##', $hero_img, $new_content );
+		$new_content = str_replace( '##HERO_SRCSET##', womensfight_hero_srcset(), $new_content );
 
 		if ( $new_content !== $content ) {
 			wp_update_post(
@@ -565,6 +587,7 @@ function womensfight_sync_one_page( $slug ) {
 	);
 	$new_content = str_replace( '##LOGO_ICON##', $logo_icon, $new_content );
 	$new_content = str_replace( '##HERO_IMG##', $hero_img, $new_content );
+	$new_content = str_replace( '##HERO_SRCSET##', womensfight_hero_srcset(), $new_content );
 
 	wp_update_post(
 		array(
