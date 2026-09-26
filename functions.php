@@ -686,6 +686,15 @@ function womensfight_render_page_sync_screen() {
 	echo '<p style="margin:.3em 0; color:var(--ink-faint,#787490);">GitHub-এ push করা নতুন commit-এর timestamp/hash-এর সাথে উপরের তথ্য মিলিয়ে দেখুন — মিললে বুঝবেন সর্বশেষ push এই সার্ভারে পৌঁছেছে।</p>';
 	echo '</div>';
 
+	$webhook_url    = esc_url( rest_url( 'womensfight/v1/lead-webhook' ) );
+	$webhook_secret = esc_html( womensfight_get_webhook_secret() );
+	$regen_url      = wp_nonce_url( admin_url( 'themes.php?page=womensfight-page-sync&womensfight_regen_webhook_secret=1' ), 'womensfight_regen_webhook_secret' );
+	echo '<div class="notice notice-info" style="padding:12px 16px; max-width:900px;"><p style="margin:.3em 0;"><strong>Universal Lead Webhook</strong> — Facebook Lead Ads, Messenger, TikTok, Google Lead Form ইত্যাদি যেকোনো সোর্স থেকে Zapier/Make দিয়ে এই ঠিকানায় Lead পাঠালে তা সরাসরি Client Projects-এ জমা হবে।</p>';
+	echo '<p style="margin:.3em 0;">Webhook URL: <code>' . $webhook_url . '</code></p>';
+	echo '<p style="margin:.3em 0;">Secret Key: <code>' . $webhook_secret . '</code> &middot; <a href="' . esc_url( $regen_url ) . '" onclick="return confirm(&#039;নতুন Secret Key তৈরি হলে পুরনোটা আর কাজ করবে না — Zapier/Make-এ যেখানে ব্যবহার করেছেন সেখানেও আপডেট করতে হবে। এগিয়ে যাবেন?&#039;);">নতুন Secret Key তৈরি করুন</a></p>';
+	echo '<p style="margin:.3em 0; color:var(--ink-faint,#787490);">Zapier/Make-এ Webhook Action সেট করার সময় POST body-তে JSON হিসেবে পাঠান: <code>name, mobile, whatsapp, email, business, service, budget, location, fb_link, message, source</code> (সবগুলো ঐচ্ছিক), এবং হেডারে <code>X-WF-Secret: ' . $webhook_secret . '</code> যোগ করুন।</p>';
+	echo '</div>';
+
 	echo '<p>নিচের যেকোনো একটা পেজের পাশে <strong>এই পেজ সিঙ্ক করুন</strong> চাপলে শুধু <em>সেই একটা পেজই</em> থিমের ডিফল্ট ডিজাইন দিয়ে রিসেট হবে — বাকি সব পেজ অপরিবর্তিত থাকবে। কোনো একটা পেজ ভাঙা বা ফাঁকা দেখালে এটা ব্যবহার করুন।</p>';
 
 	echo '<table class="widefat striped" style="max-width:900px;"><thead><tr><th>পেজ</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead><tbody>';
@@ -802,6 +811,8 @@ function womensfight_lead_fields() {
 		'wf_lead_storage'       => 'Current Lead Storage Method',
 		'wf_sales_staff'        => 'Number of Sales Staff',
 		'wf_automate_tasks'     => 'Tasks to Automate',
+		// External webhook leads only (Facebook Lead Ads, Messenger, etc.)
+		'wf_lead_source'        => 'Lead Source',
 	);
 }
 
@@ -1080,6 +1091,131 @@ function womensfight_handle_customer_form_submit() {
 }
 add_action( 'admin_post_womensfight_submit_customer_form', 'womensfight_handle_customer_form_submit' );
 add_action( 'admin_post_nopriv_womensfight_submit_customer_form', 'womensfight_handle_customer_form_submit' );
+
+/* ---------------------------------------------------------------------
+ * Universal Lead Webhook — a secret-key-protected REST endpoint that
+ * lets an external automation tool (Zapier, Make, etc.) push a lead
+ * from any source — Facebook Lead Ads, Messenger, TikTok Lead Gen,
+ * Google Lead Form Extensions — straight into the same Client Projects
+ * pipeline the on-site forms use, tagged with where it came from.
+ * ------------------------------------------------------------------- */
+
+/**
+ * The secret key external tools must send to use the webhook.
+ * Auto-generated once and stored in the database; visible (with a
+ * "regenerate" option) on the Page Sync admin screen.
+ */
+function womensfight_get_webhook_secret() {
+	$secret = get_option( 'womensfight_webhook_secret' );
+	if ( ! $secret ) {
+		$secret = wp_generate_password( 32, false );
+		update_option( 'womensfight_webhook_secret', $secret );
+	}
+	return $secret;
+}
+
+function womensfight_maybe_regenerate_webhook_secret() {
+	if ( ! isset( $_GET['womensfight_regen_webhook_secret'] ) || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	check_admin_referer( 'womensfight_regen_webhook_secret' );
+	update_option( 'womensfight_webhook_secret', wp_generate_password( 32, false ) );
+	wp_safe_redirect( admin_url( 'themes.php?page=womensfight-page-sync' ) );
+	exit;
+}
+add_action( 'admin_init', 'womensfight_maybe_regenerate_webhook_secret' );
+
+function womensfight_register_lead_webhook_route() {
+	register_rest_route(
+		'womensfight/v1',
+		'/lead-webhook',
+		array(
+			'methods'             => 'POST',
+			'callback'            => 'womensfight_handle_lead_webhook',
+			'permission_callback' => '__return_true',
+		)
+	);
+}
+add_action( 'rest_api_init', 'womensfight_register_lead_webhook_route' );
+
+/**
+ * Accepts a JSON lead payload from an external automation tool, checks
+ * the shared secret key, and saves it exactly like an on-site form
+ * submission — a wf_project post (status "lead") with wf_p_* meta —
+ * so it shows up in Client Projects alongside every other lead.
+ */
+function womensfight_handle_lead_webhook( WP_REST_Request $request ) {
+	$secret   = womensfight_get_webhook_secret();
+	$provided = $request->get_header( 'x-wf-secret' );
+	if ( ! $provided ) {
+		$provided = $request->get_param( 'secret' );
+	}
+	if ( ! $secret || ! $provided || ! hash_equals( $secret, (string) $provided ) ) {
+		return new WP_Error( 'wf_unauthorized', 'Invalid or missing secret key.', array( 'status' => 401 ) );
+	}
+
+	$params = $request->get_json_params();
+	if ( ! is_array( $params ) || empty( $params ) ) {
+		$params = $request->get_params();
+	}
+
+	// incoming JSON key => wf_project meta field (unprefixed, "wf_p_" added below).
+	$map = array(
+		'name'     => 'wf_name',
+		'mobile'   => 'wf_mobile',
+		'whatsapp' => 'wf_whatsapp',
+		'email'    => 'wf_email',
+		'business' => 'wf_business',
+		'service'  => 'wf_service',
+		'budget'   => 'wf_budget',
+		'location' => 'wf_location',
+		'fb_link'  => 'wf_fb_link',
+		'message'  => 'wf_message',
+		'source'   => 'wf_lead_source',
+	);
+
+	$data = array();
+	foreach ( $map as $incoming_key => $meta_key ) {
+		$data[ $meta_key ] = isset( $params[ $incoming_key ] ) ? sanitize_textarea_field( wp_unslash( (string) $params[ $incoming_key ] ) ) : '';
+	}
+
+	if ( '' === $data['wf_service'] ) {
+		$data['wf_service'] = 'Business Automation';
+	}
+	if ( '' === $data['wf_lead_source'] ) {
+		$data['wf_lead_source'] = 'External Webhook';
+	}
+
+	if ( '' !== $data['wf_name'] ) {
+		$title = $data['wf_name'];
+	} elseif ( '' !== $data['wf_mobile'] ) {
+		$title = $data['wf_mobile'];
+	} elseif ( '' !== $data['wf_whatsapp'] ) {
+		$title = $data['wf_whatsapp'];
+	} else {
+		$title = $data['wf_lead_source'] . ' — ' . current_time( 'Y-m-d H:i' );
+	}
+
+	$post_id = wp_insert_post(
+		array(
+			'post_type'   => 'wf_project',
+			'post_title'  => $title,
+			'post_status' => 'publish',
+		)
+	);
+
+	if ( ! $post_id || is_wp_error( $post_id ) ) {
+		return new WP_Error( 'wf_insert_failed', 'Could not save lead.', array( 'status' => 500 ) );
+	}
+
+	foreach ( $data as $key => $value ) {
+		update_post_meta( $post_id, str_replace( 'wf_', 'wf_p_', $key ), $value );
+	}
+	update_post_meta( $post_id, 'wf_p_status', 'lead' );
+	update_post_meta( $post_id, 'wf_p_payment_status', 'unpaid' );
+
+	return new WP_REST_Response( array( 'success' => true, 'id' => $post_id ), 200 );
+}
 
 /**
  * wp-admin list table columns for Customer Submissions, so the important
@@ -1752,16 +1888,17 @@ function womensfight_render_project_detail_box( $post ) {
 	wp_nonce_field( 'womensfight_save_project', 'womensfight_project_nonce' );
 
 	$info_fields = array(
-		'wf_p_name'     => 'নাম',
-		'wf_p_mobile'   => 'Mobile',
-		'wf_p_whatsapp' => 'WhatsApp',
-		'wf_p_email'    => 'Email',
-		'wf_p_business' => 'Business',
-		'wf_p_service'  => 'Service',
-		'wf_p_budget'   => 'Budget',
-		'wf_p_location' => 'Business Location',
-		'wf_p_fb_link'  => 'Facebook Page / Website Link',
-		'wf_p_message'  => 'Message / Requirement',
+		'wf_p_name'        => 'নাম',
+		'wf_p_mobile'      => 'Mobile',
+		'wf_p_whatsapp'    => 'WhatsApp',
+		'wf_p_email'       => 'Email',
+		'wf_p_business'    => 'Business',
+		'wf_p_service'     => 'Service',
+		'wf_p_budget'      => 'Budget',
+		'wf_p_location'    => 'Business Location',
+		'wf_p_fb_link'     => 'Facebook Page / Website Link',
+		'wf_p_lead_source' => 'Lead Source',
+		'wf_p_message'     => 'Message / Requirement',
 	);
 
 	// Append only the fields belonging to this project's actual service,
