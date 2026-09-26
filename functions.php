@@ -23,6 +23,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Women's Fight Academy — a fully separate lead system (its own post
+ * type, form handler, admin list and dashboard), entirely self-contained
+ * in inc/academy-leads.php. This is the only line in this file that
+ * knows it exists.
+ */
+require_once get_template_directory() . '/inc/academy-leads.php';
+
 /* ---------------------------------------------------------------------
  * Theme setup
  * ------------------------------------------------------------------- */

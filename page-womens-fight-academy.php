@@ -1,16 +1,18 @@
 <?php
 /**
- * FULLY SELF-CONTAINED template for the "Women's Fight Academy" page
- * (slug: womens-fight-academy) — STEP 3 SAMPLE, pending approval.
+ * Template for the "Women's Fight Academy" page (slug: womens-fight-academy).
  *
- * By request, this page is isolated from the rest of the codebase as
- * much as WordPress's architecture allows:
- * - functions.php is NOT modified for this page at all — no page
- *   definition entry, no SEO array entry, no menu entry. WordPress's
- *   own template hierarchy picks THIS file automatically for any page
- *   whose slug is "womens-fight-academy" (no registration needed) —
- *   see the note near the bottom of this file for how to create that
- *   WordPress Page once this is approved.
+ * This page and its lead system are kept isolated from the rest of the
+ * codebase as much as WordPress's architecture allows:
+ * - functions.php is NOT modified for this page's routing/SEO/menu at
+ *   all — no page definition entry, no SEO array entry, no menu entry.
+ *   WordPress's own template hierarchy picks THIS file automatically
+ *   for any page whose slug is "womens-fight-academy". (functions.php
+ *   only has one line, `require_once .../inc/academy-leads.php`, to
+ *   load the separate lead system below — WordPress requires that file
+ *   to be loaded on every request for its post type/admin-post hooks
+ *   to register at all, so a single require line is the minimum
+ *   possible touch.)
  * - style.css is NOT modified — every .wfa-* rule below is injected
  *   by this file alone, on this page's own wp_head hook, and applies
  *   nowhere else.
@@ -19,16 +21,15 @@
  *   womensfight_seo_title(). (The meta description still falls back to
  *   functions.php's generic one, since avoiding a duplicate <meta
  *   name="description"> tag without editing functions.php isn't
- *   possible — noted in the delivery report.)
- * - The "Free Counseling" form is NOT wired to
- *   womensfight_render_customer_form() / womensfight_lead_fields() /
- *   the admin-post handler — its own field names, its own vanilla-JS
- *   validation, and on submit shows an honest "this is a sample form"
- *   message instead of pretending to save anything.
+ *   possible.)
+ * - The "Free Counseling" form below submits to inc/academy-leads.php's
+ *   own handler (action=wfa_submit_academy_form) and its own "wfa_lead"
+ *   post type — completely separate from womensfight_lead_fields() /
+ *   womensfight_render_customer_form() / the wf_project pipeline used
+ *   by the rest of the site. Academy leads only ever appear under their
+ *   own "Academy Leads" admin menu + dashboard, never mixed into
+ *   Client Projects.
  * - Not in womensfight_menu_structure() (nav menu), by design.
- *
- * Net effect: deleting this file and inc/content/womens-fight-academy.php
- * removes 100% of this page's code — nothing elsewhere references it.
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -248,14 +249,23 @@ get_header();
 </section>
 
 <section class="tight alt" id="wfa-counseling-form"><div class="wrap">
+<?php if ( isset( $_GET['wfa_submitted'] ) && '1' === $_GET['wfa_submitted'] ) : ?>
+
+  <div class="wf-cform-success">
+    <p>ধন্যবাদ। আপনার তথ্য আমরা পেয়েছি। আমাদের টিম খুব দ্রুত আপনার সাথে যোগাযোগ করবে।</p>
+  </div>
+
+<?php else : ?>
+
   <div class="section-head center">
     <span class="eyebrow">ফ্রি Counseling</span>
     <h2>আপনার জন্য কোন Course উপযুক্ত জানুন</h2>
   </div>
 
-  <div class="wfa-sample-note">এটি বর্তমানে একটি <strong>Sample Form</strong> (frontend-only demo) &mdash; কোনো তথ্য সংরক্ষণ বা প্রেরণ করা হয় না। Backend connection অনুমোদনের পর এটি চালু করা হবে।</div>
-
-  <form class="wf-cform" id="wfa-cform" novalidate>
+  <form class="wf-cform" id="wfa-cform" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate>
+    <input type="hidden" name="action" value="wfa_submit_academy_form">
+    <input type="hidden" name="wfa_redirect" value="<?php echo esc_url( get_permalink() ); ?>">
+    <?php wp_nonce_field( 'wfa_submit_academy_form', 'wfa_form_nonce' ); ?>
     <div class="frow">
       <div><label for="wfa_name">শিক্ষার্থীর নাম</label><input type="text" id="wfa_name" name="wfa_name" placeholder="আপনার নাম" required></div>
       <div><label for="wfa_mobile">Mobile Number</label><input type="tel" id="wfa_mobile" name="wfa_mobile" placeholder="01XXXXXXXXX" required pattern="^01[0-9]{9}$"></div>
@@ -312,8 +322,9 @@ get_header();
     </div>
     <div><label for="wfa_message">সংক্ষিপ্ত Message</label><textarea id="wfa_message" name="wfa_message" rows="3" placeholder="আপনার প্রশ্ন বা প্রয়োজন লিখুন (ঐচ্ছিক)"></textarea></div>
     <button class="btn btn-primary" type="submit">ফ্রি কাউন্সেলিং নিন</button>
-    <p class="wfa-form-result" id="wfa-form-result" role="status" aria-live="polite"></p>
   </form>
+
+<?php endif; ?>
 </div></section>
 
 <section class="tight wrap">
@@ -361,13 +372,10 @@ get_header();
 	var form = document.getElementById('wfa-cform');
 	if (!form) { return; }
 	form.addEventListener('submit', function(e){
-		e.preventDefault();
-		var result = document.getElementById('wfa-form-result');
 		if (!form.checkValidity()) {
+			e.preventDefault();
 			form.reportValidity();
-			return;
 		}
-		result.textContent = 'এটি বর্তমানে একটি Sample Form। Backend connection অনুমোদনের পর চালু করা হবে।';
 	});
 })();
 </script>
@@ -375,10 +383,8 @@ get_header();
 get_footer();
 
 /**
- * TO ACTIVATE (once approved) — no functions.php change needed:
- * wp-admin → Pages → Add New → title "Women's Fight Academy" →
- * set the URL slug to "womens-fight-academy" → Publish. WordPress's
- * template hierarchy will automatically use this file for that page,
- * because the filename matches the slug. inc/content/womens-fight-academy.php
- * is only a fallback for contexts that skip this template (search/RSS).
+ * This page's WordPress Page (slug: womens-fight-academy) is created
+ * manually in wp-admin → Pages, not via functions.php's page-sync
+ * system — WordPress's template hierarchy picks this file up
+ * automatically because the filename matches the slug.
  */
