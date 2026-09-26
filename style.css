@@ -3,7 +3,7 @@ Theme Name: Women's Fight Agency
 Theme URI: https://womensfight.agency
 Author: Women's Fight
 Description: Dark, vivid multi-page agency theme for Women's Fight, built around the brand's real pink-magenta-to-blue logo mark, fully in Bangla, with real editable WordPress Pages (Block Editor and Elementor ready out of the box) and an interactive AI Agent audience-estimator tool.
-Version: 4.2
+Version: 4.3
 Requires at least: 5.9
 Requires PHP: 7.4
 Requires Plugins: elementor
@@ -400,4 +400,54 @@ footer.site-footer{background:var(--bg-2); color:var(--ink); margin-top:40px; bo
 @media (max-width:640px){
   .wf-whatsapp-float{bottom:18px; right:18px; width:52px; height:52px;}
   .wf-whatsapp-float svg{width:26px; height:26px;}
+}
+
+/* Business Automation Service (sample page) */
+.aut-mock{position:relative; width:100%; max-width:420px; background:var(--surface); border:1px solid var(--border); border-radius:22px; box-shadow:var(--shadow); overflow:hidden;}
+.aut-mock-bar{display:flex; gap:6px; padding:14px 16px; border-bottom:1px solid var(--border); background:var(--bg-2);}
+.aut-mock-bar span{width:9px; height:9px; border-radius:50%; background:var(--border); display:block;}
+.aut-mock-bar span:first-child{background:var(--pink);}
+.aut-mock-bar span:nth-child(2){background:#ffb400;}
+.aut-mock-bar span:nth-child(3){background:#2ecf85;}
+.aut-mock-body{padding:20px; display:flex; flex-direction:column; gap:14px;}
+.aut-mock-row{display:flex; align-items:center; gap:14px;}
+.aut-mock-row b{display:block; font-size:.92rem; font-weight:700; color:var(--ink);}
+.aut-mock-row span{font-size:.8rem; color:var(--ink-faint);}
+
+.aut-dash-stats{display:grid; grid-template-columns:repeat(6,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:22px; overflow:hidden; margin-bottom:28px;}
+.aut-dash-stats div{background:var(--surface); padding:22px 14px; text-align:center;}
+.aut-dash-stats b{display:block; font-family:'Noto Serif Bengali',serif; font-size:1.6rem; font-weight:700; background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent;}
+.aut-dash-stats span{font-size:.78rem; color:var(--ink-faint);}
+
+.aut-table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--surface);}
+.aut-table{width:100%; border-collapse:collapse; min-width:720px; font-size:.88rem;}
+.aut-table th, .aut-table td{padding:14px 16px; text-align:left; white-space:nowrap; border-bottom:1px solid var(--border);}
+.aut-table th{color:var(--ink-faint); font-size:.76rem; text-transform:uppercase; letter-spacing:.04em; font-weight:700;}
+.aut-table tbody tr:last-child td{border-bottom:none;}
+.aut-table td{color:var(--ink-soft);}
+
+.aut-badge{display:inline-flex; align-items:center; padding:5px 13px; border-radius:999px; font-size:.76rem; font-weight:700; white-space:nowrap;}
+.aut-badge.new{background:rgba(0,191,253,.15); color:var(--blue-light);}
+.aut-badge.contacted{background:rgba(154,31,174,.18); color:#d29bff;}
+.aut-badge.interested{background:rgba(255,180,0,.15); color:#ffb400;}
+.aut-badge.followup{background:rgba(243,20,123,.15); color:var(--pink-light);}
+.aut-badge.hot{background:rgba(255,90,60,.18); color:#ff7a5c;}
+.aut-badge.customer{background:rgba(0,200,120,.15); color:#2ecf85;}
+
+.aut-sector-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
+.aut-sector-grid .feat{align-items:center; text-align:center;}
+.aut-sector-grid .feat h3{font-size:.94rem;}
+
+.aut-pkg-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+
+@media (max-width:980px){
+  .aut-dash-stats{grid-template-columns:repeat(3,1fr);}
+  .aut-sector-grid{grid-template-columns:1fr 1fr;}
+  .aut-pkg-grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:640px){
+  .aut-dash-stats{grid-template-columns:1fr 1fr;}
+  .aut-sector-grid{grid-template-columns:1fr;}
+  .aut-pkg-grid{grid-template-columns:1fr;}
+  .wf-demo-filters#aut-filters{gap:8px;}
 }

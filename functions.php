@@ -262,6 +262,7 @@ function womensfight_page_definitions() {
 		'lead-form'            => 'Lead Form',
 		'project'              => 'Client Dashboard',
 		'demo-library'         => 'Demo Website Library',
+		'auto-motion'          => 'Business Automation Service',
 	);
 }
 
@@ -276,6 +277,7 @@ function womensfight_menu_structure() {
 				array( 'title' => 'Landing Page', 'slug' => 'landing-page' ),
 				array( 'title' => 'Video Production', 'slug' => 'video-production' ),
 				array( 'title' => 'AI Agency', 'slug' => 'ai-agency' ),
+				array( 'title' => 'Business Automation', 'slug' => 'auto-motion' ),
 			),
 		),
 		array( 'title' => 'Case Study', 'slug' => 'case-study' ),
@@ -794,6 +796,12 @@ function womensfight_lead_fields() {
 		'wf_footage_link'       => 'Raw Footage Link',
 		'wf_video_duration'     => 'Video Duration',
 		'wf_style_reference'    => 'Style Reference Link',
+		// Business Automation only
+		'wf_business_category'  => 'Business Category',
+		'wf_daily_leads'        => 'Daily Lead Volume (approx.)',
+		'wf_lead_storage'       => 'Current Lead Storage Method',
+		'wf_sales_staff'        => 'Number of Sales Staff',
+		'wf_automate_tasks'     => 'Tasks to Automate',
 	);
 }
 
@@ -809,6 +817,7 @@ function womensfight_service_specific_fields() {
 		'Website Development'  => array( 'wf_ref_website', 'wf_pages_needed', 'wf_domain_status' ),
 		'Graphic Design'       => array( 'wf_design_type', 'wf_brand_guideline', 'wf_deliverable_count' ),
 		'Video Editing'        => array( 'wf_footage_link', 'wf_video_duration', 'wf_style_reference' ),
+		'Business Automation'  => array( 'wf_business_category', 'wf_daily_leads', 'wf_lead_storage', 'wf_sales_staff', 'wf_automate_tasks' ),
 	);
 }
 
@@ -821,6 +830,7 @@ function womensfight_lead_services() {
 		'Graphic Design',
 		'Video Editing',
 		'Branding',
+		'Business Automation',
 		'Other',
 	);
 }
@@ -954,6 +964,32 @@ function womensfight_render_customer_form() {
 				<div><label for="wf_video_duration">ভিডিও কত মিনিটের</label><input type="text" id="wf_video_duration" name="wf_video_duration" placeholder="যেমন: ৩ মিনিট"></div>
 				<div><label for="wf_style_reference">Style Reference Link</label><input type="url" id="wf_style_reference" name="wf_style_reference" placeholder="উদাহরণস্বরূপ কোনো ভিডিও লিংক"></div>
 			</div>
+		</div>
+
+		<div id="wf_svc_Business Automation" class="wf-svc-fields" style="display:none;">
+			<div class="frow">
+				<div>
+					<label for="wf_business_category">Business Category</label>
+					<select id="wf_business_category" name="wf_business_category">
+						<option value="">সিলেক্ট করুন</option>
+						<option>Training Center</option>
+						<option>Facebook &amp; E-commerce Business</option>
+						<option>Clinic &amp; Healthcare Service</option>
+						<option>Beauty Parlour</option>
+						<option>Real Estate</option>
+						<option>Travel Agency</option>
+						<option>Digital Agency</option>
+						<option>Local Service Business</option>
+						<option>অন্যান্য</option>
+					</select>
+				</div>
+				<div><label for="wf_daily_leads">প্রতিদিন আনুমানিক কতটি Lead আসে?</label><input type="text" id="wf_daily_leads" name="wf_daily_leads" placeholder="যেমন: ১০-১৫টি"></div>
+			</div>
+			<div class="frow">
+				<div><label for="wf_lead_storage">বর্তমানে Lead কোথায় সংরক্ষণ করেন?</label><input type="text" id="wf_lead_storage" name="wf_lead_storage" placeholder="যেমন: Excel, খাতায়, মেসেঞ্জারে"></div>
+				<div><label for="wf_sales_staff">কতজন Sales Staff আছে?</label><input type="text" id="wf_sales_staff" name="wf_sales_staff" placeholder="যেমন: ২ জন"></div>
+			</div>
+			<div><label for="wf_automate_tasks">কোন কাজগুলো Automatic করতে চান?</label><textarea id="wf_automate_tasks" name="wf_automate_tasks" rows="3" placeholder="যেমন: Lead Reply, Follow-up, Invoice"></textarea></div>
 		</div>
 
 		<div><label for="wf_message">Message / Requirement</label><textarea id="wf_message" name="wf_message" rows="4" placeholder="আপনার প্রয়োজন সম্পর্কে লিখুন (ঐচ্ছিক)"></textarea></div>
@@ -1438,6 +1474,7 @@ function womensfight_seo_meta_descriptions() {
 		'ai-agent'             => 'ফ্রি AI Agent দিয়ে আপনার লোকেশন অনুযায়ী অডিয়েন্স হিসাব করুন — Ramganj, Lakshmipur-এর Women&rsquo;s Fight এজেন্সি থেকে।',
 		'contact'              => "Women's Fight-এর সাথে যোগাযোগ করুন — City Plaza, Ramganj, Lakshmipur। ফ্রি কনসালটেশন বুক করুন।",
 		'lead-form'            => 'Ramganj, Lakshmipur-এর Women&rsquo;s Fight এজেন্সিকে আপনার তথ্য জানান — আমরা দ্রুত যোগাযোগ করব।',
+		'auto-motion'  => 'Lead collection, WhatsApp response, CRM, follow-up, invoice and business reporting automation service for growing businesses in Bangladesh.',
 	);
 }
 
@@ -1519,6 +1556,9 @@ add_action( 'wp_head', 'womensfight_open_graph_tags', 1 );
 function womensfight_seo_title( $title ) {
 	if ( is_front_page() ) {
 		return "Women's Fight — Ramganj, Lakshmipur-এর সেরা ডিজিটাল মার্কেটিং এজেন্সি";
+	}
+	if ( is_page( 'auto-motion' ) ) {
+		return "Business Automation Service in Bangladesh | Women's Fight";
 	}
 	if ( is_page() ) {
 		return get_the_title( get_queried_object_id() ) . ' — Ramganj, Lakshmipur | Women&rsquo;s Fight';
