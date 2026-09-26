@@ -295,7 +295,14 @@ get_header();
           <option>নিশ্চিত নই — Counseling-এ জানতে চাই</option>
         </select>
       </div>
-      <div><label for="wfa_location">পছন্দের Training Location</label><input type="text" id="wfa_location" name="wfa_location" placeholder="এলাকা / শহর"></div>
+      <div>
+        <label for="wfa_location">পছন্দের Training Location</label>
+        <select id="wfa_location" name="wfa_location">
+          <option value="">সিলেক্ট করুন</option>
+          <option>রামগঞ্জ ব্রাঞ্চ</option>
+          <option>চাটখিল ব্রাঞ্চ</option>
+        </select>
+      </div>
     </div>
     <div class="frow">
       <div>
