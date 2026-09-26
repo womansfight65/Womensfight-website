@@ -1438,6 +1438,55 @@ function womensfight_noindex_private_pages() {
 add_action( 'wp_head', 'womensfight_noindex_private_pages', 1 );
 
 /**
+ * Canonical URL — one clean, definitive URL per page, so search
+ * engines don't treat ?query-string variants or trailing-slash quirks
+ * as separate duplicate pages.
+ */
+function womensfight_canonical_url() {
+	$url = is_front_page() ? home_url( '/' ) : get_permalink();
+	if ( $url ) {
+		echo '<link rel="canonical" href="' . esc_url( $url ) . '">' . "\n";
+	}
+}
+add_action( 'wp_head', 'womensfight_canonical_url', 1 );
+
+/**
+ * Open Graph + Twitter Card tags — without these, sharing a link (or
+ * Facebook crawling it for an ad) shows no title/image/description, or
+ * a generic broken preview. Reuses the same title/description mapping
+ * as the SEO tags above, plus a site-wide fallback image (the full
+ * logo) since individual pages don't have their own share image yet.
+ */
+function womensfight_open_graph_tags() {
+	if ( ! is_page() && ! is_front_page() ) {
+		return;
+	}
+	if ( is_page( 'project' ) ) {
+		return;
+	}
+
+	$title       = is_front_page() ? "Women's Fight — Ramganj, Lakshmipur-এর সেরা ডিজিটাল মার্কেটিং এজেন্সি" : get_the_title( get_queried_object_id() ) . " — Women's Fight";
+	$descriptions = womensfight_seo_meta_descriptions();
+	$slug        = is_page() ? get_post_field( 'post_name', get_queried_object_id() ) : '';
+	$description = isset( $descriptions[ $slug ] ) ? $descriptions[ $slug ] : $descriptions['home'];
+	$url         = is_front_page() ? home_url( '/' ) : get_permalink();
+	$image       = esc_url( get_template_directory_uri() . '/assets/img/logo-full.png' );
+
+	echo '<meta property="og:type" content="website">' . "\n";
+	echo '<meta property="og:site_name" content="Women\'s Fight">' . "\n";
+	echo '<meta property="og:title" content="' . esc_attr( $title ) . '">' . "\n";
+	echo '<meta property="og:description" content="' . esc_attr( $description ) . '">' . "\n";
+	echo '<meta property="og:url" content="' . esc_url( $url ) . '">' . "\n";
+	echo '<meta property="og:image" content="' . $image . '">' . "\n";
+	echo '<meta property="og:locale" content="bn_BD">' . "\n";
+	echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+	echo '<meta name="twitter:title" content="' . esc_attr( $title ) . '">' . "\n";
+	echo '<meta name="twitter:description" content="' . esc_attr( $description ) . '">' . "\n";
+	echo '<meta name="twitter:image" content="' . $image . '">' . "\n";
+}
+add_action( 'wp_head', 'womensfight_open_graph_tags', 1 );
+
+/**
  * Browser-tab / search-result title, with the target location worked in
  * naturally — separate from the on-page H1 and nav labels, which stay
  * unchanged.
