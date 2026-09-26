@@ -134,6 +134,7 @@ get_header();
     <div class="feat"><div class="ico sm"><svg><use href="#i-code"/></svg></div><h3>Freelancing-এ আগ্রহী নারী</h3><p>Freelancing শুরু করার জন্য প্রয়োজনীয় Skill ও Guideline পান।</p></div>
     <div class="feat"><div class="ico sm"><svg><use href="#i-gear"/></svg></div><h3>Computer Skill শিখতে আগ্রহী নারী</h3><p>একদম শুরু থেকে ধাপে ধাপে Computer ব্যবহার শিখুন।</p></div>
   </div>
+  <div style="text-align:center; margin-top:32px;"><a class="btn btn-primary" href="#wfa-counseling-form">ফ্রি কাউন্সেলিং নিন</a></div>
 </div></section>
 
 <section class="tight wrap">
@@ -232,6 +233,7 @@ get_header();
     <div class="tl-step"><div class="tl-num">৪</div><div class="tl-body"><h3>Internship / Local Client / Freelancing / নিজের Business</h3><p>আগ্রহ ও সুযোগ অনুযায়ী পরবর্তী ধাপে এগিয়ে যাওয়া।</p></div></div>
   </div>
   <p class="note" style="margin-top:20px;">ফলাফল শিক্ষার্থীর নিজের অনুশীলন, পরিশ্রম এবং প্রাপ্ত সুযোগের উপর নির্ভর করে &mdash; কোনো নির্দিষ্ট আয়, চাকরি বা ফলাফলের নিশ্চয়তা দেওয়া হয় না।</p>
+  <div style="text-align:center; margin-top:24px;"><a class="btn btn-ghost" href="#wfa-counseling-form">কোন Course দিয়ে শুরু করব জানুন</a></div>
 </div></section>
 
 <section class="tight wrap">
@@ -346,6 +348,7 @@ get_header();
     <div class="benefit"><div class="ico sm"><svg><use href="#i-users"/></svg></div><h3>Trainer Support</h3><p>প্রশ্ন বা সমস্যায় Trainer ও Support Team-এর সহায়তা।</p></div>
     <div class="benefit"><div class="ico sm"><svg><use href="#i-pin"/></svg></div><h3>Center Visit / Counseling</h3><p>Free Counseling-এর মাধ্যমে বিস্তারিত জেনে নেওয়ার সুযোগ।</p></div>
   </div>
+  <div style="text-align:center; margin-top:32px;"><a class="btn btn-primary" href="#wfa-counseling-form">সন্তানের জন্য ফ্রি কাউন্সেলিং নিন</a></div>
 </section>
 
 <section class="tight alt"><div class="wrap">
