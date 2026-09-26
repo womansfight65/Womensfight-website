@@ -1470,7 +1470,7 @@ function womensfight_open_graph_tags() {
 	$slug        = is_page() ? get_post_field( 'post_name', get_queried_object_id() ) : '';
 	$description = isset( $descriptions[ $slug ] ) ? $descriptions[ $slug ] : $descriptions['home'];
 	$url         = is_front_page() ? home_url( '/' ) : get_permalink();
-	$image       = esc_url( get_template_directory_uri() . '/assets/img/logo-full.png' );
+	$image       = esc_url( womensfight_asset_url( 'og-share.jpg' ) );
 
 	echo '<meta property="og:type" content="website">' . "\n";
 	echo '<meta property="og:site_name" content="Women\'s Fight">' . "\n";
@@ -1478,6 +1478,8 @@ function womensfight_open_graph_tags() {
 	echo '<meta property="og:description" content="' . esc_attr( $description ) . '">' . "\n";
 	echo '<meta property="og:url" content="' . esc_url( $url ) . '">' . "\n";
 	echo '<meta property="og:image" content="' . $image . '">' . "\n";
+	echo '<meta property="og:image:width" content="1200">' . "\n";
+	echo '<meta property="og:image:height" content="630">' . "\n";
 	echo '<meta property="og:locale" content="bn_BD">' . "\n";
 	echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
 	echo '<meta name="twitter:title" content="' . esc_attr( $title ) . '">' . "\n";
