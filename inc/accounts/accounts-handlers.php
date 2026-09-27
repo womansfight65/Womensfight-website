@@ -61,7 +61,7 @@ function wfa_handle_save_transaction() {
 	$edit_id = isset( $_POST['wfa_edit_id'] ) ? absint( $_POST['wfa_edit_id'] ) : 0;
 
 	if ( $edit_id > 0 ) {
-		$wpdb->update(
+		$result = $wpdb->update(
 			$table,
 			array(
 				'entry_date'     => $entry_date,
@@ -80,7 +80,7 @@ function wfa_handle_save_transaction() {
 		);
 		$message = 'wfa_updated';
 	} else {
-		$wpdb->insert(
+		$result = $wpdb->insert(
 			$table,
 			array(
 				'entry_date'     => $entry_date,
@@ -94,9 +94,19 @@ function wfa_handle_save_transaction() {
 				'created_by'     => get_current_user_id(),
 				'created_at'     => current_time( 'mysql' ),
 			),
-			array( '%s', '%s', '%s', '%s', '%f', '%s', '%s', '%d', '%s' )
+			// 10 data fields need 10 format specifiers — a previous
+			// version of this array was one short (missing '%s' for
+			// "status"), which silently misaligned every field after it
+			// and made $wpdb->insert() refuse to run at all. This is why
+			// entries never actually saved even though no error showed.
+			array( '%s', '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%d', '%s' )
 		);
 		$message = 'wfa_added';
+	}
+
+	if ( false === $result ) {
+		set_transient( 'wfa_last_db_error', $wpdb->last_error, 60 );
+		$message = 'wfa_save_failed';
 	}
 
 	wp_safe_redirect(

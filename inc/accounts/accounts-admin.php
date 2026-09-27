@@ -74,6 +74,18 @@ function wfa_render_message_banner() {
 		'wfa_balance_saved' => 'Opening Balance সংরক্ষণ করা হয়েছে।',
 	);
 	$key = sanitize_key( wp_unslash( $_GET['wfa_msg'] ) );
+
+	if ( 'wfa_save_failed' === $key ) {
+		$error = get_transient( 'wfa_last_db_error' );
+		delete_transient( 'wfa_last_db_error' );
+		echo '<div class="notice notice-error"><p><strong>Entry সংরক্ষণ করা যায়নি।</strong>';
+		if ( $error ) {
+			echo ' Database error: ' . esc_html( $error );
+		}
+		echo '</p></div>';
+		return;
+	}
+
 	if ( isset( $messages[ $key ] ) ) {
 		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $messages[ $key ] ) . '</p></div>';
 	}
