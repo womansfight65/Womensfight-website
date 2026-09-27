@@ -5,6 +5,8 @@
 .wfa-wrap .wfa-month-form{margin:16px 0; display:flex; align-items:center; gap:8px;}
 .wfa-wrap .wfa-actions{margin:16px 0;}
 .wfa-wrap .wfa-hint{color:#646970; font-size:.9em;}
+.wfa-wrap .wfa-section-title{margin:28px 0 4px; font-size:1.1em; border-top:1px solid #dcdcde; padding-top:20px;}
+.wfa-wrap .wfa-section-title:first-of-type{border-top:none; padding-top:0;}
 
 .wfa-cards{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:20px 0;}
 .wfa-card{background:#fff; border:1px solid #dcdcde; border-radius:6px; padding:16px 18px;}

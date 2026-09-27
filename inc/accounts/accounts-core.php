@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WFA_ACCOUNTS_DB_VERSION', '1.0' );
+define( 'WFA_ACCOUNTS_DB_VERSION', '1.1' );
 
 function wfa_accounts_transactions_table() {
 	global $wpdb;
@@ -47,39 +47,71 @@ function wfa_accounts_maybe_upgrade_db() {
 	$transactions_table = wfa_accounts_transactions_table();
 	$budget_table        = wfa_accounts_budget_table();
 
-	$sql = "CREATE TABLE {$transactions_table} (
-		id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-		entry_date DATE NOT NULL,
-		month_year CHAR(7) NOT NULL,
-		type VARCHAR(30) NOT NULL,
-		category VARCHAR(120) NOT NULL DEFAULT '',
-		amount DECIMAL(12,2) NOT NULL DEFAULT 0,
-		payment_method VARCHAR(40) NOT NULL DEFAULT '',
-		note TEXT NULL,
-		status VARCHAR(20) NOT NULL DEFAULT 'active',
-		created_by BIGINT UNSIGNED NOT NULL DEFAULT 0,
-		created_at DATETIME NOT NULL,
-		updated_by BIGINT UNSIGNED NULL,
-		updated_at DATETIME NULL,
-		PRIMARY KEY  (id),
-		KEY month_year (month_year),
-		KEY type (type),
-		KEY status (status)
-	) {$charset_collate};
+	// dbDelta() reliably parses ONE CREATE TABLE statement per call — two
+	// statements in a single string can silently fail to create (or
+	// mis-parse) the second table, which is the most likely reason data
+	// wasn't showing up. Calling it once per table avoids that entirely.
+	dbDelta(
+		"CREATE TABLE {$transactions_table} (
+			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			entry_date DATE NOT NULL,
+			month_year CHAR(7) NOT NULL,
+			type VARCHAR(30) NOT NULL,
+			category VARCHAR(120) NOT NULL DEFAULT '',
+			amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+			payment_method VARCHAR(40) NOT NULL DEFAULT '',
+			note TEXT NULL,
+			status VARCHAR(20) NOT NULL DEFAULT 'active',
+			created_by BIGINT UNSIGNED NOT NULL DEFAULT 0,
+			created_at DATETIME NOT NULL,
+			updated_by BIGINT UNSIGNED NULL,
+			updated_at DATETIME NULL,
+			PRIMARY KEY  (id),
+			KEY month_year (month_year),
+			KEY type (type),
+			KEY status (status)
+		) {$charset_collate};"
+	);
 
-	CREATE TABLE {$budget_table} (
-		month_year CHAR(7) NOT NULL,
-		ads_budget DECIMAL(12,2) NOT NULL DEFAULT 0,
-		updated_by BIGINT UNSIGNED NULL,
-		updated_at DATETIME NULL,
-		PRIMARY KEY  (month_year)
-	) {$charset_collate};";
-
-	dbDelta( $sql );
+	dbDelta(
+		"CREATE TABLE {$budget_table} (
+			month_year CHAR(7) NOT NULL,
+			ads_budget DECIMAL(12,2) NOT NULL DEFAULT 0,
+			updated_by BIGINT UNSIGNED NULL,
+			updated_at DATETIME NULL,
+			PRIMARY KEY  (month_year)
+		) {$charset_collate};"
+	);
 
 	update_option( 'wfa_accounts_db_version', WFA_ACCOUNTS_DB_VERSION );
 }
 add_action( 'admin_init', 'wfa_accounts_maybe_upgrade_db' );
+
+/**
+ * True only if both tables actually exist in the database — used by the
+ * Overview screen's system-status line so a table-creation problem is
+ * visible at a glance instead of silently showing zero for everything.
+ */
+function wfa_accounts_tables_ready() {
+	global $wpdb;
+	$t1 = wfa_accounts_transactions_table();
+	$t2 = wfa_accounts_budget_table();
+	$found1 = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $t1 ) );
+	$found2 = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $t2 ) );
+	return ( $found1 === $t1 ) && ( $found2 === $t2 );
+}
+
+/**
+ * Total active transaction count, all months — used by the Overview
+ * screen to tell "nothing entered yet" apart from "entered, but not in
+ * the selected month" (the most common real-world cause of an
+ * apparently-empty Overview).
+ */
+function wfa_accounts_total_entry_count() {
+	global $wpdb;
+	$table = wfa_accounts_transactions_table();
+	return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table} WHERE status = 'active'" );
+}
 
 /**
  * Transaction type => Bangla-friendly label. The single source of truth
@@ -174,6 +206,22 @@ function wfa_accounts_get_category_breakdown( $month_year, $type ) {
 			 GROUP BY category ORDER BY subtotal DESC",
 			$type,
 			$month_year
+		)
+	);
+}
+
+/**
+ * The most recent N active entries for one month — powers the Overview
+ * screen's "Recent Entries" list.
+ */
+function wfa_accounts_get_recent_entries( $month_year, $limit = 5 ) {
+	global $wpdb;
+	$table = wfa_accounts_transactions_table();
+	return $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT * FROM {$table} WHERE month_year = %s AND status = 'active' ORDER BY entry_date DESC, id DESC LIMIT %d",
+			$month_year,
+			$limit
 		)
 	);
 }

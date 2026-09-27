@@ -87,13 +87,28 @@ function wfa_render_overview_page() {
 	$t     = wfa_accounts_get_monthly_totals( $month );
 
 	echo '<div class="wrap wfa-wrap">';
-	echo '<h1>WF Simple Accounts — Overview</h1>';
+	echo '<h1 class="wp-heading-inline">WF Simple Accounts</h1>';
+	echo '<a href="' . esc_url( admin_url( 'admin.php?page=wfa-add-entry' ) ) . '" class="page-title-action">নতুন Entry যোগ করুন</a>';
+	echo '<hr class="wp-header-end">';
 	wfa_render_message_banner();
+
+	// System status — makes a table-creation problem visible immediately
+	// instead of just showing confusing zeroes everywhere.
+	if ( ! wfa_accounts_tables_ready() ) {
+		echo '<div class="notice notice-error"><p><strong>সমস্যা:</strong> Accounts-এর ডেটাবেস টেবিল এখনো তৈরি হয়নি। এই পেজটা একবার রিফ্রেশ করুন — সাধারণত প্রথমবার wp-admin-এ ঢোকার সময় এটা স্বয়ংক্রিয়ভাবে তৈরি হয়ে যায়।</p></div>';
+	}
+
+	$total_all_time = wfa_accounts_total_entry_count();
+	if ( 0 === $total_all_time ) {
+		echo '<div class="notice notice-info"><p>এখনো কোনো Entry যোগ করা হয়নি। <a href="' . esc_url( admin_url( 'admin.php?page=wfa-add-entry' ) ) . '">প্রথম Entry যোগ করুন</a>।</p></div>';
+	}
+
 	wfa_render_month_picker( 'wfa-accounts', $month );
 
 	$budget_pct = $t['ads_budget'] > 0 ? min( 100, round( ( $t['ads_spend'] / $t['ads_budget'] ) * 100 ) ) : 0;
 	$over       = $t['remaining_ads_budget'] < 0;
 
+	echo '<h2 class="wfa-section-title">মাসিক সারসংক্ষেপ</h2>';
 	echo '<div class="wfa-cards">';
 	echo '<div class="wfa-card"><span>Monthly Ads Budget</span><b>' . esc_html( wfa_accounts_money( $t['ads_budget'] ) ) . '</b></div>';
 	echo '<div class="wfa-card"><span>Actual Ads Spend</span><b>' . esc_html( wfa_accounts_money( $t['ads_spend'] ) ) . '</b></div>';
@@ -105,9 +120,28 @@ function wfa_render_overview_page() {
 	echo '<div class="wfa-card wfa-card-' . ( $t['net_profit'] >= 0 ? 'good' : 'warn' ) . '"><span>Net Profit</span><b>' . esc_html( wfa_accounts_money( $t['net_profit'] ) ) . '</b></div>';
 	echo '</div>';
 
-	echo '<h2>Ads Budget ব্যবহার</h2>';
+	echo '<h2 class="wfa-section-title">Ads Budget ব্যবহার</h2>';
 	echo '<div class="wfa-progress"><div class="wfa-progress-bar' . ( $over ? ' wfa-progress-over' : '' ) . '" style="width:' . esc_attr( $budget_pct ) . '%;"></div></div>';
 	echo '<p class="wfa-hint">' . esc_html( $budget_pct ) . '% ব্যবহৃত' . ( $over ? ' — বাজেট ছাড়িয়ে গেছে' : '' ) . '</p>';
+
+	echo '<h2 class="wfa-section-title">সাম্প্রতিক Entry (এই মাসের)</h2>';
+	$recent = wfa_accounts_get_recent_entries( $month, 5 );
+	$types  = wfa_accounts_types();
+	if ( $recent ) {
+		echo '<table class="widefat striped wfa-summary-table" style="max-width:820px;">';
+		echo '<thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th></tr></thead><tbody>';
+		foreach ( $recent as $row ) {
+			echo '<tr>';
+			echo '<td>' . esc_html( $row->entry_date ) . '</td>';
+			echo '<td>' . esc_html( isset( $types[ $row->type ] ) ? $types[ $row->type ] : $row->type ) . '</td>';
+			echo '<td>' . esc_html( $row->category ) . '</td>';
+			echo '<td>' . esc_html( wfa_accounts_money( $row->amount ) ) . '</td>';
+			echo '</tr>';
+		}
+		echo '</tbody></table>';
+	} else {
+		echo '<p class="wfa-hint">এই মাসে (' . esc_html( $month ) . ') এখনো কোনো Entry নেই।' . ( $total_all_time > 0 ? ' অন্য মাসে Entry থাকতে পারে — উপরের মাস নির্বাচন করে দেখুন।' : '' ) . '</p>';
+	}
 
 	echo '<p class="wfa-actions">';
 	echo '<a class="button button-primary" href="' . esc_url( admin_url( 'admin.php?page=wfa-add-entry' ) ) . '">নতুন Entry যোগ করুন</a> ';
