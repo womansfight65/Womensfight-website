@@ -57,8 +57,8 @@ $logo_icon = esc_url( get_template_directory_uri() . '/assets/img/logo-icon.png'
 <header class="nav">
   <div class="wrap nav-inner">
     <a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-      <img class="logo-full" src="<?php echo $logo_full; ?>" alt="Women's Fight — Ramganj, Lakshmipur" decoding="async" fetchpriority="high">
-      <img class="logo-icon" src="<?php echo $logo_icon; ?>" alt="Women's Fight — Ramganj, Lakshmipur" decoding="async">
+      <img class="logo-full" src="<?php echo $logo_full; ?>" alt="Women's Fight — Ramganj, Lakshmipur" width="800" height="245" decoding="async" fetchpriority="high">
+      <img class="logo-icon" src="<?php echo $logo_icon; ?>" alt="Women's Fight — Ramganj, Lakshmipur" width="193" height="193" decoding="async">
     </a>
 
     <?php
