@@ -5,18 +5,22 @@
  * here, server-side, straight from the database — never trusted from
  * browser JavaScript.
  *
- * Two dedicated tables, both new, neither touching any existing
+ * Three dedicated tables, all new, none touching any existing
  * WordPress or theme table:
- * - {$wpdb->prefix}wfa_transactions   — every Income/Expense/Ads Spend/
+ * - {$wpdb->prefix}wfa_transactions     — every Income/Expense/Ads Spend/
  *   Salary entry.
- * - {$wpdb->prefix}wfa_monthly_budget — one row per month holding that
+ * - {$wpdb->prefix}wfa_monthly_budget   — one row per month holding that
  *   month's planned Ads Budget (a target, not a transaction).
+ * - {$wpdb->prefix}wfa_opening_balance  — one row per payment method
+ *   holding the starting Cash/Bank/Mobile Banking balance, so a running
+ *   live balance can be shown (opening balance + all Income − all
+ *   Expense, all-time) without needing a full ledger/journal system.
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WFA_ACCOUNTS_DB_VERSION', '1.1' );
+define( 'WFA_ACCOUNTS_DB_VERSION', '1.2' );
 
 function wfa_accounts_transactions_table() {
 	global $wpdb;
@@ -26,6 +30,11 @@ function wfa_accounts_transactions_table() {
 function wfa_accounts_budget_table() {
 	global $wpdb;
 	return $wpdb->prefix . 'wfa_monthly_budget';
+}
+
+function wfa_accounts_opening_balance_table() {
+	global $wpdb;
+	return $wpdb->prefix . 'wfa_opening_balance';
 }
 
 /**
@@ -83,6 +92,17 @@ function wfa_accounts_maybe_upgrade_db() {
 		) {$charset_collate};"
 	);
 
+	$balance_table = wfa_accounts_opening_balance_table();
+	dbDelta(
+		"CREATE TABLE {$balance_table} (
+			payment_method VARCHAR(40) NOT NULL,
+			amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+			updated_by BIGINT UNSIGNED NULL,
+			updated_at DATETIME NULL,
+			PRIMARY KEY  (payment_method)
+		) {$charset_collate};"
+	);
+
 	update_option( 'wfa_accounts_db_version', WFA_ACCOUNTS_DB_VERSION );
 }
 add_action( 'admin_init', 'wfa_accounts_maybe_upgrade_db' );
@@ -94,11 +114,13 @@ add_action( 'admin_init', 'wfa_accounts_maybe_upgrade_db' );
  */
 function wfa_accounts_tables_ready() {
 	global $wpdb;
-	$t1 = wfa_accounts_transactions_table();
-	$t2 = wfa_accounts_budget_table();
-	$found1 = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $t1 ) );
-	$found2 = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $t2 ) );
-	return ( $found1 === $t1 ) && ( $found2 === $t2 );
+	foreach ( array( wfa_accounts_transactions_table(), wfa_accounts_budget_table(), wfa_accounts_opening_balance_table() ) as $table ) {
+		$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
+		if ( $found !== $table ) {
+			return false;
+		}
+	}
+	return true;
 }
 
 /**
@@ -190,6 +212,85 @@ function wfa_accounts_set_monthly_budget( $month_year, $amount ) {
 			current_time( 'mysql' )
 		)
 	);
+}
+
+function wfa_accounts_get_opening_balance( $payment_method ) {
+	global $wpdb;
+	$table = wfa_accounts_opening_balance_table();
+	$value = $wpdb->get_var(
+		$wpdb->prepare( "SELECT amount FROM {$table} WHERE payment_method = %s", $payment_method )
+	);
+	return null === $value ? 0.0 : (float) $value;
+}
+
+function wfa_accounts_set_opening_balance( $payment_method, $amount ) {
+	global $wpdb;
+	$table = wfa_accounts_opening_balance_table();
+	$wpdb->query(
+		$wpdb->prepare(
+			"INSERT INTO {$table} (payment_method, amount, updated_by, updated_at) VALUES (%s, %f, %d, %s)
+			 ON DUPLICATE KEY UPDATE amount = VALUES(amount), updated_by = VALUES(updated_by), updated_at = VALUES(updated_at)",
+			$payment_method,
+			$amount,
+			get_current_user_id(),
+			current_time( 'mysql' )
+		)
+	);
+}
+
+/**
+ * Live running balance per Payment Method — opening balance + all-time
+ * Income − all-time Expense (General Expense + Ads Spend + Salary),
+ * for every active (non-trashed) transaction. This is deliberately
+ * NOT month-scoped — "কত Cash এখন হাতে আছে" is a running total, not a
+ * monthly figure, so it always reflects every entry ever made.
+ */
+function wfa_accounts_get_balance_summary() {
+	global $wpdb;
+	$table = wfa_accounts_transactions_table();
+
+	$rows = $wpdb->get_results(
+		"SELECT payment_method, type, SUM(amount) AS total FROM {$table}
+		 WHERE status = 'active' GROUP BY payment_method, type"
+	);
+
+	$summary    = array();
+	$methods    = wfa_accounts_payment_methods();
+	$expense_types = array( 'general_expense', 'ads_spend', 'salary' );
+
+	foreach ( $methods as $method ) {
+		$summary[ $method ] = array(
+			'opening' => wfa_accounts_get_opening_balance( $method ),
+			'income'  => 0.0,
+			'expense' => 0.0,
+		);
+	}
+
+	foreach ( $rows as $row ) {
+		$method = $row->payment_method ? $row->payment_method : 'Other';
+		if ( ! isset( $summary[ $method ] ) ) {
+			// A payment method typed in before this list existed, or a
+			// blank one — still counted, just grouped under its own row.
+			$summary[ $method ] = array( 'opening' => wfa_accounts_get_opening_balance( $method ), 'income' => 0.0, 'expense' => 0.0 );
+		}
+		if ( 'income' === $row->type ) {
+			$summary[ $method ]['income'] += (float) $row->total;
+		} elseif ( in_array( $row->type, $expense_types, true ) ) {
+			$summary[ $method ]['expense'] += (float) $row->total;
+		}
+	}
+
+	$grand_total = array( 'opening' => 0.0, 'income' => 0.0, 'expense' => 0.0, 'balance' => 0.0 );
+	foreach ( $summary as $method => &$data ) {
+		$data['balance']    = $data['opening'] + $data['income'] - $data['expense'];
+		$grand_total['opening'] += $data['opening'];
+		$grand_total['income']  += $data['income'];
+		$grand_total['expense'] += $data['expense'];
+		$grand_total['balance'] += $data['balance'];
+	}
+	unset( $data );
+
+	return array( 'by_method' => $summary, 'total' => $grand_total );
 }
 
 /**

@@ -225,6 +225,31 @@ function wfa_handle_set_budget() {
 add_action( 'admin_post_wfa_set_budget', 'wfa_handle_set_budget' );
 
 /**
+ * Set/update one Payment Method's Opening Balance — the starting point
+ * the live running Cash/Bank balance is calculated from.
+ */
+function wfa_handle_set_opening_balance() {
+	wfa_accounts_require_access();
+	if ( ! isset( $_POST['wfa_ob_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['wfa_ob_nonce'] ), 'wfa_set_opening_balance' ) ) {
+		wp_die( 'Security check failed। দয়া করে পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' );
+	}
+
+	$method = isset( $_POST['wfa_ob_method'] ) ? sanitize_text_field( wp_unslash( $_POST['wfa_ob_method'] ) ) : '';
+	if ( ! in_array( $method, wfa_accounts_payment_methods(), true ) ) {
+		wp_die( 'ভুল Payment Method।' );
+	}
+	$amount = isset( $_POST['wfa_ob_amount'] ) ? max( 0, round( (float) $_POST['wfa_ob_amount'], 2 ) ) : 0;
+
+	wfa_accounts_set_opening_balance( $method, $amount );
+
+	wp_safe_redirect(
+		add_query_arg( array( 'page' => 'wfa-accounts', 'wfa_msg' => 'wfa_balance_saved' ), admin_url( 'admin.php' ) )
+	);
+	exit;
+}
+add_action( 'admin_post_wfa_set_opening_balance', 'wfa_handle_set_opening_balance' );
+
+/**
  * CSV export for one month, all active transactions. UTF-8 BOM included
  * so Bangla text opens correctly in Excel (same pattern as the rest of
  * the site's exports).

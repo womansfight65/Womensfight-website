@@ -71,6 +71,7 @@ function wfa_render_message_banner() {
 		'wfa_restored'      => 'Entry ফিরিয়ে আনা হয়েছে।',
 		'wfa_deleted'       => 'Entry স্থায়ীভাবে মুছে ফেলা হয়েছে।',
 		'wfa_budget_saved'  => 'Ads Budget সংরক্ষণ করা হয়েছে।',
+		'wfa_balance_saved' => 'Opening Balance সংরক্ষণ করা হয়েছে।',
 	);
 	$key = sanitize_key( wp_unslash( $_GET['wfa_msg'] ) );
 	if ( isset( $messages[ $key ] ) ) {
@@ -102,6 +103,33 @@ function wfa_render_overview_page() {
 	if ( 0 === $total_all_time ) {
 		echo '<div class="notice notice-info"><p>এখনো কোনো Entry যোগ করা হয়নি। <a href="' . esc_url( admin_url( 'admin.php?page=wfa-add-entry' ) ) . '">প্রথম Entry যোগ করুন</a>।</p></div>';
 	}
+
+	// Live running balance — NOT month-scoped, always all-time-to-date.
+	echo '<h2 class="wfa-section-title">Cash &amp; Bank Balance <span class="wfa-live-tag">Live</span></h2>';
+	$balance = wfa_accounts_get_balance_summary();
+	echo '<div class="wfa-cards">';
+	foreach ( $balance['by_method'] as $method => $data ) {
+		echo '<div class="wfa-card"><span>' . esc_html( $method ) . '</span><b>' . esc_html( wfa_accounts_money( $data['balance'] ) ) . '</b></div>';
+	}
+	echo '<div class="wfa-card wfa-card-good"><span>মোট (সব মিলিয়ে)</span><b>' . esc_html( wfa_accounts_money( $balance['total']['balance'] ) ) . '</b></div>';
+	echo '</div>';
+
+	echo '<details class="wfa-balance-settings"><summary>Opening Balance সেট/পরিবর্তন করুন</summary>';
+	echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="wfa-form wfa-inline-form">';
+	echo '<input type="hidden" name="action" value="wfa_set_opening_balance">';
+	wp_nonce_field( 'wfa_set_opening_balance', 'wfa_ob_nonce' );
+	echo '<label for="wfa_ob_method">Payment Method</label> ';
+	echo '<select id="wfa_ob_method" name="wfa_ob_method">';
+	foreach ( wfa_accounts_payment_methods() as $m ) {
+		echo '<option>' . esc_html( $m ) . '</option>';
+	}
+	echo '</select> ';
+	echo '<label for="wfa_ob_amount">Opening Balance (৳)</label> ';
+	echo '<input type="number" step="0.01" min="0" id="wfa_ob_amount" name="wfa_ob_amount" required> ';
+	echo '<button type="submit" class="button">সংরক্ষণ করুন</button>';
+	echo '</form>';
+	echo '<p class="wfa-hint">এটা শুধু একবার (বা ভুল হলে সংশোধন করতে) ব্যবহার করুন — এখান থেকে শুরু করে পরবর্তী সব Income/Expense স্বয়ংক্রিয়ভাবে যোগ-বিয়োগ হয়ে Live Balance দেখাবে।</p>';
+	echo '</details>';
 
 	wfa_render_month_picker( 'wfa-accounts', $month );
 
@@ -184,13 +212,13 @@ function wfa_render_add_entry_page() {
 
 	echo '<tr><th><label for="wfa_entry_date">Date</label></th><td><input type="date" id="wfa_entry_date" name="wfa_entry_date" value="' . esc_attr( $row ? $row->entry_date : $today ) . '" required></td></tr>';
 
-	echo '<tr><th><label for="wfa_type">Transaction Type</label></th><td><select id="wfa_type" name="wfa_type" required>';
+	echo '<tr><th><label for="wfa_type">Transaction Type</label></th><td><select id="wfa_type" name="wfa_type" required onchange="wfaUpdateCategoryLabel(this.value);">';
 	foreach ( $types as $key => $label ) {
 		echo '<option value="' . esc_attr( $key ) . '"' . selected( $row ? $row->type : '', $key, false ) . '>' . esc_html( $label ) . '</option>';
 	}
 	echo '</select></td></tr>';
 
-	echo '<tr><th><label for="wfa_category">Category</label></th><td><input type="text" id="wfa_category" name="wfa_category" class="regular-text" placeholder="যেমন: Facebook Ads, Office Rent, ইত্যাদি" value="' . esc_attr( $row ? $row->category : '' ) . '"></td></tr>';
+	echo '<tr><th><label for="wfa_category" id="wfa_category_label">Category</label></th><td><input type="text" id="wfa_category" name="wfa_category" class="regular-text" placeholder="যেমন: Facebook Ads, Office Rent, ইত্যাদি" value="' . esc_attr( $row ? $row->category : '' ) . '"></td></tr>';
 
 	echo '<tr><th><label for="wfa_amount">Amount (৳)</label></th><td><input type="number" step="0.01" min="0" id="wfa_amount" name="wfa_amount" class="regular-text" required value="' . esc_attr( $row ? $row->amount : '' ) . '"></td></tr>';
 
@@ -218,6 +246,33 @@ function wfa_render_add_entry_page() {
 	echo '</tbody></table>';
 	submit_button( 'Budget সংরক্ষণ করুন', 'secondary' );
 	echo '</form>';
+
+	// Category field relabels itself by Transaction Type, so it reads
+	// "Income Source" for Income, "Employee Name" for Salary, etc. —
+	// purely a label/placeholder swap; the stored field is still just
+	// "category", so existing reports/breakdowns keep working unchanged.
+	?>
+	<script>
+	var wfaCategoryLabels = {
+		income:          { label: 'Income Source (আয় কোথা থেকে)', placeholder: 'যেমন: Facebook Ads Lead, Website Order, ইত্যাদি' },
+		general_expense: { label: 'Category', placeholder: 'যেমন: Office Rent, Internet Bill, ইত্যাদি' },
+		ads_spend:       { label: 'Category (কোন Platform)', placeholder: 'যেমন: Facebook Ads, Google Ads' },
+		salary:          { label: 'Employee Name (কর্মচারীর নাম)', placeholder: 'যেমন: রহিম উদ্দিন' }
+	};
+	function wfaUpdateCategoryLabel(type) {
+		var info = wfaCategoryLabels[type];
+		if (!info) { return; }
+		var label = document.getElementById('wfa_category_label');
+		var input = document.getElementById('wfa_category');
+		if (label) { label.textContent = info.label; }
+		if (input) { input.setAttribute('placeholder', info.placeholder); }
+	}
+	document.addEventListener('DOMContentLoaded', function () {
+		var typeSelect = document.getElementById('wfa_type');
+		if (typeSelect) { wfaUpdateCategoryLabel(typeSelect.value); }
+	});
+	</script>
+	<?php
 
 	echo '</div>';
 }

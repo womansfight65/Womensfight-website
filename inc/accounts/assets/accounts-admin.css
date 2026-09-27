@@ -25,6 +25,12 @@
 .wfa-summary-table{max-width:520px;}
 .wfa-danger{color:#d63638;}
 
+.wfa-live-tag{display:inline-block; background:#00a32a; color:#fff; font-size:.6em; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:2px 8px; border-radius:999px; vertical-align:middle; margin-left:6px;}
+.wfa-balance-settings{margin:14px 0 26px; background:#fff; border:1px solid #dcdcde; border-radius:6px; padding:12px 16px;}
+.wfa-balance-settings summary{cursor:pointer; font-weight:600;}
+.wfa-inline-form{border:none; padding:0; margin-top:12px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:none;}
+.wfa-inline-form input[type="number"]{width:140px;}
+
 @media (max-width:960px){
   .wfa-cards{grid-template-columns:repeat(2,1fr);}
 }
