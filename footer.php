@@ -43,6 +43,7 @@ $logo_full = esc_url( get_template_directory_uri() . '/assets/img/logo-full.png'
       <a href="<?php echo esc_url( womensfight_page_url( 'product' ) ); ?>">Product</a>
       <a href="<?php echo esc_url( womensfight_page_url( 'contact' ) ); ?>">Contact Us</a>
       <a href="<?php echo esc_url( womensfight_page_url( 'lead-form' ) ); ?>">Lead Form</a>
+      <a href="<?php echo esc_url( home_url( '/crm-lead/' ) ); ?>">CRM-Lead (Team Login)</a>
     </div>
     <div class="foot-col">
       <h4>যোগাযোগ</h4>
@@ -53,7 +54,7 @@ $logo_full = esc_url( get_template_directory_uri() . '/assets/img/logo-full.png'
   </div>
   <div class="wrap foot-bottom">
     <span>&copy; <?php echo esc_html( date( 'Y' ) ); ?> Women&rsquo;s Fight Agency. সর্বস্বত্ব সংরক্ষিত।</span>
-    <span>প্রাইভেসি পলিসি &middot; শর্তাবলী &middot; <a href="<?php echo esc_url( home_url( '/crm-lead/' ) ); ?>" style="color:inherit;">CRM-Lead</a></span>
+    <span>প্রাইভেসি পলিসি &middot; শর্তাবলী</span>
   </div>
 </footer>
 
