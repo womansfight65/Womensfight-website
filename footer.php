@@ -53,7 +53,7 @@ $logo_full = esc_url( get_template_directory_uri() . '/assets/img/logo-full.png'
   </div>
   <div class="wrap foot-bottom">
     <span>&copy; <?php echo esc_html( date( 'Y' ) ); ?> Women&rsquo;s Fight Agency. সর্বস্বত্ব সংরক্ষিত।</span>
-    <span>প্রাইভেসি পলিসি &middot; শর্তাবলী</span>
+    <span>প্রাইভেসি পলিসি &middot; শর্তাবলী &middot; <a href="<?php echo esc_url( home_url( '/crm-lead/' ) ); ?>" style="color:inherit;">CRM-Lead</a></span>
   </div>
 </footer>
 

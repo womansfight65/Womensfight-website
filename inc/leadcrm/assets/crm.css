@@ -1,0 +1,105 @@
+/* Lead CRM — scoped to /crm-lead/ only. Reuses the public theme's
+   :root color tokens (style.css is enqueued alongside this file) so
+   it stays visually consistent with the brand, but none of this
+   leaks onto any other page. */
+
+body.wfa-crm-body{margin:0; background:var(--bg); color:var(--ink); font-family:'Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;}
+.wfa-crm-topbar{display:flex; align-items:center; justify-content:space-between; padding:14px 24px; border-bottom:1px solid var(--border); background:var(--surface);}
+.wfa-crm-topbar .brand{display:flex; align-items:center; gap:10px; font-weight:700;}
+.wfa-crm-topbar .brand img{height:30px; width:auto;}
+.wfa-crm-topbar .who{font-size:.85rem; color:var(--ink-faint); display:flex; align-items:center; gap:14px;}
+.wfa-crm-topbar .who a{color:var(--pink-light); text-decoration:none; font-weight:700;}
+
+.crm-wrap{max-width:1360px; margin:0 auto; padding:24px;}
+
+/* Login screen */
+.crm-login-wrap{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;}
+.crm-login-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:40px 36px; width:100%; max-width:380px;}
+.crm-login-card h1{font-size:1.4rem; margin-bottom:6px;}
+.crm-login-card p.sub{color:var(--ink-faint); font-size:.88rem; margin-bottom:24px;}
+.crm-login-card label{font-size:.8rem; font-weight:700; color:var(--ink-faint); display:block; margin-bottom:7px;}
+.crm-login-card input{width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--border); background:var(--bg-2); color:var(--ink); font-family:inherit; font-size:.92rem; margin-bottom:16px;}
+.crm-login-card input:focus{outline:none; border-color:var(--pink);}
+.crm-login-error{background:rgba(243,20,123,.12); border:1px solid rgba(243,20,123,.3); color:var(--pink-light); padding:10px 14px; border-radius:10px; font-size:.85rem; margin-bottom:16px;}
+
+/* Stat cards */
+.crm-cards{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px;}
+.crm-card{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px 18px;}
+.crm-card span{display:block; color:var(--ink-faint); font-size:.8rem; margin-bottom:6px;}
+.crm-card b{display:block; font-size:1.5rem; font-weight:700; color:var(--ink);}
+.crm-card-warn b{color:var(--pink-light);}
+
+/* Filters */
+.crm-filters{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:18px; align-items:center;}
+.crm-filters input, .crm-filters select{padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--ink); font-family:inherit; font-size:.86rem;}
+.crm-filters input[type="text"]{min-width:200px; flex:1;}
+
+/* Table */
+.crm-table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--surface);}
+.crm-table{width:100%; border-collapse:collapse; min-width:960px; font-size:.86rem;}
+.crm-table th, .crm-table td{padding:12px 14px; text-align:left; border-bottom:1px solid var(--border); white-space:nowrap;}
+.crm-table th{color:var(--ink-faint); font-size:.74rem; text-transform:uppercase; letter-spacing:.03em;}
+.crm-table tbody tr:last-child td{border-bottom:none;}
+.crm-table tbody tr:hover{background:var(--surface-2);}
+
+.crm-badge{display:inline-flex; padding:4px 11px; border-radius:999px; font-size:.72rem; font-weight:700; white-space:nowrap;}
+.crm-badge-new{background:rgba(0,191,253,.15); color:var(--blue-light);}
+.crm-badge-contacted{background:rgba(154,31,174,.18); color:#d29bff;}
+.crm-badge-no_response{background:rgba(130,121,163,.2); color:var(--ink-faint);}
+.crm-badge-interested{background:rgba(255,180,0,.15); color:#ffb400;}
+.crm-badge-followup{background:rgba(243,20,123,.15); color:var(--pink-light);}
+.crm-badge-admission_pending{background:rgba(255,120,0,.18); color:#ff9a3d;}
+.crm-badge-admitted{background:rgba(0,200,120,.15); color:#2ecf85;}
+.crm-badge-not_interested{background:rgba(130,121,163,.2); color:var(--ink-faint);}
+.crm-badge-lost{background:rgba(255,60,60,.15); color:#ff5c5c;}
+
+/* Drawer */
+.crm-drawer-overlay{position:fixed; inset:0; background:rgba(5,4,12,.65); backdrop-filter:blur(2px); z-index:300; display:none;}
+.crm-drawer-overlay.open{display:block;}
+.crm-drawer{position:fixed; top:0; right:0; bottom:0; width:100%; max-width:560px; background:var(--bg); border-left:1px solid var(--border); z-index:301; transform:translateX(100%); transition:transform .25s ease; overflow-y:auto; padding:28px;}
+.crm-drawer-overlay.open .crm-drawer{transform:translateX(0);}
+.crm-drawer-close{position:absolute; top:20px; right:20px; width:36px; height:36px; border-radius:50%; background:var(--surface); border:1px solid var(--border); color:var(--ink); font-size:1.3rem; cursor:pointer;}
+
+.crm-drawer-head{margin-bottom:18px; padding-right:40px;}
+.crm-drawer-head h2{font-size:1.2rem; margin-bottom:8px;}
+.crm-drawer-code{font-size:.78rem; color:var(--ink-faint); font-weight:600;}
+
+.crm-drawer-section{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px; margin-bottom:16px;}
+.crm-drawer-section h3{font-size:.95rem; margin-bottom:12px;}
+
+.crm-inline-form label{font-size:.75rem; font-weight:700; color:var(--ink-faint); display:block; margin-bottom:5px;}
+.crm-inline-form input, .crm-inline-form select, .crm-inline-form textarea{width:100%; padding:9px 11px; border-radius:9px; border:1px solid var(--border); background:var(--bg-2); color:var(--ink); font-family:inherit; font-size:.84rem; margin-bottom:10px;}
+.crm-inline-form textarea{resize:vertical;}
+.crm-grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.crm-row-form{display:flex; gap:10px; align-items:center;}
+.crm-row-form select{margin-bottom:0;}
+
+.crm-timeline{display:flex; flex-direction:column; gap:10px; margin-top:14px;}
+.crm-timeline-item{border-top:1px solid var(--border); padding-top:10px;}
+.crm-timeline-item:first-child{border-top:none; padding-top:0;}
+.crm-timeline-meta{display:flex; justify-content:space-between; font-size:.78rem; margin-bottom:4px;}
+.crm-timeline-meta span{color:var(--ink-faint);}
+.crm-timeline-item p{font-size:.86rem; margin:4px 0;}
+.crm-outcome{display:inline-block; font-size:.72rem; font-weight:700; color:var(--blue-light); background:rgba(0,191,253,.1); padding:2px 9px; border-radius:999px;}
+
+.crm-followup-list{margin-top:14px; display:flex; flex-direction:column; gap:8px;}
+.crm-followup-item{border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:.84rem;}
+.crm-fu-priority, .crm-fu-status{display:inline-block; font-size:.68rem; font-weight:700; margin-left:8px; padding:2px 8px; border-radius:999px; background:var(--bg-2); color:var(--ink-faint);}
+.crm-fu-completed{opacity:.55;}
+.crm-fu-actions{margin-top:6px;}
+
+.crm-admission-table{width:100%; font-size:.86rem; border-collapse:collapse;}
+.crm-admission-table th, .crm-admission-table td{text-align:left; padding:7px 0; border-bottom:1px solid var(--border);}
+.crm-admission-table tr:last-child th, .crm-admission-table tr:last-child td{border-bottom:none;}
+
+.crm-hint{font-size:.82rem; color:var(--ink-faint);}
+
+@media (max-width:900px){
+  .crm-cards{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:640px){
+  .crm-wrap{padding:14px;}
+  .crm-cards{grid-template-columns:1fr;}
+  .crm-grid2{grid-template-columns:1fr;}
+  .crm-drawer{max-width:100%; padding:20px;}
+}

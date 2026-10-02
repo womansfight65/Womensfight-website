@@ -336,6 +336,54 @@ function wfa_accounts_money( $amount ) {
 }
 
 /**
+ * Reusable transaction insert — the single place that builds the
+ * $wpdb->insert() data/format arrays for a transaction row. Both the
+ * on-page Add Entry form (accounts-handlers.php) and other modules
+ * (e.g. Lead CRM recording an Admission's fee/commission) call this
+ * instead of duplicating the insert, so the format-array bug fixed
+ * earlier (a missing '%s' silently broke every new entry) can't
+ * reappear in a second copy of this code.
+ *
+ * $args: entry_date, type, category, amount, payment_method, note,
+ * created_by (all optional except type/amount, which the caller should
+ * always set deliberately). Returns the new row's id, or false on
+ * failure.
+ */
+function wfa_accounts_add_transaction( $args ) {
+	global $wpdb;
+	$defaults = array(
+		'entry_date'     => current_time( 'Y-m-d' ),
+		'type'           => '',
+		'category'       => '',
+		'amount'         => 0,
+		'payment_method' => '',
+		'note'           => '',
+		'created_by'     => get_current_user_id(),
+	);
+	$args       = wp_parse_args( $args, $defaults );
+	$month_year = substr( $args['entry_date'], 0, 7 );
+
+	$result = $wpdb->insert(
+		wfa_accounts_transactions_table(),
+		array(
+			'entry_date'     => $args['entry_date'],
+			'month_year'     => $month_year,
+			'type'           => $args['type'],
+			'category'       => $args['category'],
+			'amount'         => max( 0, round( (float) $args['amount'], 2 ) ),
+			'payment_method' => $args['payment_method'],
+			'note'           => $args['note'],
+			'status'         => 'active',
+			'created_by'     => $args['created_by'],
+			'created_at'     => current_time( 'mysql' ),
+		),
+		array( '%s', '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%d', '%s' )
+	);
+
+	return $result ? (int) $wpdb->insert_id : false;
+}
+
+/**
  * This file is the single entry point functions.php requires — it in
  * turn loads its two sibling files, so the rest of the theme only ever
  * needs to know about this one file.

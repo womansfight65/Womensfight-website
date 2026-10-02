@@ -80,26 +80,18 @@ function wfa_handle_save_transaction() {
 		);
 		$message = 'wfa_updated';
 	} else {
-		$result = $wpdb->insert(
-			$table,
+		// Uses the shared helper (see accounts-core.php) instead of a
+		// second hand-built $wpdb->insert() call — that duplication is
+		// exactly what caused the earlier format-array bug.
+		$result = wfa_accounts_add_transaction(
 			array(
 				'entry_date'     => $entry_date,
-				'month_year'     => $month_year,
 				'type'           => $type,
 				'category'       => $category,
 				'amount'         => $amount,
 				'payment_method' => $payment_method,
 				'note'           => $note,
-				'status'         => 'active',
-				'created_by'     => get_current_user_id(),
-				'created_at'     => current_time( 'mysql' ),
-			),
-			// 10 data fields need 10 format specifiers — a previous
-			// version of this array was one short (missing '%s' for
-			// "status"), which silently misaligned every field after it
-			// and made $wpdb->insert() refuse to run at all. This is why
-			// entries never actually saved even though no error showed.
-			array( '%s', '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%d', '%s' )
+			)
 		);
 		$message = 'wfa_added';
 	}

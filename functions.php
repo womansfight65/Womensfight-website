@@ -41,6 +41,16 @@ require_once get_template_directory() . '/inc/academy-leads.php';
  */
 require_once get_template_directory() . '/inc/accounts/accounts-core.php';
 
+/**
+ * Lead CRM — a private, login-gated front-end dashboard (not wp-admin)
+ * for managing the full lead-to-admission journey, entirely
+ * self-contained in inc/leadcrm/. This is the only line in this file
+ * that knows it exists. See inc/leadcrm/crm-core.php for the data
+ * model, role/capability and query helpers; page-crm-lead.php is the
+ * dedicated front-end template (slug: crm-lead) that renders it.
+ */
+require_once get_template_directory() . '/inc/leadcrm/crm-core.php';
+
 /* ---------------------------------------------------------------------
  * Theme setup
  * ------------------------------------------------------------------- */
