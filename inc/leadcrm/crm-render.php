@@ -9,23 +9,49 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-function wfa_crm_render_stats_cards() {
-	$s = wfa_crm_get_stats();
-	$cards = array(
-		'Total Leads'        => $s['total'],
-		'New Leads'          => $s['new'],
-		"Today's Leads"      => $s['today'],
-		'Follow-ups Today'   => $s['followups_today'],
-		'Overdue Follow-ups' => $s['followups_overdue'],
-		'Interested Leads'   => $s['interested'],
-		'Admission Pending'  => $s['admission_pending'],
-		'Admitted'           => $s['admitted'],
-	);
+function wfa_crm_render_stat_group( $title, $items, $warn_label = '' ) {
+	echo '<div class="crm-stat-group">';
+	echo '<h4 class="crm-stat-group-title">' . esc_html( $title ) . '</h4>';
 	echo '<div class="crm-cards">';
-	foreach ( $cards as $label => $value ) {
-		$warn = ( 'Overdue Follow-ups' === $label && $value > 0 ) ? ' crm-card-warn' : '';
+	foreach ( $items as $label => $value ) {
+		$warn = ( $label === $warn_label && $value > 0 ) ? ' crm-card-warn' : '';
 		echo '<div class="crm-card' . esc_attr( $warn ) . '"><span>' . esc_html( $label ) . '</span><b>' . intval( $value ) . '</b></div>';
 	}
+	echo '</div></div>';
+}
+
+function wfa_crm_render_stats_cards() {
+	$s = wfa_crm_get_stats();
+
+	echo '<div class="crm-stat-groups">';
+
+	wfa_crm_render_stat_group(
+		'Lead Overview',
+		array(
+			'Total Leads'   => $s['total'],
+			'New Leads'     => $s['new'],
+			"Today's Leads" => $s['today'],
+		)
+	);
+
+	wfa_crm_render_stat_group(
+		'Follow-up',
+		array(
+			'Follow-ups Today'   => $s['followups_today'],
+			'Overdue Follow-ups' => $s['followups_overdue'],
+		),
+		'Overdue Follow-ups'
+	);
+
+	wfa_crm_render_stat_group(
+		'Pipeline',
+		array(
+			'Interested Leads'  => $s['interested'],
+			'Admission Pending' => $s['admission_pending'],
+			'Admitted'          => $s['admitted'],
+		)
+	);
+
 	echo '</div>';
 }
 
@@ -33,14 +59,13 @@ function wfa_crm_render_filters() {
 	$counselors = wfa_crm_counselor_choices();
 	echo '<div class="crm-filters">';
 	echo '<input type="text" id="crm-f-search" placeholder="নাম, ফোন বা Lead ID খুঁজুন">';
-	echo '<input type="date" id="crm-f-from" title="তারিখ থেকে">';
-	echo '<input type="date" id="crm-f-to" title="তারিখ পর্যন্ত">';
 
-	echo '<select id="crm-f-source"><option value="">সব Source</option>';
-	foreach ( wfa_crm_sources() as $s ) {
-		echo '<option>' . esc_html( $s ) . '</option>';
-	}
-	echo '</select>';
+	/* Hidden but still functional — kept empty so the AJAX filter
+	   payload stays compatible; the date/source filters were dropped
+	   from the visible toolbar to keep the bar simple for daily use. */
+	echo '<input type="hidden" id="crm-f-from" value="">';
+	echo '<input type="hidden" id="crm-f-to" value="">';
+	echo '<input type="hidden" id="crm-f-source" value="">';
 
 	echo '<select id="crm-f-course"><option value="">সব Course</option>';
 	foreach ( wfa_crm_courses() as $c ) {
@@ -73,16 +98,18 @@ function wfa_crm_status_badge( $status ) {
 
 function wfa_crm_render_leads_table( $leads ) {
 	echo '<div class="crm-table-wrap"><table class="crm-table">';
-	echo '<thead><tr><th>Lead ID</th><th>নাম</th><th>ফোন</th><th>Source</th><th>Course</th><th>Counselor</th><th>Next Follow-up</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+	echo '<thead><tr><th>#</th><th>Lead ID</th><th>নাম</th><th>ফোন</th><th>Source</th><th>Course</th><th>Counselor</th><th>Next Follow-up</th><th>Status</th><th>Action</th></tr></thead><tbody>';
 
 	if ( $leads ) {
 		global $wpdb;
-		$ft = wfa_crm_followups_table();
+		$ft  = wfa_crm_followups_table();
+		$row = 1;
 		foreach ( $leads as $lead ) {
 			$next_fu = $wpdb->get_var(
 				$wpdb->prepare( "SELECT next_date FROM {$ft} WHERE lead_id = %d AND status = 'pending' ORDER BY next_date ASC LIMIT 1", $lead->id )
 			);
 			echo '<tr data-lead-id="' . esc_attr( $lead->id ) . '">';
+			echo '<td>' . intval( $row++ ) . '</td>';
 			echo '<td>' . esc_html( $lead->lead_code ) . '</td>';
 			echo '<td>' . esc_html( $lead->name ) . '</td>';
 			echo '<td>' . esc_html( $lead->phone ) . '</td>';
@@ -95,14 +122,31 @@ function wfa_crm_render_leads_table( $leads ) {
 			echo '</tr>';
 		}
 	} else {
-		echo '<tr><td colspan="9">কোনো Lead পাওয়া যায়নি।</td></tr>';
+		echo '<tr><td colspan="10">কোনো Lead পাওয়া যায়নি।</td></tr>';
 	}
 
 	echo '</tbody></table></div>';
 }
 
+/**
+ * Commission summary — Life Support IT Institute's commission, right
+ * on this same page (no separate Commission page), per the "Commission
+ * and CRM on one page" request.
+ */
+function wfa_crm_render_commission_summary() {
+	$c = wfa_crm_get_commission_summary();
+	echo '<h2 class="crm-section-title">Commission — Life Support IT Institute</h2>';
+	echo '<div class="crm-cards crm-cards-commission">';
+	echo '<div class="crm-card"><span>মোট Fee সংগ্রহ (সব Admission)</span><b>' . esc_html( wfa_accounts_money( $c['total_fee'] ) ) . '</b></div>';
+	echo '<div class="crm-card crm-card-warn"><span>Commission বাকি (' . intval( $c['pending_count'] ) . 'টা Admission)</span><b>' . esc_html( wfa_accounts_money( $c['pending_amount'] ) ) . '</b></div>';
+	echo '<div class="crm-card crm-card-good"><span>Commission পরিশোধিত</span><b>' . esc_html( wfa_accounts_money( $c['paid_amount'] ) ) . '</b></div>';
+	echo '</div>';
+}
+
 function wfa_crm_render_dashboard() {
 	wfa_crm_render_stats_cards();
+	wfa_crm_render_commission_summary();
+	echo '<h2 class="crm-section-title">সব Lead</h2>';
 	wfa_crm_render_filters();
 	echo '<div id="crm-table-region">';
 	wfa_crm_render_leads_table( wfa_crm_query_leads() );

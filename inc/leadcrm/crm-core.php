@@ -271,6 +271,23 @@ function wfa_crm_get_stats() {
 }
 
 /**
+ * Commission summary (Life Support IT Institute) across every
+ * Admission — shown right on the main Lead CRM dashboard so Commission
+ * never needs a separate page.
+ */
+function wfa_crm_get_commission_summary() {
+	global $wpdb;
+	$table = wfa_crm_admissions_table();
+
+	return array(
+		'pending_count'  => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table} WHERE commission_status = 'pending'" ),
+		'pending_amount' => (float) $wpdb->get_var( "SELECT COALESCE(SUM(commission_amount),0) FROM {$table} WHERE commission_status = 'pending'" ),
+		'paid_amount'    => (float) $wpdb->get_var( "SELECT COALESCE(SUM(commission_amount),0) FROM {$table} WHERE commission_status = 'paid'" ),
+		'total_fee'      => (float) $wpdb->get_var( "SELECT COALESCE(SUM(fee_collected),0) FROM {$table}" ),
+	);
+}
+
+/**
  * Filtered, searched lead list for the main table. All filters are
  * optional; every value is passed through $wpdb->prepare().
  */
