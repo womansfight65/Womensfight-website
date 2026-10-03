@@ -29,6 +29,8 @@ function wfa_crm_render_stats_cards() {
 		'Lead Summary',
 		array(
 			'Total Leads'        => $s['total'],
+			'WF Academy Leads'   => $s['academy_total'],
+			'WF Agency Leads'    => $s['agency_total'],
 			'New Leads'          => $s['new'],
 			"Today's Leads"      => $s['today'],
 			'Follow-ups Today'   => $s['followups_today'],
@@ -46,6 +48,13 @@ function wfa_crm_render_stats_cards() {
 function wfa_crm_render_filters() {
 	$counselors = wfa_crm_counselor_choices();
 	echo '<div class="crm-filters">';
+
+	echo '<select id="crm-f-type"><option value="">সব Type</option>';
+	foreach ( wfa_crm_lead_types() as $key => $label ) {
+		echo '<option value="' . esc_attr( $key ) . '">' . esc_html( $label ) . '</option>';
+	}
+	echo '</select>';
+
 	echo '<input type="text" id="crm-f-search" placeholder="নাম, ফোন বা Lead ID খুঁজুন">';
 
 	/* Hidden but still functional — kept empty so the AJAX filter
@@ -84,9 +93,15 @@ function wfa_crm_status_badge( $status ) {
 	return '<span class="crm-badge crm-badge-' . esc_attr( $status ) . '">' . esc_html( $label ) . '</span>';
 }
 
+function wfa_crm_type_badge( $type ) {
+	$labels = wfa_crm_lead_types();
+	$label  = isset( $labels[ $type ] ) ? $labels[ $type ] : $type;
+	return '<span class="crm-badge crm-badge-type-' . esc_attr( $type ) . '">' . esc_html( $label ) . '</span>';
+}
+
 function wfa_crm_render_leads_table( $leads ) {
 	echo '<div class="crm-table-wrap"><table class="crm-table">';
-	echo '<thead><tr><th>#</th><th>Lead ID</th><th>নাম</th><th>ফোন</th><th>Source</th><th>Course</th><th>Counselor</th><th>Next Follow-up</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+	echo '<thead><tr><th>#</th><th>Lead ID</th><th>Type</th><th>নাম</th><th>ফোন</th><th>Source</th><th>Course/Service</th><th>Counselor</th><th>Next Follow-up</th><th>Status</th><th>Action</th></tr></thead><tbody>';
 
 	if ( $leads ) {
 		global $wpdb;
@@ -99,6 +114,7 @@ function wfa_crm_render_leads_table( $leads ) {
 			echo '<tr data-lead-id="' . esc_attr( $lead->id ) . '">';
 			echo '<td>' . intval( $row++ ) . '</td>';
 			echo '<td>' . esc_html( $lead->lead_code ) . '</td>';
+			echo '<td>' . wfa_crm_type_badge( $lead->lead_type ) . '</td>';
 			echo '<td>' . esc_html( $lead->name ) . '</td>';
 			echo '<td>' . esc_html( $lead->phone ) . '</td>';
 			echo '<td>' . esc_html( $lead->source ) . '</td>';
@@ -110,7 +126,7 @@ function wfa_crm_render_leads_table( $leads ) {
 			echo '</tr>';
 		}
 	} else {
-		echo '<tr><td colspan="10">কোনো Lead পাওয়া যায়নি।</td></tr>';
+		echo '<tr><td colspan="11">কোনো Lead পাওয়া যায়নি।</td></tr>';
 	}
 
 	echo '</tbody></table></div>';
@@ -165,13 +181,18 @@ function wfa_crm_render_lead_drawer( $lead_id ) {
 
 	echo '<div class="crm-drawer-head">';
 	echo '<h2>' . esc_html( $lead->name ? $lead->name : $lead->lead_code ) . ' <span class="crm-drawer-code">' . esc_html( $lead->lead_code ) . '</span></h2>';
-	echo wfa_crm_status_badge( $lead->status );
+	echo wfa_crm_type_badge( $lead->lead_type ) . ' ' . wfa_crm_status_badge( $lead->status );
 	echo '</div>';
 
 	/* ---- Section 1: Lead Information ---- */
 	echo '<div class="crm-drawer-section"><h3>Lead Information</h3>';
 	echo '<form class="crm-inline-form" id="crm-lead-info-form">';
 	echo '<div class="crm-grid2">';
+	echo '<div><label>Lead Type</label><select name="lead_type">';
+	foreach ( wfa_crm_lead_types() as $key => $label ) {
+		echo '<option value="' . esc_attr( $key ) . '"' . selected( $lead->lead_type, $key, false ) . '>' . esc_html( $label ) . '</option>';
+	}
+	echo '</select></div>';
 	echo '<div><label>নাম</label><input type="text" name="name" value="' . esc_attr( $lead->name ) . '"></div>';
 	echo '<div><label>Phone</label><input type="text" name="phone" value="' . esc_attr( $lead->phone ) . '"></div>';
 	echo '<div><label>WhatsApp</label><input type="text" name="whatsapp" value="' . esc_attr( $lead->whatsapp ) . '"></div>';
@@ -340,6 +361,11 @@ function wfa_crm_render_new_lead_form() {
 	echo '<div class="crm-drawer-section">';
 	echo '<form class="crm-inline-form" id="crm-new-lead-form">';
 	echo '<div class="crm-grid2">';
+	echo '<div><label>Lead Type</label><select name="lead_type" required><option value="">সিলেক্ট করুন</option>';
+	foreach ( wfa_crm_lead_types() as $key => $label ) {
+		echo '<option value="' . esc_attr( $key ) . '">' . esc_html( $label ) . '</option>';
+	}
+	echo '</select></div>';
 	echo '<div><label>নাম</label><input type="text" name="name" required></div>';
 	echo '<div><label>Phone</label><input type="text" name="phone" required></div>';
 	echo '<div><label>WhatsApp</label><input type="text" name="whatsapp"></div>';

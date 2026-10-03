@@ -40,7 +40,7 @@ body.wfa-crm-body{margin:0; background:var(--bg); color:var(--ink); font-family:
 .crm-cards-commission{margin-bottom:0;}
 
 /* Filters */
-.crm-filters{display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:18px; align-items:center;}
+.crm-filters{display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-bottom:18px; align-items:center;}
 .crm-filters input, .crm-filters select{width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--ink); font-family:inherit; font-size:.86rem;}
 .crm-filters input[type="text"]{grid-column:1 / -1;}
 .crm-filters button{width:auto;}
@@ -63,6 +63,9 @@ body.wfa-crm-body{margin:0; background:var(--bg); color:var(--ink); font-family:
 .crm-badge-admitted{background:rgba(0,200,120,.15); color:#2ecf85;}
 .crm-badge-not_interested{background:rgba(130,121,163,.2); color:var(--ink-faint);}
 .crm-badge-lost{background:rgba(255,60,60,.15); color:#ff5c5c;}
+
+.crm-badge-type-academy{background:rgba(0,191,253,.15); color:var(--blue-light);}
+.crm-badge-type-agency{background:rgba(243,20,123,.15); color:var(--pink-light);}
 
 /* Drawer */
 .crm-drawer-overlay{position:fixed; inset:0; background:rgba(5,4,12,.65); backdrop-filter:blur(2px); z-index:300; display:none;}
@@ -107,7 +110,6 @@ body.wfa-crm-body{margin:0; background:var(--bg); color:var(--ink); font-family:
 
 @media (max-width:900px){
   .crm-cards{grid-template-columns:1fr 1fr;}
-  .crm-filters{grid-template-columns:1fr 1fr;}
 }
 @media (max-width:640px){
   .crm-wrap{padding:14px;}

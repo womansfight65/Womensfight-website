@@ -39,6 +39,7 @@ function wfa_crm_capture_public_contact_lead() {
 		wfa_crm_leads_table(),
 		array(
 			'lead_code'         => wfa_crm_next_lead_code(),
+			'lead_type'         => 'agency',
 			'name'              => '' !== $name ? $name : 'Website Contact',
 			'phone'             => $phone,
 			'whatsapp'          => '',
@@ -55,7 +56,7 @@ function wfa_crm_capture_public_contact_lead() {
 			'created_by'        => 0,
 			'created_at'        => current_time( 'mysql' ),
 		),
-		array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s' )
+		array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s' )
 	);
 
 	if ( $inserted && '' !== $message ) {

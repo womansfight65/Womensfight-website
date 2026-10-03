@@ -54,7 +54,8 @@
 			source: document.getElementById('crm-f-source').value,
 			course: document.getElementById('crm-f-course').value,
 			counselor: document.getElementById('crm-f-counselor').value,
-			status: document.getElementById('crm-f-status').value
+			status: document.getElementById('crm-f-status').value,
+			lead_type: document.getElementById('crm-f-type').value
 		};
 	}
 
@@ -96,6 +97,7 @@
 				document.getElementById('crm-f-course').value = '';
 				document.getElementById('crm-f-counselor').value = '';
 				document.getElementById('crm-f-status').value = '';
+				document.getElementById('crm-f-type').value = '';
 				refreshDashboard();
 			}
 			if (e.target.classList.contains('crm-fu-complete')) {
@@ -105,7 +107,7 @@
 			}
 		});
 
-		['crm-f-search', 'crm-f-from', 'crm-f-to', 'crm-f-source', 'crm-f-course', 'crm-f-counselor', 'crm-f-status'].forEach(function (id) {
+		['crm-f-search', 'crm-f-from', 'crm-f-to', 'crm-f-source', 'crm-f-course', 'crm-f-counselor', 'crm-f-status', 'crm-f-type'].forEach(function (id) {
 			var el = document.getElementById(id);
 			if (el) { el.addEventListener('input', debouncedRefresh); el.addEventListener('change', debouncedRefresh); }
 		});

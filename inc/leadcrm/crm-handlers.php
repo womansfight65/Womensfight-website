@@ -39,6 +39,7 @@ function wfa_crm_ajax_get_dashboard() {
 		'course'    => isset( $_POST['course'] ) ? sanitize_text_field( wp_unslash( $_POST['course'] ) ) : '',
 		'counselor' => isset( $_POST['counselor'] ) ? absint( $_POST['counselor'] ) : 0,
 		'status'    => isset( $_POST['status'] ) ? sanitize_key( wp_unslash( $_POST['status'] ) ) : '',
+		'lead_type' => isset( $_POST['lead_type'] ) ? sanitize_key( wp_unslash( $_POST['lead_type'] ) ) : '',
 	);
 
 	ob_start();
@@ -83,8 +84,14 @@ function wfa_crm_ajax_create_lead() {
 		wp_send_json_error( array( 'message' => 'নাম ও Phone আবশ্যক।' ) );
 	}
 
+	$lead_type = isset( $_POST['lead_type'] ) ? sanitize_key( wp_unslash( $_POST['lead_type'] ) ) : '';
+	if ( ! array_key_exists( $lead_type, wfa_crm_lead_types() ) ) {
+		wp_send_json_error( array( 'message' => 'Lead Type (WF Academy / WF Agency) সিলেক্ট করুন।' ) );
+	}
+
 	$data = array(
 		'lead_code'         => wfa_crm_next_lead_code(),
+		'lead_type'         => $lead_type,
 		'name'              => $name,
 		'phone'             => $phone,
 		'whatsapp'          => isset( $_POST['whatsapp'] ) ? sanitize_text_field( wp_unslash( $_POST['whatsapp'] ) ) : '',
@@ -105,7 +112,7 @@ function wfa_crm_ajax_create_lead() {
 	$result = $wpdb->insert(
 		wfa_crm_leads_table(),
 		$data,
-		array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s' )
+		array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s' )
 	);
 
 	if ( false === $result ) {
@@ -128,7 +135,13 @@ function wfa_crm_ajax_save_lead_info() {
 		wp_send_json_error( array( 'message' => 'Lead খুঁজে পাওয়া যায়নি।' ) );
 	}
 
+	$lead_type = isset( $_POST['lead_type'] ) ? sanitize_key( wp_unslash( $_POST['lead_type'] ) ) : '';
+	if ( ! array_key_exists( $lead_type, wfa_crm_lead_types() ) ) {
+		wp_send_json_error( array( 'message' => 'Lead Type (WF Academy / WF Agency) সিলেক্ট করুন।' ) );
+	}
+
 	$data = array(
+		'lead_type'         => $lead_type,
 		'name'              => isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '',
 		'phone'             => isset( $_POST['phone'] ) ? sanitize_text_field( wp_unslash( $_POST['phone'] ) ) : '',
 		'whatsapp'          => isset( $_POST['whatsapp'] ) ? sanitize_text_field( wp_unslash( $_POST['whatsapp'] ) ) : '',
@@ -149,7 +162,7 @@ function wfa_crm_ajax_save_lead_info() {
 		wfa_crm_leads_table(),
 		$data,
 		array( 'id' => $lead_id ),
-		array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s' ),
+		array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s' ),
 		array( '%d' )
 	);
 

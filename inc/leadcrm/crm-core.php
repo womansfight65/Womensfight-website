@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WFA_CRM_DB_VERSION', '1.0' );
+define( 'WFA_CRM_DB_VERSION', '1.1' );
 define( 'WFA_CRM_CAP', 'wfa_access_crm' );
 
 function wfa_crm_leads_table() {
@@ -60,6 +60,7 @@ function wfa_crm_maybe_upgrade_db() {
 		"CREATE TABLE " . wfa_crm_leads_table() . " (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			lead_code VARCHAR(20) NOT NULL,
+			lead_type VARCHAR(20) NOT NULL DEFAULT 'academy',
 			name VARCHAR(190) NOT NULL DEFAULT '',
 			phone VARCHAR(40) NOT NULL DEFAULT '',
 			whatsapp VARCHAR(40) NOT NULL DEFAULT '',
@@ -81,7 +82,8 @@ function wfa_crm_maybe_upgrade_db() {
 			KEY status (status),
 			KEY counselor_id (counselor_id),
 			KEY source (source),
-			KEY lead_date (lead_date)
+			KEY lead_date (lead_date),
+			KEY lead_type (lead_type)
 		) {$charset_collate};"
 	);
 
@@ -210,6 +212,17 @@ function wfa_crm_courses() {
 	return array( 'Computer Operator Course', 'Graphic Design', 'Digital Marketing', 'Not sure yet' );
 }
 
+/**
+ * Separates student/course leads (WF Academy) from business/service
+ * leads (WF Agency) so the two never get mixed up in one list.
+ */
+function wfa_crm_lead_types() {
+	return array(
+		'academy' => 'WF Academy',
+		'agency'  => 'WF Agency',
+	);
+}
+
 function wfa_crm_priorities() {
 	return array( 'low' => 'Low', 'medium' => 'Medium', 'high' => 'High' );
 }
@@ -267,6 +280,8 @@ function wfa_crm_get_stats() {
 		'interested'         => (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE status = %s", 'interested' ) ),
 		'admission_pending'  => (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE status = %s", 'admission_pending' ) ),
 		'admitted'           => (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE status = %s", 'admitted' ) ),
+		'academy_total'      => (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE lead_type = %s", 'academy' ) ),
+		'agency_total'       => (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE lead_type = %s", 'agency' ) ),
 	);
 }
 
@@ -303,6 +318,7 @@ function wfa_crm_query_leads( $args = array() ) {
 		'course'     => '',
 		'counselor'  => 0,
 		'status'     => '',
+		'lead_type'  => '',
 		'limit'      => 200,
 	);
 	$args = wp_parse_args( $args, $defaults );
@@ -341,6 +357,10 @@ function wfa_crm_query_leads( $args = array() ) {
 	if ( '' !== $args['status'] ) {
 		$where[]  = 'status = %s';
 		$params[] = $args['status'];
+	}
+	if ( '' !== $args['lead_type'] ) {
+		$where[]  = 'lead_type = %s';
+		$params[] = $args['lead_type'];
 	}
 
 	$sql = "SELECT * FROM {$table} WHERE " . implode( ' AND ', $where ) . ' ORDER BY id DESC LIMIT %d';
