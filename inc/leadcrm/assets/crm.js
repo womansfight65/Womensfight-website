@@ -21,7 +21,7 @@
 		return out;
 	}
 
-	var overlay, drawer, tableRegion, sidebarRegion;
+	var overlay, drawer, tableRegion, cardsRegion;
 
 	function openDrawerWithHtml(html) {
 		drawer.innerHTML = '<button type="button" class="crm-drawer-close" id="crm-drawer-close">&times;</button>' + html;
@@ -61,8 +61,8 @@
 	function refreshDashboard() {
 		post('wfa_crm_get_dashboard', currentFilters()).then(function (res) {
 			if (res.success) {
-				sidebarRegion.outerHTML = res.data.sidebar;
-				sidebarRegion = document.querySelector('.crm-sidebar');
+				cardsRegion.outerHTML = res.data.stats;
+				cardsRegion = document.querySelector('.crm-cards');
 				tableRegion.innerHTML = res.data.table;
 			}
 		});
@@ -78,7 +78,7 @@
 		overlay = document.getElementById('crm-drawer-overlay');
 		drawer = document.getElementById('crm-drawer');
 		tableRegion = document.getElementById('crm-table-region');
-		sidebarRegion = document.querySelector('.crm-sidebar');
+		cardsRegion = document.querySelector('.crm-cards');
 
 		overlay.addEventListener('click', function (e) {
 			if (e.target === overlay) { closeDrawer(); }

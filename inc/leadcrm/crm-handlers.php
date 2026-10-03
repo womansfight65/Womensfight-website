@@ -42,14 +42,14 @@ function wfa_crm_ajax_get_dashboard() {
 	);
 
 	ob_start();
-	wfa_crm_render_sidebar_summary();
-	$sidebar_html = ob_get_clean();
+	wfa_crm_render_stats_cards();
+	$stats_html = ob_get_clean();
 
 	ob_start();
 	wfa_crm_render_leads_table( wfa_crm_query_leads( $args ) );
 	$table_html = ob_get_clean();
 
-	wp_send_json_success( array( 'sidebar' => $sidebar_html, 'table' => $table_html ) );
+	wp_send_json_success( array( 'stats' => $stats_html, 'table' => $table_html ) );
 }
 add_action( 'wp_ajax_wfa_crm_get_dashboard', 'wfa_crm_ajax_get_dashboard' );
 

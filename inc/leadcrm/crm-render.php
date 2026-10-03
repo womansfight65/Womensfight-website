@@ -9,51 +9,44 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * A compact "label ... number" row — used for the sidebar instead of
- * big boxed cards, so 11 numbers (8 stats + 3 commission figures)
- * don't take over the page.
- */
-function wfa_crm_mini_stat_row( $label, $value, $warn = false ) {
-	echo '<div class="crm-mini-stat' . ( $warn ? ' crm-mini-stat-warn' : '' ) . '"><span>' . esc_html( $label ) . '</span><b>' . $value . '</b></div>';
+function wfa_crm_render_stat_group( $title, $items, $warn_label = '' ) {
+	echo '<div class="crm-stat-group">';
+	echo '<h4 class="crm-stat-group-title">' . esc_html( $title ) . '</h4>';
+	echo '<div class="crm-cards">';
+	foreach ( $items as $label => $value ) {
+		$warn = ( $label === $warn_label && $value > 0 ) ? ' crm-card-warn' : '';
+		echo '<div class="crm-card' . esc_attr( $warn ) . '"><span>' . esc_html( $label ) . '</span><b>' . intval( $value ) . '</b></div>';
+	}
+	echo '</div></div>';
 }
 
-function wfa_crm_render_sidebar_summary() {
+function wfa_crm_render_stats_cards() {
 	$s = wfa_crm_get_stats();
-	$c = wfa_crm_get_commission_summary();
 
-	echo '<aside class="crm-sidebar">';
+	echo '<div class="crm-stat-groups">';
 
-	echo '<div class="crm-sidebar-block"><h4>Lead Overview</h4>';
-	wfa_crm_mini_stat_row( 'Total Leads', intval( $s['total'] ) );
-	wfa_crm_mini_stat_row( 'New Leads', intval( $s['new'] ) );
-	wfa_crm_mini_stat_row( "Today's Leads", intval( $s['today'] ) );
+	wfa_crm_render_stat_group(
+		'Lead Summary',
+		array(
+			'Total Leads'        => $s['total'],
+			'New Leads'          => $s['new'],
+			"Today's Leads"      => $s['today'],
+			'Follow-ups Today'   => $s['followups_today'],
+			'Overdue Follow-ups' => $s['followups_overdue'],
+			'Interested Leads'   => $s['interested'],
+			'Admission Pending'  => $s['admission_pending'],
+			'Admitted'           => $s['admitted'],
+		),
+		'Overdue Follow-ups'
+	);
+
 	echo '</div>';
-
-	echo '<div class="crm-sidebar-block"><h4>Follow-up</h4>';
-	wfa_crm_mini_stat_row( 'Follow-ups Today', intval( $s['followups_today'] ) );
-	wfa_crm_mini_stat_row( 'Overdue Follow-ups', intval( $s['followups_overdue'] ), $s['followups_overdue'] > 0 );
-	echo '</div>';
-
-	echo '<div class="crm-sidebar-block"><h4>Pipeline</h4>';
-	wfa_crm_mini_stat_row( 'Interested', intval( $s['interested'] ) );
-	wfa_crm_mini_stat_row( 'Admission Pending', intval( $s['admission_pending'] ) );
-	wfa_crm_mini_stat_row( 'Admitted', intval( $s['admitted'] ) );
-	echo '</div>';
-
-	echo '<div class="crm-sidebar-block"><h4>Commission — Life Support IT</h4>';
-	wfa_crm_mini_stat_row( 'মোট Fee সংগ্রহ', wfa_accounts_money( $c['total_fee'] ) );
-	wfa_crm_mini_stat_row( 'বাকি (' . intval( $c['pending_count'] ) . 'টা)', wfa_accounts_money( $c['pending_amount'] ), $c['pending_amount'] > 0 );
-	wfa_crm_mini_stat_row( 'পরিশোধিত', wfa_accounts_money( $c['paid_amount'] ) );
-	echo '</div>';
-
-	echo '</aside>';
 }
 
 function wfa_crm_render_filters() {
 	$counselors = wfa_crm_counselor_choices();
 	echo '<div class="crm-filters">';
-	echo '<input type="text" id="crm-f-search" class="crm-filter-wide" placeholder="নাম, ফোন বা Lead ID খুঁজুন">';
+	echo '<input type="text" id="crm-f-search" placeholder="নাম, ফোন বা Lead ID খুঁজুন">';
 
 	/* Hidden but still functional — kept empty so the AJAX filter
 	   payload stays compatible; the date/source filters were dropped
@@ -81,6 +74,7 @@ function wfa_crm_render_filters() {
 	echo '</select>';
 
 	echo '<button type="button" class="btn btn-ghost" id="crm-f-clear">Clear</button>';
+	echo '<button type="button" class="btn btn-primary" id="crm-new-lead">+ নতুন Lead</button>';
 	echo '</div>';
 }
 
@@ -127,20 +121,24 @@ function wfa_crm_render_leads_table( $leads ) {
  * on this same page (no separate Commission page), per the "Commission
  * and CRM on one page" request.
  */
+function wfa_crm_render_commission_summary() {
+	$c = wfa_crm_get_commission_summary();
+	echo '<h2 class="crm-section-title">Commission — Life Support IT Institute</h2>';
+	echo '<div class="crm-cards crm-cards-commission">';
+	echo '<div class="crm-card"><span>মোট Fee সংগ্রহ (সব Admission)</span><b>' . esc_html( wfa_accounts_money( $c['total_fee'] ) ) . '</b></div>';
+	echo '<div class="crm-card crm-card-warn"><span>Commission বাকি (' . intval( $c['pending_count'] ) . 'টা Admission)</span><b>' . esc_html( wfa_accounts_money( $c['pending_amount'] ) ) . '</b></div>';
+	echo '<div class="crm-card crm-card-good"><span>Commission পরিশোধিত</span><b>' . esc_html( wfa_accounts_money( $c['paid_amount'] ) ) . '</b></div>';
+	echo '</div>';
+}
+
 function wfa_crm_render_dashboard() {
-	echo '<div class="crm-dash-grid">';
-
-	wfa_crm_render_sidebar_summary();
-
-	echo '<div class="crm-main">';
-	echo '<div class="crm-main-head"><h2>সব Lead</h2><button type="button" class="btn btn-primary" id="crm-new-lead">+ নতুন Lead</button></div>';
+	wfa_crm_render_stats_cards();
+	wfa_crm_render_commission_summary();
+	echo '<h2 class="crm-section-title">সব Lead</h2>';
 	wfa_crm_render_filters();
 	echo '<div id="crm-table-region">';
 	wfa_crm_render_leads_table( wfa_crm_query_leads() );
 	echo '</div>';
-	echo '</div>'; // .crm-main
-
-	echo '</div>'; // .crm-dash-grid
 }
 
 /**
