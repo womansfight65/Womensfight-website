@@ -44,6 +44,7 @@ $logo_full = esc_url( get_template_directory_uri() . '/assets/img/logo-full.png'
       <a href="<?php echo esc_url( womensfight_page_url( 'contact' ) ); ?>">Contact Us</a>
       <a href="<?php echo esc_url( womensfight_page_url( 'lead-form' ) ); ?>">Lead Form</a>
       <a href="<?php echo esc_url( home_url( '/crm-lead/' ) ); ?>">CRM-Lead (Team Login)</a>
+      <a href="<?php echo esc_url( home_url( '/wf-invoice/' ) ); ?>">WF-Invoice (Team Login)</a>
     </div>
     <div class="foot-col">
       <h4>যোগাযোগ</h4>

@@ -51,6 +51,14 @@ require_once get_template_directory() . '/inc/accounts/accounts-core.php';
  */
 require_once get_template_directory() . '/inc/leadcrm/crm-core.php';
 
+/**
+ * WF-Invoice — invoice management system, fully isolated like the
+ * Academy/Accounts/Lead CRM modules. See inc/invoice/invoice-core.php
+ * for the data model; page-wf-invoice.php (slug: wf-invoice) is the
+ * dedicated front-end template.
+ */
+require_once get_template_directory() . '/inc/invoice/invoice-core.php';
+
 /* ---------------------------------------------------------------------
  * Theme setup
  * ------------------------------------------------------------------- */
