@@ -61,6 +61,8 @@ add_action(
 .smm-service-card:hover{border-color:var(--pink);}
 .smm-service-card b{font-size:.92rem;}
 .smm-service-card button{align-self:flex-start;}
+.smm-service-ico{width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:var(--grad);}
+.smm-service-ico svg{width:18px; height:18px; stroke:#fff; fill:none; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round;}
 
 .smm-steps{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
 .smm-step{background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:28px; position:relative;}
@@ -107,6 +109,12 @@ add_action(
 #smm-page .smm-platform-card.active{border-color:#6c4fd6; border-top-color:#6c4fd6; box-shadow:0 0 0 3px rgba(108,79,214,.15);}
 #smm-page .smm-platform-card span{color:#2c1f5e;}
 #smm-page .smm-services-panel{background:#efe9fb; border-color:#e2d9f7;}
+#smm-page .smm-service-card b{color:#2c1f5e;}
+#smm-page .smm-service-ico{background:linear-gradient(135deg,#6c4fd6,#9333ea);}
+#smm-page .smm-orbit-row b{color:#2c1f5e;}
+#smm-page .smm-orbit-row span{color:#7a71a0;}
+#smm-page .smm-orbit-card h4{color:#9388b8;}
+#smm-page .smm-orbit-row{border-top-color:#eee6fb;}
 #smm-page .smm-step span.num{background:linear-gradient(135deg,#6c4fd6,#9333ea);}
 #smm-page .faq summary{color:#2c1f5e;}
 #smm-page .faq summary::after{color:#6c4fd6;}
@@ -202,17 +210,6 @@ $overview  = wf_smm_platform_overview();
     </table>
   </div>
 </section>
-
-<section class="tight alt"><div class="wrap">
-  <div class="section-head center"><span class="eyebrow">কেন আমরা</span><h2>কেন আমাদের বেছে নেবেন</h2></div>
-  <div class="feat-grid">
-    <div class="feat"><div class="ico sm"><svg><use href="#i-target"/></svg></div><h3>প্রয়োজন অনুযায়ী সার্ভিস</h3><p>আপনার লক্ষ্য অনুযায়ী সঠিক প্ল্যাটফর্ম ও সার্ভিস নির্বাচনের সুযোগ।</p></div>
-    <div class="feat"><div class="ico sm"><svg><use href="#i-chat"/></svg></div><h3>অর্ডারের আগে আলোচনা</h3><p>কাজ শুরুর আগে বিস্তারিত আলোচনা করে বুঝে নেওয়ার সুযোগ।</p></div>
-    <div class="feat"><div class="ico sm"><svg><use href="#i-form"/></svg></div><h3>সহজ রিকোয়েস্ট প্রক্রিয়া</h3><p>কয়েকটি তথ্য দিয়েই রিকোয়েস্ট জমা দেওয়া যায়, কোনো জটিলতা নেই।</p></div>
-    <div class="feat"><div class="ico sm"><svg><use href="#i-users"/></svg></div><h3>সরাসরি টিমের সাথে যোগাযোগ</h3><p>থার্ড-পার্টি প্যানেল নয় — সরাসরি আমাদের টিমের সাথে কথা বলার সুযোগ।</p></div>
-    <div class="feat"><div class="ico sm"><svg><use href="#i-check"/></svg></div><h3>পরিষ্কার ধারণা</h3><p>সার্ভিসের শর্ত, সময় ও খরচ সম্পর্কে স্পষ্ট ধারণা দেওয়া হয়।</p></div>
-  </div>
-</div></section>
 
 <section class="tight wrap">
   <div class="section-head center"><span class="eyebrow">প্রক্রিয়া</span><h2>যেভাবে কাজ করবেন আমাদের সাথে</h2></div>
@@ -337,9 +334,9 @@ $overview  = wf_smm_platform_overview();
 		formService.innerHTML = '<option value="">সিলেক্ট করুন</option>';
 		list.forEach(function (svc) {
 			var opt = document.createElement('option');
-			opt.value = svc;
-			opt.textContent = svc;
-			if (svc === selectedService) { opt.selected = true; }
+			opt.value = svc.label;
+			opt.textContent = svc.label;
+			if (svc.label === selectedService) { opt.selected = true; }
 			formService.appendChild(opt);
 		});
 	}
@@ -351,10 +348,10 @@ $overview  = wf_smm_platform_overview();
 		list.forEach(function (svc) {
 			var card = document.createElement('div');
 			card.className = 'smm-service-card';
-			card.innerHTML = '<b>' + svc + '</b><button type="button" class="btn btn-ghost">রিকোয়েস্ট করুন</button>';
+			card.innerHTML = '<div class="smm-service-ico"><svg><use href="#' + svc.icon + '"/></svg></div><b>' + svc.label + '</b><button type="button" class="btn btn-ghost">রিকোয়েস্ট করুন</button>';
 			card.querySelector('button').addEventListener('click', function () {
 				formPlatform.value = platformKey;
-				populateServiceSelect(platformKey, svc);
+				populateServiceSelect(platformKey, svc.label);
 				var formEl = document.getElementById('smm-request-form');
 				if (formEl) { formEl.scrollIntoView({ behavior: 'smooth' }); }
 			});
