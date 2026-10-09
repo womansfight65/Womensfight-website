@@ -59,6 +59,13 @@ require_once get_template_directory() . '/inc/leadcrm/crm-core.php';
  */
 require_once get_template_directory() . '/inc/invoice/invoice-core.php';
 
+/**
+ * SMM Service Request landing page — fully isolated module (own post
+ * type, own form handler). See inc/smm/smm-core.php; page-smm-service.php
+ * (slug: smm-service) is the dedicated front-end template.
+ */
+require_once get_template_directory() . '/inc/smm/smm-core.php';
+
 /* ---------------------------------------------------------------------
  * Theme setup
  * ------------------------------------------------------------------- */
@@ -299,6 +306,7 @@ function womensfight_page_definitions() {
 		'project'              => 'Client Dashboard',
 		'demo-library'         => 'Demo Website Library',
 		'auto-motion'          => 'Business Automation Service',
+		'smm-service'          => 'সোশ্যাল মিডিয়া সার্ভিস',
 	);
 }
 
@@ -314,6 +322,7 @@ function womensfight_menu_structure() {
 				array( 'title' => 'Video Production', 'slug' => 'video-production' ),
 				array( 'title' => 'AI Agency', 'slug' => 'ai-agency' ),
 				array( 'title' => 'Business Automation', 'slug' => 'auto-motion' ),
+				array( 'title' => 'Social Media Analysis', 'slug' => 'smm-service' ),
 			),
 		),
 		array( 'title' => 'Case Study', 'slug' => 'case-study' ),
