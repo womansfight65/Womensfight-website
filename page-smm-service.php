@@ -129,6 +129,9 @@ add_action(
 #smm-page .cta-band{background:linear-gradient(135deg,#6c4fd6,#4a2f9e);}
 #smm-page .cta-band::before{background:rgba(147,51,234,.35);}
 #smm-page .cta-band::after{background:rgba(108,79,214,.3);}
+#smm-page .cta-band h2{color:#fff;}
+#smm-page .cta-band p{color:rgba(255,255,255,.82);}
+#smm-page .cta-band .btn-primary{background:#fff; color:#4a2f9e; box-shadow:none;}
 
 .smm-overview-wrap{overflow-x:auto; border-radius:var(--radius-lg); margin-top:36px;}
 .smm-overview-table{width:100%; border-collapse:collapse; min-width:640px;}
