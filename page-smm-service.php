@@ -85,29 +85,14 @@ add_action(
   .smm-hero-visual{display:none;}
 }
 @media (max-width:640px){
-  .smm-platform-grid{grid-template-columns:1fr 1fr; gap:10px;}
-  .smm-platform-card{padding:18px 10px;}
-  .smm-platform-badge{width:44px; height:44px;}
-  .smm-platform-badge svg{width:22px; height:22px;}
+  .smm-platform-grid{grid-template-columns:1fr 1fr;}
   .smm-service-grid{grid-template-columns:1fr;}
-  .smm-services-panel{padding:18px;}
-  .smm-trust-row{gap:10px 16px;}
-  .smm-step{padding:20px;}
-
-  .smm-overview-table thead{display:none;}
-  .smm-overview-table, .smm-overview-table tbody, .smm-overview-table tr, .smm-overview-table td{display:block; width:100%;}
-  .smm-overview-table{min-width:0;}
-  .smm-overview-table tr{margin-bottom:14px; border:1px solid #e5defa; border-radius:14px; overflow:hidden;}
-  .smm-overview-table tbody td{border-top:1px dashed #e5defa; display:flex; justify-content:space-between; gap:12px; text-align:right;}
-  .smm-overview-table tbody tr td:first-child{border-top:none; background:linear-gradient(90deg,#6c4fd6,#8b5cf6); color:#fff; text-align:left;}
-  .smm-overview-table tbody td::before{content:attr(data-label); font-weight:700; color:#6c4fd6; text-align:left;}
-  .smm-overview-table tbody tr td:first-child::before{content:""; display:none;}
 }
 
 /* A distinct, lighter look for just this page's main content — the
    rest of the site (header/footer/nav) stays the normal dark theme,
    only #smm-page overrides colors for its own children. */
-#smm-page{background:linear-gradient(180deg,#f5f3fc 0%,#ece7fb 45%,#ddd4f7 100%); padding-bottom:1px;}
+#smm-page{background:linear-gradient(180deg,#f5f3fc 0%,#ece7fb 45%,#ddd4f7 100%); padding-bottom:1px; overflow-x:hidden;}
 #smm-page h1, #smm-page h2, #smm-page h3{color:#2c1f5e;}
 #smm-page p{color:#5c537a;}
 #smm-page .eyebrow{color:#6c4fd6;}
@@ -180,7 +165,7 @@ $overview  = wf_smm_platform_overview();
 <main id="smm-page">
 
 <div class="page-header wrap"><div class="inner" style="display:flex; flex-wrap:wrap; gap:40px; align-items:center; max-width:none;">
-  <div style="flex:1; min-width:300px; max-width:620px;">
+  <div style="flex:1 1 300px; min-width:0; max-width:620px; width:100%;">
     <div class="ico"><svg><use href="#i-megaphone"/></svg></div>
     <span class="eyebrow">আপনার সোশ্যাল মিডিয়া গ্রোথ পার্টনার</span>
     <h1>আপনার সোশ্যাল মিডিয়া পেজ আছে, কিন্তু আশানুরূপ রিচ, ফলোয়ার বা এনগেজমেন্ট পাচ্ছেন না?</h1>
@@ -235,22 +220,12 @@ $overview  = wf_smm_platform_overview();
       <thead><tr><th>প্ল্যাটফর্ম</th><th>উপলব্ধ গ্রোথ সার্ভিস</th><th>সাধারণ ব্যবহার</th></tr></thead>
       <tbody>
         <?php foreach ( $overview as $key => $row ) : ?>
-          <tr><td data-label="প্ল্যাটফর্ম"><?php echo esc_html( $platforms[ $key ] ); ?></td><td data-label="উপলব্ধ গ্রোথ সার্ভিস"><?php echo esc_html( $row['services'] ); ?></td><td data-label="সাধারণ ব্যবহার"><?php echo esc_html( $row['uses'] ); ?></td></tr>
+          <tr><td><?php echo esc_html( $platforms[ $key ] ); ?></td><td><?php echo esc_html( $row['services'] ); ?></td><td><?php echo esc_html( $row['uses'] ); ?></td></tr>
         <?php endforeach; ?>
       </tbody>
     </table>
   </div>
 </section>
-
-<section class="tight alt"><div class="wrap">
-  <div class="section-head center"><span class="eyebrow">কেন আমরা</span><h2>সোশ্যাল মিডিয়া প্রমোশন এখন আরও সহজ!</h2><p>আপনার ব্যবসা, ব্র্যান্ড কিংবা কনটেন্টের জন্য প্রয়োজনীয় সোশ্যাল মিডিয়া সার্ভিস খুঁজছেন? Women's Fight-এর মাধ্যমে সহজেই আপনার প্রয়োজন জানাতে পারবেন।</p></div>
-  <div class="feat-grid">
-    <div class="feat"><div class="ico sm"><svg><use href="#i-layers"/></svg></div><h3>এক জায়গায় বিভিন্ন সার্ভিস</h3><p>জনপ্রিয় সোশ্যাল মিডিয়া প্ল্যাটফর্মের বিভিন্ন সার্ভিস থেকে প্রয়োজন অনুযায়ী নির্বাচন করুন।</p></div>
-    <div class="feat"><div class="ico sm"><svg><use href="#i-form"/></svg></div><h3>সহজ রিকোয়েস্ট প্রক্রিয়া</h3><p>কয়েকটি প্রয়োজনীয় তথ্য দিয়েই আপনার সার্ভিস রিকোয়েস্ট জমা দিন।</p></div>
-    <div class="feat"><div class="ico sm"><svg><use href="#i-users"/></svg></div><h3>সরাসরি টিম সাপোর্ট</h3><p>আমাদের টিম আপনার প্রয়োজন বুঝে সার্ভিস ও খরচ সম্পর্কে আলোচনা করবে।</p></div>
-    <div class="feat"><div class="ico sm"><svg><use href="#i-check"/></svg></div><h3>আগে আলোচনা, তারপর সিদ্ধান্ত</h3><p>কাজ শুরু করার আগে বিস্তারিত জেনে আপনার সম্মতি অনুযায়ী এগিয়ে যান।</p></div>
-  </div>
-</div></section>
 
 <section class="tight wrap">
   <div class="section-head center"><span class="eyebrow">প্রক্রিয়া</span><h2>মাত্র ৩টি সহজ ধাপে শুরু করুন</h2></div>
