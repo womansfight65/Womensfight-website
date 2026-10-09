@@ -2222,16 +2222,29 @@ function womensfight_save_demo_meta( $post_id ) {
 		update_post_meta( $post_id, 'wf_d_description', sanitize_textarea_field( wp_unslash( $_POST['wf_d_description'] ) ) );
 	}
 
+	/* Temporary diagnostic — reports exactly what PHP saw for the file
+	   field on every save (not just failures), so the one real cause
+	   can be identified. Remove once the upload issue is confirmed
+	   fixed. */
+	$debug = 'DEBUG: $_FILES[wf_d_screenshot] = ' . ( isset( $_FILES['wf_d_screenshot'] ) ? wp_json_encode( array(
+		'name'  => $_FILES['wf_d_screenshot']['name'],
+		'size'  => $_FILES['wf_d_screenshot']['size'],
+		'error' => $_FILES['wf_d_screenshot']['error'],
+	) ) : 'NOT SET' );
+
 	if ( ! empty( $_FILES['wf_d_screenshot']['name'] ) ) {
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/media.php';
 		$attachment_id = media_handle_upload( 'wf_d_screenshot', $post_id );
 		if ( is_wp_error( $attachment_id ) ) {
-			set_transient( 'wf_demo_upload_error_' . get_current_user_id(), $attachment_id->get_error_message(), 60 );
+			set_transient( 'wf_demo_upload_error_' . get_current_user_id(), $debug . ' | media_handle_upload error: ' . $attachment_id->get_error_message(), 60 );
 		} else {
 			update_post_meta( $post_id, 'wf_d_screenshot_id', $attachment_id );
+			set_transient( 'wf_demo_upload_error_' . get_current_user_id(), $debug . ' | SUCCESS, attachment_id=' . $attachment_id, 60 );
 		}
+	} else {
+		set_transient( 'wf_demo_upload_error_' . get_current_user_id(), $debug . ' | skipped (no filename)', 60 );
 	}
 }
 add_action( 'save_post_wf_demo', 'womensfight_save_demo_meta' );
