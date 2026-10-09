@@ -2138,6 +2138,20 @@ function womensfight_register_demo_detail_box() {
 }
 add_action( 'add_meta_boxes_wf_demo', 'womensfight_register_demo_detail_box' );
 
+function womensfight_demo_enqueue_media( $hook ) {
+	if ( 'post.php' !== $hook && 'post-new.php' !== $hook ) {
+		return;
+	}
+	$post_type = isset( $_GET['post_type'] ) ? sanitize_key( wp_unslash( $_GET['post_type'] ) ) : '';
+	if ( 'post.php' === $hook && isset( $_GET['post'] ) ) {
+		$post_type = get_post_type( absint( $_GET['post'] ) );
+	}
+	if ( 'wf_demo' === $post_type ) {
+		wp_enqueue_media();
+	}
+}
+add_action( 'admin_enqueue_scripts', 'womensfight_demo_enqueue_media' );
+
 function womensfight_render_demo_detail_box( $post ) {
 	wp_nonce_field( 'womensfight_save_demo', 'womensfight_demo_nonce' );
 
@@ -2175,33 +2189,42 @@ function womensfight_render_demo_detail_box( $post ) {
 	</table>
 
 	<p><strong>Screenshot</strong></p>
-	<?php if ( $screenshot ) : ?>
-		<div style="margin-bottom:8px;"><?php echo wp_get_attachment_image( $screenshot, 'medium' ); ?></div>
-	<?php endif; ?>
-	<input type="file" name="wf_d_screenshot" accept="image/*">
-	<p class="description">নতুন ছবি দিলে আগেরটা replace হয়ে যাবে। খালি রাখলে আগেরটাই থাকবে।</p>
+	<div id="wf_d_screenshot_preview" style="margin-bottom:8px;">
+		<?php if ( $screenshot ) : ?>
+			<?php echo wp_get_attachment_image( $screenshot, 'medium' ); ?>
+		<?php endif; ?>
+	</div>
+	<input type="hidden" name="wf_d_screenshot_id" id="wf_d_screenshot_id" value="<?php echo esc_attr( $screenshot ); ?>">
+	<button type="button" class="button" id="wf_d_screenshot_pick">ছবি সিলেক্ট করুন</button>
+	<button type="button" class="button" id="wf_d_screenshot_remove" <?php echo $screenshot ? '' : 'style="display:none;"'; ?>>Remove</button>
+	<p class="description">Media Library থেকে সিলেক্ট বা নতুন আপলোড করুন।</p>
+	<script>
+	(function($){
+		var frame;
+		$('#wf_d_screenshot_pick').on('click', function(e){
+			e.preventDefault();
+			if (frame) { frame.open(); return; }
+			frame = wp.media({ title: 'Screenshot সিলেক্ট করুন', multiple: false, library: { type: 'image' } });
+			frame.on('select', function(){
+				var att = frame.state().get('selection').first().toJSON();
+				$('#wf_d_screenshot_id').val(att.id);
+				$('#wf_d_screenshot_preview').html('<img src="' + (att.sizes && att.sizes.medium ? att.sizes.medium.url : att.url) + '" style="max-width:300px; height:auto;">');
+				$('#wf_d_screenshot_remove').show();
+			});
+			frame.open();
+		});
+		$('#wf_d_screenshot_remove').on('click', function(e){
+			e.preventDefault();
+			$('#wf_d_screenshot_id').val('');
+			$('#wf_d_screenshot_preview').html('');
+			$(this).hide();
+		});
+	})(jQuery);
+	</script>
 	<?php
 }
 
 function womensfight_save_demo_meta( $post_id ) {
-	if (
-		'POST' === $_SERVER['REQUEST_METHOD'] && empty( $_POST ) && empty( $_FILES )
-		&& isset( $_SERVER['CONTENT_LENGTH'] ) && (int) $_SERVER['CONTENT_LENGTH'] > 0
-	) {
-		/* PHP silently drops the ENTIRE request (both $_POST and $_FILES,
-		   including the nonce) when the uploaded file exceeds
-		   post_max_size — no error, nothing saves, and it otherwise
-		   looks exactly like "nothing happened". Caught here, before the
-		   nonce check below, because the nonce itself is one of the
-		   dropped fields. */
-		set_transient(
-			'wf_demo_upload_error_' . get_current_user_id(),
-			'ছবির সাইজ সার্ভারের লিমিটের চেয়ে বড় (post_max_size: ' . esc_html( ini_get( 'post_max_size' ) ) . ')। ছোট সাইজের ছবি (২-৩ MB এর কম) দিয়ে আবার চেষ্টা করুন।',
-			60
-		);
-		return;
-	}
-
 	if ( ! isset( $_POST['womensfight_demo_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['womensfight_demo_nonce'] ), 'womensfight_save_demo' ) ) {
 		return;
 	}
@@ -2222,46 +2245,20 @@ function womensfight_save_demo_meta( $post_id ) {
 		update_post_meta( $post_id, 'wf_d_description', sanitize_textarea_field( wp_unslash( $_POST['wf_d_description'] ) ) );
 	}
 
-	/* Temporary diagnostic — reports exactly what PHP saw for the file
-	   field on every save (not just failures), so the one real cause
-	   can be identified. Remove once the upload issue is confirmed
-	   fixed. */
-	$debug = 'DEBUG: $_FILES[wf_d_screenshot] = ' . ( isset( $_FILES['wf_d_screenshot'] ) ? wp_json_encode( array(
-		'name'  => $_FILES['wf_d_screenshot']['name'],
-		'size'  => $_FILES['wf_d_screenshot']['size'],
-		'error' => $_FILES['wf_d_screenshot']['error'],
-	) ) : 'NOT SET' );
-
-	if ( ! empty( $_FILES['wf_d_screenshot']['name'] ) ) {
-		require_once ABSPATH . 'wp-admin/includes/image.php';
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-		require_once ABSPATH . 'wp-admin/includes/media.php';
-		$attachment_id = media_handle_upload( 'wf_d_screenshot', $post_id );
-		if ( is_wp_error( $attachment_id ) ) {
-			set_transient( 'wf_demo_upload_error_' . get_current_user_id(), $debug . ' | media_handle_upload error: ' . $attachment_id->get_error_message(), 60 );
-		} else {
+	/* Screenshot is picked via the WordPress Media Library (wp.media),
+	   not a raw <input type="file">, so it's just an attachment ID
+	   coming through as ordinary $_POST data — same reliable path as
+	   every other text field here, no multipart upload involved. */
+	if ( isset( $_POST['wf_d_screenshot_id'] ) ) {
+		$attachment_id = absint( $_POST['wf_d_screenshot_id'] );
+		if ( $attachment_id && 'attachment' === get_post_type( $attachment_id ) ) {
 			update_post_meta( $post_id, 'wf_d_screenshot_id', $attachment_id );
-			set_transient( 'wf_demo_upload_error_' . get_current_user_id(), $debug . ' | SUCCESS, attachment_id=' . $attachment_id, 60 );
+		} else {
+			delete_post_meta( $post_id, 'wf_d_screenshot_id' );
 		}
-	} else {
-		set_transient( 'wf_demo_upload_error_' . get_current_user_id(), $debug . ' | skipped (no filename)', 60 );
 	}
 }
 add_action( 'save_post_wf_demo', 'womensfight_save_demo_meta' );
-
-function womensfight_demo_upload_error_notice() {
-	$screen = get_current_screen();
-	if ( ! $screen || 'wf_demo' !== $screen->post_type ) {
-		return;
-	}
-	$key = 'wf_demo_upload_error_' . get_current_user_id();
-	$msg = get_transient( $key );
-	if ( $msg ) {
-		delete_transient( $key );
-		echo '<div class="notice notice-error"><p><strong>Screenshot আপলোড ব্যর্থ হয়েছে:</strong> ' . esc_html( $msg ) . '</p></div>';
-	}
-}
-add_action( 'admin_notices', 'womensfight_demo_upload_error_notice' );
 
 function womensfight_demo_columns( $columns ) {
 	return array(
