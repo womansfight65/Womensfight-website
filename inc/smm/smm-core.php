@@ -48,6 +48,26 @@ function wf_smm_services() {
 	);
 }
 
+/**
+ * Richer per-platform description for the "Platform vs Service"
+ * overview table on the landing page — separate from wf_smm_services()
+ * (which feeds the short, exact dropdown options on the request form).
+ */
+function wf_smm_platform_overview() {
+	return array(
+		'facebook'  => array( 'services' => 'ফলোয়ার, রিয়েকশন, ভিউ, কমেন্ট, শেয়ার ও অন্যান্য সার্ভিস', 'uses' => 'পেজ, ব্যবসা, কনটেন্ট ক্রিয়েটর, কমিউনিটি' ),
+		'instagram' => array( 'services' => 'ফলোয়ার, লাইক, ভিউ, কমেন্ট, Reels ও অন্যান্য এনগেজমেন্ট সার্ভিস', 'uses' => 'ইনফ্লুয়েন্সার, ক্রিয়েটর, ব্র্যান্ড, অনলাইন স্টোর' ),
+		'youtube'   => array( 'services' => 'সাবস্ক্রাইবার, ভিউ, লাইক ও ওয়াচ-টাইম সম্পর্কিত সার্ভিস', 'uses' => 'ইউটিউবার, ব্যবসা, চ্যানেল' ),
+		'tiktok'    => array( 'services' => 'ফলোয়ার, লাইক, ভিউ, শেয়ার ও এনগেজমেন্ট সার্ভিস', 'uses' => 'ক্রিয়েটর, ইনফ্লুয়েন্সার, ব্র্যান্ড, শর্ট ভিডিও' ),
+		'telegram'  => array( 'services' => 'মেম্বার, পোস্ট ভিউ ও রিয়েকশন', 'uses' => 'গ্রুপ, চ্যানেল, কমিউনিটি' ),
+		'x'         => array( 'services' => 'প্রোফাইল প্রোমোশন ও এনগেজমেন্ট সার্ভিস', 'uses' => 'পাবলিক ফিগার, ব্র্যান্ড, বিজনেস' ),
+		'linkedin'  => array( 'services' => 'প্রফেশনাল সোশ্যাল মিডিয়া গ্রোথ সার্ভিস', 'uses' => 'প্রফেশনাল, কোম্পানি, B2B ব্র্যান্ড' ),
+		'spotify'   => array( 'services' => 'মিউজিক-সম্পর্কিত প্রোমোশন সার্ভিস', 'uses' => 'আর্টিস্ট, মিউজিশিয়ান, DJ, ক্রিয়েটর' ),
+		'snapchat'  => array( 'services' => 'প্রোফাইল প্রোমোশন সার্ভিস', 'uses' => 'ক্রিয়েটর, ব্র্যান্ড' ),
+		'discord'   => array( 'services' => 'সার্ভার গ্রোথ ও মেম্বার এনগেজমেন্ট', 'uses' => 'কমিউনিটি, গেমিং গ্রুপ, ব্র্যান্ড' ),
+	);
+}
+
 /* ---------------------------------------------------------------------
  * Post type — "SMM Requests" in wp-admin, same pattern as Contact
  * Messages / Demo Requests.

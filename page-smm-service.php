@@ -21,18 +21,44 @@ add_action(
 	function () {
 		?>
 <style>
-.smm-platform-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:14px;}
-.smm-platform-card{background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:22px 14px; text-align:center; cursor:pointer; transition:transform .15s ease, border-color .15s ease; display:flex; flex-direction:column; align-items:center; gap:10px;}
-.smm-platform-card:hover{transform:translateY(-3px); border-color:var(--pink);}
-.smm-platform-card.active{border-color:var(--pink); box-shadow:var(--glow-pink);}
-.smm-platform-card svg{width:30px; height:30px; color:var(--pink-light);}
+.smm-hero-visual{position:relative; margin-top:36px; max-width:460px;}
+.smm-orbit-card{background:var(--surface); border:1px solid var(--border); border-radius:22px; box-shadow:var(--shadow); padding:26px; position:relative; z-index:1;}
+.smm-orbit-card h4{font-size:.8rem; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.04em; margin-bottom:16px;}
+.smm-orbit-row{display:flex; align-items:center; gap:14px; padding:12px 0; border-top:1px solid var(--border);}
+.smm-orbit-row:first-of-type{border-top:none;}
+.smm-orbit-badge{width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex:none;}
+.smm-orbit-badge svg{width:20px; height:20px; color:#fff;}
+.smm-orbit-row b{display:block; font-size:.88rem;}
+.smm-orbit-row span{font-size:.76rem; color:var(--ink-faint);}
+.smm-orbit-bar{height:6px; border-radius:999px; background:var(--bg-2); margin-top:6px; overflow:hidden;}
+.smm-orbit-bar i{display:block; height:100%; background:var(--grad); border-radius:999px;}
+.smm-hero-visual::before{content:""; position:absolute; width:260px; height:260px; background:var(--grad); opacity:.28; filter:blur(70px); border-radius:50%; top:-60px; right:-60px; z-index:0;}
+
+.smm-platform-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:16px;}
+.smm-platform-card{background:var(--surface); border:1px solid var(--border); border-top:3px solid transparent; border-radius:18px; padding:26px 14px; text-align:center; cursor:pointer; transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease; display:flex; flex-direction:column; align-items:center; gap:12px;}
+.smm-platform-card:hover{transform:translateY(-4px); border-top-color:var(--pink); box-shadow:0 16px 30px -18px rgba(0,0,0,.6);}
+.smm-platform-card.active{border-color:var(--pink); border-top-color:var(--pink); box-shadow:var(--glow-pink);}
+.smm-platform-badge{width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center;}
+.smm-platform-badge svg{width:26px; height:26px; color:#fff;}
 .smm-platform-card span{font-size:.86rem; font-weight:700;}
+.smm-platform-card[data-platform="facebook"] .smm-platform-badge{background:#1877f2;}
+.smm-platform-card[data-platform="instagram"] .smm-platform-badge{background:linear-gradient(135deg,#f58529,#dd2a7b 50%,#8134af);}
+.smm-platform-card[data-platform="youtube"] .smm-platform-badge{background:#ff0000;}
+.smm-platform-card[data-platform="tiktok"] .smm-platform-badge{background:#000;}
+.smm-platform-card[data-platform="telegram"] .smm-platform-badge{background:#26a5e4;}
+.smm-platform-card[data-platform="x"] .smm-platform-badge{background:#000;}
+.smm-platform-card[data-platform="linkedin"] .smm-platform-badge{background:#0a66c2;}
+.smm-platform-card[data-platform="spotify"] .smm-platform-badge{background:#1db954;}
+.smm-platform-card[data-platform="snapchat"] .smm-platform-badge{background:#fffc00;}
+.smm-platform-card[data-platform="snapchat"] .smm-platform-badge svg{color:#000;}
+.smm-platform-card[data-platform="discord"] .smm-platform-badge{background:#5865f2;}
 
 .smm-services-panel{margin-top:28px; background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:30px; display:none;}
 .smm-services-panel.show{display:block;}
 .smm-services-panel h3{font-size:1.1rem; margin-bottom:18px;}
 .smm-service-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
-.smm-service-card{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:12px;}
+.smm-service-card{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:12px; transition:border-color .15s ease;}
+.smm-service-card:hover{border-color:var(--pink);}
 .smm-service-card b{font-size:.92rem;}
 .smm-service-card button{align-self:flex-start;}
 
@@ -49,11 +75,52 @@ add_action(
   .smm-platform-grid{grid-template-columns:repeat(3,1fr);}
   .smm-service-grid{grid-template-columns:1fr 1fr;}
   .smm-steps{grid-template-columns:1fr;}
+  .smm-hero-visual{display:none;}
 }
 @media (max-width:640px){
   .smm-platform-grid{grid-template-columns:1fr 1fr;}
   .smm-service-grid{grid-template-columns:1fr;}
 }
+
+/* A distinct, lighter look for just this page's main content — the
+   rest of the site (header/footer/nav) stays the normal dark theme,
+   only #smm-page overrides colors for its own children. */
+#smm-page{background:linear-gradient(180deg,#f5f3fc 0%,#ece7fb 45%,#ddd4f7 100%); padding-bottom:1px;}
+#smm-page h1, #smm-page h2, #smm-page h3{color:#2c1f5e;}
+#smm-page p{color:#5c537a;}
+#smm-page .eyebrow{color:#6c4fd6;}
+#smm-page .eyebrow::before{background:linear-gradient(90deg,#6c4fd6,#a78bfa);}
+#smm-page .page-header{border-bottom:1px solid #e2d9f7;}
+#smm-page .page-header::before{background:linear-gradient(120deg,#8b5cf6,#6c4fd6); opacity:.18;}
+#smm-page .ico svg{stroke:#6c4fd6;}
+#smm-page .feat, #smm-page .smm-platform-card, #smm-page .smm-step, #smm-page .smm-service-card, #smm-page .faq details, #smm-page .wf-cform, #smm-page .wf-cform-success, #smm-page .smm-orbit-card, #smm-page .smm-overview-wrap{background:#fff; border-color:#e5defa; box-shadow:0 14px 34px -22px rgba(76,55,150,.35);}
+#smm-page .feat .ico.sm svg{stroke:#6c4fd6;}
+#smm-page section.alt{background:#efe9fb;}
+#smm-page label{color:#7a71a0;}
+#smm-page input, #smm-page textarea, #smm-page select{background:#faf8ff; border-color:#e2d9f7; color:#2c1f5e;}
+#smm-page input::placeholder, #smm-page textarea::placeholder{color:#a79dc9;}
+#smm-page .btn-primary{background:linear-gradient(135deg,#6c4fd6,#9333ea); color:#fff; box-shadow:0 12px 24px -10px rgba(108,79,214,.55);}
+#smm-page .btn-ghost{border-color:#d9cdf5; color:#4b3a8a; background:#fff;}
+#smm-page .btn-ghost:hover{border-color:#6c4fd6;}
+#smm-page .smm-platform-card{border-top-color:transparent;}
+#smm-page .smm-platform-card:hover{border-top-color:#6c4fd6; box-shadow:0 16px 30px -18px rgba(76,55,150,.4);}
+#smm-page .smm-platform-card.active{border-color:#6c4fd6; border-top-color:#6c4fd6; box-shadow:0 0 0 3px rgba(108,79,214,.15);}
+#smm-page .smm-platform-card span{color:#2c1f5e;}
+#smm-page .smm-services-panel{background:#efe9fb; border-color:#e2d9f7;}
+#smm-page .smm-step span.num{background:linear-gradient(135deg,#6c4fd6,#9333ea);}
+#smm-page .faq summary{color:#2c1f5e;}
+#smm-page .faq summary::after{color:#6c4fd6;}
+#smm-page .cta-band{background:linear-gradient(135deg,#6c4fd6,#4a2f9e);}
+#smm-page .cta-band::before{background:rgba(147,51,234,.35);}
+#smm-page .cta-band::after{background:rgba(108,79,214,.3);}
+
+.smm-overview-wrap{overflow-x:auto; border-radius:var(--radius-lg); margin-top:36px;}
+.smm-overview-table{width:100%; border-collapse:collapse; min-width:640px;}
+.smm-overview-table thead th{background:linear-gradient(90deg,#6c4fd6,#8b5cf6); color:#fff; text-align:left; padding:16px 20px; font-size:.86rem; font-weight:700;}
+.smm-overview-table thead th:first-child{border-top-left-radius:var(--radius-lg);}
+.smm-overview-table thead th:last-child{border-top-right-radius:var(--radius-lg);}
+.smm-overview-table tbody td{padding:16px 20px; border-top:1px dashed #e5defa; font-size:.88rem; color:#4b3a8a;}
+.smm-overview-table tbody td:first-child{font-weight:700; color:#2c1f5e; white-space:nowrap;}
 </style>
 		<?php
 	}
@@ -74,26 +141,46 @@ $error_labels = array(
 
 $platforms = wf_smm_platforms();
 $services  = wf_smm_services();
+$overview  = wf_smm_platform_overview();
 ?>
-<main>
+<main id="smm-page">
 
-<div class="page-header wrap"><div class="inner">
-  <div class="ico"><svg><use href="#i-megaphone"/></svg></div>
-  <span class="eyebrow">সার্ভিস</span>
-  <h1>আপনার সোশ্যাল মিডিয়ার প্রচারণায় প্রয়োজন সঠিক পরিকল্পনা ও সহযোগিতা।</h1>
-  <p>Facebook, Instagram, YouTube, TikTok সহ বিভিন্ন সোশ্যাল মিডিয়া প্ল্যাটফর্মের জন্য আপনার প্রয়োজন অনুযায়ী সার্ভিস সম্পর্কে জানতে রিকোয়েস্ট করুন। আমাদের টিম আপনার সঙ্গে যোগাযোগ করে বিস্তারিত আলোচনা করবে।</p>
-  <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:26px;">
-    <a href="#smm-request-form" class="btn btn-primary">সার্ভিস রিকোয়েস্ট করুন</a>
-    <a href="#smm-platforms" class="btn btn-ghost">আমাদের সার্ভিসসমূহ</a>
+<div class="page-header wrap"><div class="inner" style="display:flex; flex-wrap:wrap; gap:40px; align-items:center; max-width:none;">
+  <div style="flex:1; min-width:300px; max-width:620px;">
+    <div class="ico"><svg><use href="#i-megaphone"/></svg></div>
+    <span class="eyebrow">সোশ্যাল মিডিয়া মার্কেটিং সার্ভিস</span>
+    <h1>আপনার ব্র্যান্ডকে সঠিক দর্শকের সামনে পৌঁছে দিতে চান?</h1>
+    <p>Facebook, Instagram, YouTube, TikTok সহ বিভিন্ন সোশ্যাল মিডিয়া প্ল্যাটফর্মে আপনার প্রয়োজন অনুযায়ী সার্ভিস বেছে নিন — একটি রিকোয়েস্টেই। কোনো ঝামেলা নেই, কোনো লুকানো শর্ত নেই — শুধু সরাসরি আলোচনা ও কাজ শুরু।</p>
+    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:26px;">
+      <a href="#smm-request-form" class="btn btn-primary">সার্ভিস রিকোয়েস্ট করুন</a>
+      <a href="#smm-platforms" class="btn btn-ghost">আমাদের সার্ভিসসমূহ</a>
+    </div>
+  </div>
+  <div class="smm-hero-visual">
+    <div class="smm-orbit-card">
+      <h4>জনপ্রিয় প্ল্যাটফর্ম</h4>
+      <div class="smm-orbit-row">
+        <div class="smm-orbit-badge" style="background:#1877f2;"><svg><use href="#i-sm-facebook"/></svg></div>
+        <div style="flex:1;"><b>Facebook</b><span>Page ও Post প্রোমোশন</span></div>
+      </div>
+      <div class="smm-orbit-row">
+        <div class="smm-orbit-badge" style="background:linear-gradient(135deg,#f58529,#dd2a7b 50%,#8134af);"><svg><use href="#i-sm-instagram"/></svg></div>
+        <div style="flex:1;"><b>Instagram</b><span>Profile ও Reels প্রোমোশন</span></div>
+      </div>
+      <div class="smm-orbit-row">
+        <div class="smm-orbit-badge" style="background:#ff0000;"><svg><use href="#i-sm-youtube"/></svg></div>
+        <div style="flex:1;"><b>YouTube</b><span>Channel ও Video প্রোমোশন</span></div>
+      </div>
+    </div>
   </div>
 </div></div>
 
 <section class="tight wrap" id="smm-platforms">
-  <div class="section-head"><span class="eyebrow">প্ল্যাটফর্ম</span><h2>কোন প্ল্যাটফর্মের জন্য সার্ভিস প্রয়োজন?</h2><p>একটি প্ল্যাটফর্মে ক্লিক করুন, নিচে সেই প্ল্যাটফর্মের জন্য আমাদের সার্ভিসগুলো দেখতে পাবেন।</p></div>
+  <div class="section-head center"><span class="eyebrow">প্ল্যাটফর্ম</span><h2>কোন প্ল্যাটফর্মের জন্য সার্ভিস প্রয়োজন?</h2><p>একটি প্ল্যাটফর্মে ক্লিক করুন, নিচে সেই প্ল্যাটফর্মের জন্য আমাদের সার্ভিসগুলো দেখতে পাবেন।</p></div>
   <div class="smm-platform-grid" id="smm-platform-grid">
     <?php foreach ( $platforms as $key => $label ) : ?>
       <div class="smm-platform-card" data-platform="<?php echo esc_attr( $key ); ?>">
-        <svg><use href="#i-sm-<?php echo esc_attr( $key ); ?>"/></svg>
+        <div class="smm-platform-badge"><svg><use href="#i-sm-<?php echo esc_attr( $key ); ?>"/></svg></div>
         <span><?php echo esc_html( $label ); ?></span>
       </div>
     <?php endforeach; ?>
@@ -102,6 +189,17 @@ $services  = wf_smm_services();
   <div class="smm-services-panel" id="smm-services-panel">
     <h3 id="smm-services-title"></h3>
     <div class="smm-service-grid" id="smm-service-grid"></div>
+  </div>
+
+  <div class="smm-overview-wrap">
+    <table class="smm-overview-table">
+      <thead><tr><th>প্ল্যাটফর্ম</th><th>উপলব্ধ গ্রোথ সার্ভিস</th><th>সাধারণ ব্যবহার</th></tr></thead>
+      <tbody>
+        <?php foreach ( $overview as $key => $row ) : ?>
+          <tr><td><?php echo esc_html( $platforms[ $key ] ); ?></td><td><?php echo esc_html( $row['services'] ); ?></td><td><?php echo esc_html( $row['uses'] ); ?></td></tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
   </div>
 </section>
 
