@@ -85,8 +85,23 @@ add_action(
   .smm-hero-visual{display:none;}
 }
 @media (max-width:640px){
-  .smm-platform-grid{grid-template-columns:1fr 1fr;}
+  .smm-platform-grid{grid-template-columns:1fr 1fr; gap:10px;}
+  .smm-platform-card{padding:18px 10px;}
+  .smm-platform-badge{width:44px; height:44px;}
+  .smm-platform-badge svg{width:22px; height:22px;}
   .smm-service-grid{grid-template-columns:1fr;}
+  .smm-services-panel{padding:18px;}
+  .smm-trust-row{gap:10px 16px;}
+  .smm-step{padding:20px;}
+
+  .smm-overview-table thead{display:none;}
+  .smm-overview-table, .smm-overview-table tbody, .smm-overview-table tr, .smm-overview-table td{display:block; width:100%;}
+  .smm-overview-table{min-width:0;}
+  .smm-overview-table tr{margin-bottom:14px; border:1px solid #e5defa; border-radius:14px; overflow:hidden;}
+  .smm-overview-table tbody td{border-top:1px dashed #e5defa; display:flex; justify-content:space-between; gap:12px; text-align:right;}
+  .smm-overview-table tbody tr td:first-child{border-top:none; background:linear-gradient(90deg,#6c4fd6,#8b5cf6); color:#fff; text-align:left;}
+  .smm-overview-table tbody td::before{content:attr(data-label); font-weight:700; color:#6c4fd6; text-align:left;}
+  .smm-overview-table tbody tr td:first-child::before{content:""; display:none;}
 }
 
 /* A distinct, lighter look for just this page's main content — the
@@ -220,7 +235,7 @@ $overview  = wf_smm_platform_overview();
       <thead><tr><th>প্ল্যাটফর্ম</th><th>উপলব্ধ গ্রোথ সার্ভিস</th><th>সাধারণ ব্যবহার</th></tr></thead>
       <tbody>
         <?php foreach ( $overview as $key => $row ) : ?>
-          <tr><td><?php echo esc_html( $platforms[ $key ] ); ?></td><td><?php echo esc_html( $row['services'] ); ?></td><td><?php echo esc_html( $row['uses'] ); ?></td></tr>
+          <tr><td data-label="প্ল্যাটফর্ম"><?php echo esc_html( $platforms[ $key ] ); ?></td><td data-label="উপলব্ধ গ্রোথ সার্ভিস"><?php echo esc_html( $row['services'] ); ?></td><td data-label="সাধারণ ব্যবহার"><?php echo esc_html( $row['uses'] ); ?></td></tr>
         <?php endforeach; ?>
       </tbody>
     </table>
