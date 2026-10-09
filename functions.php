@@ -2184,6 +2184,24 @@ function womensfight_render_demo_detail_box( $post ) {
 }
 
 function womensfight_save_demo_meta( $post_id ) {
+	if (
+		'POST' === $_SERVER['REQUEST_METHOD'] && empty( $_POST ) && empty( $_FILES )
+		&& isset( $_SERVER['CONTENT_LENGTH'] ) && (int) $_SERVER['CONTENT_LENGTH'] > 0
+	) {
+		/* PHP silently drops the ENTIRE request (both $_POST and $_FILES,
+		   including the nonce) when the uploaded file exceeds
+		   post_max_size — no error, nothing saves, and it otherwise
+		   looks exactly like "nothing happened". Caught here, before the
+		   nonce check below, because the nonce itself is one of the
+		   dropped fields. */
+		set_transient(
+			'wf_demo_upload_error_' . get_current_user_id(),
+			'ছবির সাইজ সার্ভারের লিমিটের চেয়ে বড় (post_max_size: ' . esc_html( ini_get( 'post_max_size' ) ) . ')। ছোট সাইজের ছবি (২-৩ MB এর কম) দিয়ে আবার চেষ্টা করুন।',
+			60
+		);
+		return;
+	}
+
 	if ( ! isset( $_POST['womensfight_demo_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['womensfight_demo_nonce'] ), 'womensfight_save_demo' ) ) {
 		return;
 	}
