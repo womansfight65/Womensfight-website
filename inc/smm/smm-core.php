@@ -36,6 +36,9 @@ function wf_smm_platforms() {
 function wf_smm_services() {
 	return array(
 		'facebook'  => array(
+			array( 'label' => 'Page প্রোমোশন', 'icon' => 'i-target' ),
+			array( 'label' => 'Post প্রোমোশন', 'icon' => 'i-doc' ),
+			array( 'label' => 'Video প্রোমোশন', 'icon' => 'i-film' ),
 			array( 'label' => 'ফলোয়ার', 'icon' => 'i-users' ),
 			array( 'label' => 'লাইক/রিয়েকশন', 'icon' => 'i-heart' ),
 			array( 'label' => 'ভিউ', 'icon' => 'i-film' ),
@@ -44,13 +47,17 @@ function wf_smm_services() {
 			array( 'label' => 'কনটেন্ট মনিটাইজেশন', 'icon' => 'i-chart' ),
 		),
 		'instagram' => array(
+			array( 'label' => 'Profile প্রোমোশন', 'icon' => 'i-target' ),
+			array( 'label' => 'Post প্রোমোশন', 'icon' => 'i-doc' ),
+			array( 'label' => 'Reels প্রোমোশন', 'icon' => 'i-bolt' ),
 			array( 'label' => 'ফলোয়ার', 'icon' => 'i-users' ),
 			array( 'label' => 'লাইক', 'icon' => 'i-heart' ),
 			array( 'label' => 'ভিউ', 'icon' => 'i-film' ),
 			array( 'label' => 'কমেন্ট', 'icon' => 'i-chat' ),
-			array( 'label' => 'Reels প্রোমোশন', 'icon' => 'i-bolt' ),
 		),
 		'youtube'   => array(
+			array( 'label' => 'Channel প্রোমোশন', 'icon' => 'i-target' ),
+			array( 'label' => 'Video প্রোমোশন', 'icon' => 'i-film' ),
 			array( 'label' => 'সাবস্ক্রাইবার', 'icon' => 'i-users' ),
 			array( 'label' => 'ভিউ', 'icon' => 'i-film' ),
 			array( 'label' => 'লাইক', 'icon' => 'i-heart' ),
@@ -58,6 +65,8 @@ function wf_smm_services() {
 			array( 'label' => 'কনটেন্ট মনিটাইজেশন', 'icon' => 'i-chart' ),
 		),
 		'tiktok'    => array(
+			array( 'label' => 'Profile প্রোমোশন', 'icon' => 'i-target' ),
+			array( 'label' => 'Video প্রোমোশন', 'icon' => 'i-film' ),
 			array( 'label' => 'ফলোয়ার', 'icon' => 'i-users' ),
 			array( 'label' => 'লাইক', 'icon' => 'i-heart' ),
 			array( 'label' => 'ভিউ', 'icon' => 'i-film' ),
@@ -65,30 +74,40 @@ function wf_smm_services() {
 			array( 'label' => 'কমেন্ট', 'icon' => 'i-chat' ),
 		),
 		'telegram'  => array(
+			array( 'label' => 'Channel প্রোমোশন', 'icon' => 'i-target' ),
+			array( 'label' => 'Post এনগেজমেন্ট', 'icon' => 'i-chat' ),
 			array( 'label' => 'মেম্বার', 'icon' => 'i-users' ),
 			array( 'label' => 'পোস্ট ভিউ', 'icon' => 'i-film' ),
 			array( 'label' => 'রিয়েকশন', 'icon' => 'i-heart' ),
 		),
 		'x'         => array(
+			array( 'label' => 'Profile প্রোমোশন', 'icon' => 'i-target' ),
+			array( 'label' => 'Post এনগেজমেন্ট', 'icon' => 'i-chat' ),
 			array( 'label' => 'ফলোয়ার', 'icon' => 'i-users' ),
 			array( 'label' => 'লাইক', 'icon' => 'i-heart' ),
 			array( 'label' => 'রিটুইট/শেয়ার', 'icon' => 'i-share' ),
 			array( 'label' => 'ভিউ', 'icon' => 'i-film' ),
 		),
 		'linkedin'  => array(
+			array( 'label' => 'Profile প্রোমোশন', 'icon' => 'i-target' ),
+			array( 'label' => 'Post প্রোমোশন', 'icon' => 'i-doc' ),
 			array( 'label' => 'ফলোয়ার/কানেকশন', 'icon' => 'i-users' ),
 			array( 'label' => 'পোস্ট এনগেজমেন্ট', 'icon' => 'i-chat' ),
 		),
 		'spotify'   => array(
+			array( 'label' => 'Profile/Playlist প্রোমোশন', 'icon' => 'i-target' ),
 			array( 'label' => 'প্লে/স্ট্রিম', 'icon' => 'i-film' ),
 			array( 'label' => 'ফলোয়ার', 'icon' => 'i-users' ),
 			array( 'label' => 'মাসিক লিসেনার', 'icon' => 'i-chart' ),
 		),
 		'snapchat'  => array(
+			array( 'label' => 'Profile প্রোমোশন', 'icon' => 'i-target' ),
 			array( 'label' => 'ফলোয়ার', 'icon' => 'i-users' ),
 			array( 'label' => 'ভিউ', 'icon' => 'i-film' ),
 		),
 		'discord'   => array(
+			array( 'label' => 'Server Growth', 'icon' => 'i-target' ),
+			array( 'label' => 'Member Engagement', 'icon' => 'i-chat' ),
 			array( 'label' => 'সার্ভার মেম্বার', 'icon' => 'i-users' ),
 			array( 'label' => 'এনগেজমেন্ট', 'icon' => 'i-chat' ),
 		),

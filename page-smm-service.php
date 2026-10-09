@@ -34,6 +34,10 @@ add_action(
 .smm-orbit-bar i{display:block; height:100%; background:var(--grad); border-radius:999px;}
 .smm-hero-visual::before{content:""; position:absolute; width:260px; height:260px; background:var(--grad); opacity:.28; filter:blur(70px); border-radius:50%; top:-60px; right:-60px; z-index:0;}
 
+.smm-trust-row{display:flex; gap:18px; flex-wrap:wrap; margin-top:22px;}
+.smm-trust-row span{display:inline-flex; align-items:center; gap:7px; font-size:.82rem; font-weight:700; color:var(--ink-faint);}
+.smm-trust-row svg{width:16px; height:16px; stroke:var(--pink-light); fill:none; stroke-width:2;}
+
 .smm-platform-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:16px;}
 .smm-platform-card{background:var(--surface); border:1px solid var(--border); border-top:3px solid transparent; border-radius:18px; padding:26px 14px; text-align:center; cursor:pointer; transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease; display:flex; flex-direction:column; align-items:center; gap:12px;}
 .smm-platform-card:hover{transform:translateY(-4px); border-top-color:var(--pink); box-shadow:0 16px 30px -18px rgba(0,0,0,.6);}
@@ -69,6 +73,7 @@ add_action(
 .smm-step span.num{display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:var(--grad); color:#fff; font-weight:700; margin-bottom:14px;}
 .smm-step h3{font-size:1.02rem; margin-bottom:8px;}
 
+.smm-form-note{font-size:.8rem; color:var(--ink-faint); margin-top:12px;}
 .smm-field-error{font-size:.78rem; color:var(--pink-light); margin-top:-10px; margin-bottom:4px; display:none;}
 .smm-field-error.show{display:block;}
 .smm-hp{position:absolute; left:-9999px; top:-9999px;}
@@ -95,10 +100,13 @@ add_action(
 #smm-page .page-header{border-bottom:1px solid #e2d9f7;}
 #smm-page .page-header::before{background:linear-gradient(120deg,#8b5cf6,#6c4fd6); opacity:.18;}
 #smm-page .ico svg{stroke:#6c4fd6;}
+#smm-page .smm-trust-row span{color:#4b3a8a;}
+#smm-page .smm-trust-row svg{stroke:#6c4fd6;}
 #smm-page .feat, #smm-page .smm-platform-card, #smm-page .smm-step, #smm-page .smm-service-card, #smm-page .faq details, #smm-page .wf-cform, #smm-page .wf-cform-success, #smm-page .smm-orbit-card, #smm-page .smm-overview-wrap{background:#fff; border-color:#e5defa; box-shadow:0 14px 34px -22px rgba(76,55,150,.35);}
 #smm-page .feat .ico.sm svg{stroke:#6c4fd6;}
 #smm-page section.alt{background:#efe9fb;}
 #smm-page label{color:#7a71a0;}
+#smm-page .smm-form-note{color:#7a71a0;}
 #smm-page input, #smm-page textarea, #smm-page select{background:#faf8ff; border-color:#e2d9f7; color:#2c1f5e;}
 #smm-page input::placeholder, #smm-page textarea::placeholder{color:#a79dc9;}
 #smm-page .btn-primary{background:linear-gradient(135deg,#6c4fd6,#9333ea); color:#fff; box-shadow:0 12px 24px -10px rgba(108,79,214,.55);}
@@ -156,12 +164,17 @@ $overview  = wf_smm_platform_overview();
 <div class="page-header wrap"><div class="inner" style="display:flex; flex-wrap:wrap; gap:40px; align-items:center; max-width:none;">
   <div style="flex:1; min-width:300px; max-width:620px;">
     <div class="ico"><svg><use href="#i-megaphone"/></svg></div>
-    <span class="eyebrow">সোশ্যাল মিডিয়া মার্কেটিং সার্ভিস</span>
-    <h1>আপনার ব্র্যান্ডকে সঠিক দর্শকের সামনে পৌঁছে দিতে চান?</h1>
-    <p>Facebook, Instagram, YouTube, TikTok সহ বিভিন্ন সোশ্যাল মিডিয়া প্ল্যাটফর্মে আপনার প্রয়োজন অনুযায়ী সার্ভিস বেছে নিন — একটি রিকোয়েস্টেই। কোনো ঝামেলা নেই, কোনো লুকানো শর্ত নেই — শুধু সরাসরি আলোচনা ও কাজ শুরু।</p>
+    <span class="eyebrow">আপনার সোশ্যাল মিডিয়া গ্রোথ পার্টনার</span>
+    <h1>আপনার সোশ্যাল মিডিয়া পেজ আছে, কিন্তু আশানুরূপ রিচ, ফলোয়ার বা এনগেজমেন্ট পাচ্ছেন না?</h1>
+    <p>নতুন ব্যবসা শুরু করেছেন? নিয়মিত পোস্ট করছেন, কিন্তু আপনার পেজে কাঙ্ক্ষিত সাড়া মিলছে না? আপনার ব্র্যান্ডকে আরও বেশি মানুষের কাছে পরিচিত করতে চান? Women's Fight আছে আপনার পাশে! Facebook, Instagram, YouTube, TikTok সহ জনপ্রিয় সোশ্যাল মিডিয়া প্ল্যাটফর্মে ফলোয়ার, লাইক, ভিউ, কমেন্ট, শেয়ার ও প্রমোশন সংক্রান্ত বিভিন্ন সার্ভিস থেকে আপনার প্রয়োজন অনুযায়ী বেছে নিন।</p>
     <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:26px;">
       <a href="#smm-request-form" class="btn btn-primary">সার্ভিস রিকোয়েস্ট করুন</a>
-      <a href="#smm-platforms" class="btn btn-ghost">আমাদের সার্ভিসসমূহ</a>
+      <a href="#smm-platforms" class="btn btn-ghost">আমাদের সার্ভিসগুলো দেখুন</a>
+    </div>
+    <div class="smm-trust-row">
+      <span><svg><use href="#i-grid"/></svg>১০টি সোশ্যাল প্ল্যাটফর্ম</span>
+      <span><svg><use href="#i-check"/></svg>ফ্রি সার্ভিস রিকোয়েস্ট</span>
+      <span><svg><use href="#i-chat"/></svg>টিমের সঙ্গে সরাসরি আলোচনা</span>
     </div>
   </div>
   <div class="smm-hero-visual">
@@ -184,7 +197,7 @@ $overview  = wf_smm_platform_overview();
 </div></div>
 
 <section class="tight wrap" id="smm-platforms">
-  <div class="section-head center"><span class="eyebrow">প্ল্যাটফর্ম</span><h2>কোন প্ল্যাটফর্মের জন্য সার্ভিস প্রয়োজন?</h2><p>একটি প্ল্যাটফর্মে ক্লিক করুন, নিচে সেই প্ল্যাটফর্মের জন্য আমাদের সার্ভিসগুলো দেখতে পাবেন।</p></div>
+  <div class="section-head center"><span class="eyebrow">প্ল্যাটফর্ম</span><h2>আপনি কোন সোশ্যাল মিডিয়া প্ল্যাটফর্মে গ্রো করতে চান?</h2><p>আপনার পছন্দের প্ল্যাটফর্ম নির্বাচন করুন এবং প্রয়োজন অনুযায়ী উপলব্ধ সার্ভিসগুলো দেখুন।</p></div>
   <div class="smm-platform-grid" id="smm-platform-grid">
     <?php foreach ( $platforms as $key => $label ) : ?>
       <div class="smm-platform-card" data-platform="<?php echo esc_attr( $key ); ?>">
@@ -211,12 +224,22 @@ $overview  = wf_smm_platform_overview();
   </div>
 </section>
 
+<section class="tight alt"><div class="wrap">
+  <div class="section-head center"><span class="eyebrow">কেন আমরা</span><h2>সোশ্যাল মিডিয়া প্রমোশন এখন আরও সহজ!</h2><p>আপনার ব্যবসা, ব্র্যান্ড কিংবা কনটেন্টের জন্য প্রয়োজনীয় সোশ্যাল মিডিয়া সার্ভিস খুঁজছেন? Women's Fight-এর মাধ্যমে সহজেই আপনার প্রয়োজন জানাতে পারবেন।</p></div>
+  <div class="feat-grid">
+    <div class="feat"><div class="ico sm"><svg><use href="#i-layers"/></svg></div><h3>এক জায়গায় বিভিন্ন সার্ভিস</h3><p>জনপ্রিয় সোশ্যাল মিডিয়া প্ল্যাটফর্মের বিভিন্ন সার্ভিস থেকে প্রয়োজন অনুযায়ী নির্বাচন করুন।</p></div>
+    <div class="feat"><div class="ico sm"><svg><use href="#i-form"/></svg></div><h3>সহজ রিকোয়েস্ট প্রক্রিয়া</h3><p>কয়েকটি প্রয়োজনীয় তথ্য দিয়েই আপনার সার্ভিস রিকোয়েস্ট জমা দিন।</p></div>
+    <div class="feat"><div class="ico sm"><svg><use href="#i-users"/></svg></div><h3>সরাসরি টিম সাপোর্ট</h3><p>আমাদের টিম আপনার প্রয়োজন বুঝে সার্ভিস ও খরচ সম্পর্কে আলোচনা করবে।</p></div>
+    <div class="feat"><div class="ico sm"><svg><use href="#i-check"/></svg></div><h3>আগে আলোচনা, তারপর সিদ্ধান্ত</h3><p>কাজ শুরু করার আগে বিস্তারিত জেনে আপনার সম্মতি অনুযায়ী এগিয়ে যান।</p></div>
+  </div>
+</div></section>
+
 <section class="tight wrap">
-  <div class="section-head center"><span class="eyebrow">প্রক্রিয়া</span><h2>যেভাবে কাজ করবেন আমাদের সাথে</h2></div>
+  <div class="section-head center"><span class="eyebrow">প্রক্রিয়া</span><h2>মাত্র ৩টি সহজ ধাপে শুরু করুন</h2></div>
   <div class="smm-steps">
-    <div class="smm-step"><span class="num">১</span><h3>সার্ভিস নির্বাচন করুন</h3><p>আপনার প্রয়োজন অনুযায়ী প্ল্যাটফর্ম ও সার্ভিস বেছে নিন।</p></div>
-    <div class="smm-step"><span class="num">২</span><h3>রিকোয়েস্ট জমা দিন</h3><p>নাম, মোবাইল নম্বর, লিংক ও প্রয়োজনীয় পরিমাণ দিয়ে ফর্ম পূরণ করুন।</p></div>
-    <div class="smm-step"><span class="num">৩</span><h3>আমাদের টিম যোগাযোগ করবে</h3><p>আপনার রিকোয়েস্ট পর্যালোচনা করে সার্ভিস, খরচ ও অন্যান্য বিষয় নিয়ে আলোচনা করা হবে।</p></div>
+    <div class="smm-step"><span class="num">১</span><h3>সার্ভিস নির্বাচন করুন</h3><p>আপনার প্রয়োজন অনুযায়ী সোশ্যাল মিডিয়া প্ল্যাটফর্ম ও সার্ভিস বেছে নিন।</p></div>
+    <div class="smm-step"><span class="num">২</span><h3>রিকোয়েস্ট জমা দিন</h3><p>আপনার নাম, মোবাইল নম্বর, প্রয়োজনীয় লিংক ও সার্ভিসের পরিমাণ দিয়ে ফর্ম পূরণ করুন।</p></div>
+    <div class="smm-step"><span class="num">৩</span><h3>আমাদের টিমের সঙ্গে কথা বলুন</h3><p>আপনার রিকোয়েস্ট পর্যালোচনা করে আমাদের টিম যোগাযোগ করবে এবং বিস্তারিত জানাবে।</p></div>
   </div>
 </section>
 
@@ -230,7 +253,7 @@ $overview  = wf_smm_platform_overview();
 
   <?php else : ?>
 
-    <div class="section-head center"><span class="eyebrow">রিকোয়েস্ট ফর্ম</span><h2>আপনার প্রয়োজনীয় সার্ভিসের জন্য রিকোয়েস্ট করুন</h2><p>নিচের তথ্যগুলো পূরণ করুন। আমাদের টিম আপনার সঙ্গে যোগাযোগ করে বিস্তারিত জানাবে।</p></div>
+    <div class="section-head center"><span class="eyebrow">রিকোয়েস্ট ফর্ম</span><h2>আপনার সোশ্যাল মিডিয়া গ্রোথের যাত্রা শুরু হোক এখান থেকেই!</h2><p>আপনার প্রয়োজনীয় সার্ভিসের তথ্য দিয়ে রিকোয়েস্ট জমা দিন। আমাদের টিম আপনার সঙ্গে যোগাযোগ করে সার্ভিস ও খরচ সম্পর্কে বিস্তারিত জানাবে।</p></div>
 
     <form class="wf-cform" id="smm-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate>
       <input type="hidden" name="action" value="wf_smm_submit_request">
@@ -289,7 +312,8 @@ $overview  = wf_smm_platform_overview();
         <textarea id="wf_smm_extra" name="wf_smm_extra" placeholder="আপনার অতিরিক্ত কোনো তথ্য থাকলে লিখুন"></textarea>
       </div>
 
-      <button class="btn btn-primary" type="submit" id="smm-submit-btn">রিকোয়েস্ট জমা দিন</button>
+      <button class="btn btn-primary" type="submit" id="smm-submit-btn">আমার রিকোয়েস্ট জমা দিন</button>
+      <p class="smm-form-note">রিকোয়েস্ট জমা দেওয়া সম্পূর্ণ ফ্রি। বিস্তারিত আলোচনা ও সম্মতির পর কাজ শুরু হবে।</p>
     </form>
 
   <?php endif; ?>
@@ -299,16 +323,16 @@ $overview  = wf_smm_platform_overview();
 <section class="tight wrap">
   <div class="section-head"><span class="eyebrow">সাধারণ প্রশ্ন</span><h2>যা জানতে চান</h2></div>
   <div class="faq">
-    <details open><summary>কীভাবে সার্ভিসের জন্য রিকোয়েস্ট করব?</summary><p>উপরের প্ল্যাটফর্ম ও সার্ভিস থেকে পছন্দমতো একটি বেছে নিয়ে, অথবা সরাসরি নিচের ফর্ম পূরণ করে রিকোয়েস্ট জমা দিতে পারেন।</p></details>
-    <details><summary>রিকোয়েস্ট জমা দিতে কি টাকা লাগবে?</summary><p>না, রিকোয়েস্ট জমা দেওয়া সম্পূর্ণ ফ্রি। পেমেন্টের বিষয়টি আলোচনার পর, আপনার সম্মতিতেই এগোয়।</p></details>
-    <details><summary>রিকোয়েস্ট করার পর কী হবে?</summary><p>আমাদের টিম আপনার রিকোয়েস্ট পর্যালোচনা করে আপনার দেওয়া মোবাইল নম্বরে যোগাযোগ করবে।</p></details>
-    <details><summary>সার্ভিসের খরচ কীভাবে জানব?</summary><p>আপনার সঙ্গে সরাসরি আলোচনা করে প্রয়োজন ও পরিমাণ অনুযায়ী খরচ জানানো হবে।</p></details>
-    <details><summary>কাজ শুরু করার আগে বিস্তারিত আলোচনা করা যাবে?</summary><p>হ্যাঁ, অবশ্যই। কাজ শুরুর আগে সব বিষয় স্পষ্ট করে আলোচনা করা হয়, আপনার সম্মতি ছাড়া কোনো কিছু শুরু হয় না।</p></details>
-    <details><summary>সব ধরনের সোশ্যাল মিডিয়া সার্ভিস কি পাওয়া যাবে?</summary><p>উপরে তালিকাভুক্ত প্ল্যাটফর্ম ও সার্ভিসগুলোই বর্তমানে আমরা দিয়ে থাকি। নির্দিষ্ট কোনো প্রয়োজন থাকলে রিকোয়েস্টের "অতিরিক্ত তথ্য" ঘরে জানাতে পারেন।</p></details>
+    <details open><summary>কীভাবে সার্ভিসের জন্য রিকোয়েস্ট করব?</summary><p>উপরে আপনার পছন্দের প্ল্যাটফর্ম ও সার্ভিস বেছে নিন, অথবা সরাসরি নিচের ফর্মটি পূরণ করুন — দুই ক্ষেত্রেই আপনার রিকোয়েস্ট আমাদের কাছে পৌঁছে যাবে।</p></details>
+    <details><summary>রিকোয়েস্ট জমা দিতে কি কোনো টাকা লাগবে?</summary><p>না, রিকোয়েস্ট জমা দেওয়া সম্পূর্ণ ফ্রি। কোনো পেমেন্ট ছাড়াই আপনি আপনার প্রয়োজন জানাতে পারেন — টাকা-পয়সার বিষয় আলোচনার পর, আপনার সম্মতি পেলেই এগোয়।</p></details>
+    <details><summary>সার্ভিসের খরচ কীভাবে জানব?</summary><p>আপনার প্রয়োজন, সার্ভিসের ধরন ও পরিমাণ বুঝে আমাদের টিম সরাসরি আপনার সঙ্গে আলোচনা করে খরচ জানাবে — কোনো ফিক্সড প্যাকেজ নয়, আপনার চাহিদা অনুযায়ী।</p></details>
+    <details><summary>রিকোয়েস্ট করার পর কী হবে?</summary><p>আমাদের টিম আপনার রিকোয়েস্টটি পর্যালোচনা করে আপনার দেওয়া মোবাইল নম্বরে যোগাযোগ করবে এবং পরবর্তী ধাপ নিয়ে কথা বলবে।</p></details>
+    <details><summary>কাজ শুরু করার আগে বিস্তারিত আলোচনা করা যাবে কি?</summary><p>হ্যাঁ, অবশ্যই। কাজ শুরুর আগে সার্ভিস, সময় ও খরচ — সব বিষয় স্পষ্ট করে আলোচনা করা হয়। আপনার সম্মতি ছাড়া কোনো কাজ শুরু হয় না।</p></details>
+    <details><summary>সব ধরনের সোশ্যাল মিডিয়া সার্ভিস কি পাওয়া যাবে?</summary><p>উপরে তালিকাভুক্ত ১০টি প্ল্যাটফর্ম ও তাদের সার্ভিসগুলোই বর্তমানে আমরা দিয়ে থাকি। এর বাইরে নির্দিষ্ট কোনো প্রয়োজন থাকলে ফর্মের "অতিরিক্ত তথ্য" ঘরে লিখে জানাতে পারেন, আমরা দেখে জানাব এটা সম্ভব কিনা।</p></details>
   </div>
 </section>
 
-<section class="tight wrap"><div class="cta-band"><div><h2>আপনার সোশ্যাল মিডিয়ার জন্য কোন সার্ভিস প্রয়োজন?</h2><p>আপনার প্রয়োজন আমাদের জানান। আমাদের টিম বিস্তারিত আলোচনা করে উপযুক্ত সার্ভিস সম্পর্কে জানাবে।</p></div><a class="btn btn-primary" href="#smm-request-form">এখনই রিকোয়েস্ট করুন</a></div></section>
+<section class="tight wrap"><div class="cta-band"><div><h2>আপনার সোশ্যাল মিডিয়া পেজকে আরও পরিচিত করতে প্রস্তুত?</h2><p>আপনার প্রয়োজন অনুযায়ী সার্ভিস নির্বাচন করুন এবং Women's Fight টিমের সঙ্গে সরাসরি আলোচনা করুন।</p></div><a class="btn btn-primary" href="#smm-request-form">এখনই সার্ভিস রিকোয়েস্ট করুন</a></div></section>
 
 </main>
 
