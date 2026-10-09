@@ -252,6 +252,28 @@ function wfa_handle_set_opening_balance() {
 add_action( 'admin_post_wfa_set_opening_balance', 'wfa_handle_set_opening_balance' );
 
 /**
+ * One-click reset — sets every payment method's Opening Balance to 0,
+ * for when all transaction history has been cleared and the Cash &
+ * Bank Balance cards should also go back to zero.
+ */
+function wfa_handle_reset_opening_balances() {
+	wfa_accounts_require_access();
+	if ( ! isset( $_POST['wfa_ob_reset_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['wfa_ob_reset_nonce'] ), 'wfa_reset_opening_balances' ) ) {
+		wp_die( 'Security check failed। দয়া করে পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' );
+	}
+
+	foreach ( wfa_accounts_payment_methods() as $method ) {
+		wfa_accounts_set_opening_balance( $method, 0 );
+	}
+
+	wp_safe_redirect(
+		add_query_arg( array( 'page' => 'wfa-accounts', 'wfa_msg' => 'wfa_balance_saved' ), admin_url( 'admin.php' ) )
+	);
+	exit;
+}
+add_action( 'admin_post_wfa_reset_opening_balances', 'wfa_handle_reset_opening_balances' );
+
+/**
  * CSV export for one month, all active transactions. UTF-8 BOM included
  * so Bangla text opens correctly in Excel (same pattern as the rest of
  * the site's exports).

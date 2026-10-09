@@ -2209,12 +2209,28 @@ function womensfight_save_demo_meta( $post_id ) {
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/media.php';
 		$attachment_id = media_handle_upload( 'wf_d_screenshot', $post_id );
-		if ( ! is_wp_error( $attachment_id ) ) {
+		if ( is_wp_error( $attachment_id ) ) {
+			set_transient( 'wf_demo_upload_error_' . get_current_user_id(), $attachment_id->get_error_message(), 60 );
+		} else {
 			update_post_meta( $post_id, 'wf_d_screenshot_id', $attachment_id );
 		}
 	}
 }
 add_action( 'save_post_wf_demo', 'womensfight_save_demo_meta' );
+
+function womensfight_demo_upload_error_notice() {
+	$screen = get_current_screen();
+	if ( ! $screen || 'wf_demo' !== $screen->post_type ) {
+		return;
+	}
+	$key = 'wf_demo_upload_error_' . get_current_user_id();
+	$msg = get_transient( $key );
+	if ( $msg ) {
+		delete_transient( $key );
+		echo '<div class="notice notice-error"><p><strong>Screenshot আপলোড ব্যর্থ হয়েছে:</strong> ' . esc_html( $msg ) . '</p></div>';
+	}
+}
+add_action( 'admin_notices', 'womensfight_demo_upload_error_notice' );
 
 function womensfight_demo_columns( $columns ) {
 	return array(

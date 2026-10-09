@@ -141,6 +141,12 @@ function wfa_render_overview_page() {
 	echo '<button type="submit" class="button">সংরক্ষণ করুন</button>';
 	echo '</form>';
 	echo '<p class="wfa-hint">এটা শুধু একবার (বা ভুল হলে সংশোধন করতে) ব্যবহার করুন — এখান থেকে শুরু করে পরবর্তী সব Income/Expense স্বয়ংক্রিয়ভাবে যোগ-বিয়োগ হয়ে Live Balance দেখাবে।</p>';
+
+	echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="wfa-inline-form" onsubmit="return confirm(\'সব Payment Method-এর Opening Balance শূন্য (0) করে দেওয়া হবে। নিশ্চিত?\');">';
+	echo '<input type="hidden" name="action" value="wfa_reset_opening_balances">';
+	wp_nonce_field( 'wfa_reset_opening_balances', 'wfa_ob_reset_nonce' );
+	echo '<button type="submit" class="button">সব Opening Balance শূন্য করুন</button>';
+	echo '</form>';
 	echo '</details>';
 
 	wfa_render_month_picker( 'wfa-accounts', $month );
