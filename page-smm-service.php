@@ -90,6 +90,11 @@ add_action(
 @media (max-width:640px){
   .smm-platform-grid{grid-template-columns:1fr 1fr;}
   .smm-service-grid{grid-template-columns:1fr;}
+  .page-header h1{font-size:1.4rem !important; line-height:1.4;}
+  .page-header .eyebrow{font-size:.72rem;}
+  .page-header p{font-size:.86rem;}
+  .smm-highlight-text{font-size:.92rem !important;}
+  .smm-trust-row span{font-size:.74rem;}
 }
 
 /* A distinct, lighter look for just this page's main content — the
