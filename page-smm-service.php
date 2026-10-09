@@ -392,7 +392,12 @@ $overview  = wf_smm_platform_overview();
 			card.addEventListener('click', function () {
 				grid.querySelectorAll('.smm-platform-card').forEach(function (c) { c.classList.remove('active'); });
 				card.classList.add('active');
-				showPlatformServices(card.getAttribute('data-platform'));
+				var platformKey = card.getAttribute('data-platform');
+				showPlatformServices(platformKey);
+				formPlatform.value = platformKey;
+				populateServiceSelect(platformKey, '');
+				var formEl = document.getElementById('smm-request-form');
+				if (formEl) { formEl.scrollIntoView({ behavior: 'smooth' }); }
 			});
 		});
 	}
