@@ -34,6 +34,9 @@ add_action(
 .smm-orbit-bar i{display:block; height:100%; background:var(--grad); border-radius:999px;}
 .smm-hero-visual::before{content:""; position:absolute; width:260px; height:260px; background:var(--grad); opacity:.28; filter:blur(70px); border-radius:50%; top:-60px; right:-60px; z-index:0;}
 
+.smm-hl{background:linear-gradient(90deg,#d6336c,#6c4fd6 60%,#1d4ed8); -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:700;}
+.smm-highlight-text{font-weight:700; font-size:1.05rem; margin-top:14px;}
+
 .smm-trust-row{display:flex; gap:18px; flex-wrap:wrap; margin-top:22px;}
 .smm-trust-row span{display:inline-flex; align-items:center; gap:7px; font-size:.82rem; font-weight:700; color:var(--ink-faint);}
 .smm-trust-row svg{width:16px; height:16px; stroke:var(--pink-light); fill:none; stroke-width:2;}
@@ -95,6 +98,7 @@ add_action(
 #smm-page{background:linear-gradient(180deg,#f5f3fc 0%,#ece7fb 45%,#ddd4f7 100%); padding-bottom:1px; overflow-x:hidden;}
 #smm-page h1, #smm-page h2, #smm-page h3{color:#2c1f5e;}
 #smm-page p{color:#5c537a;}
+#smm-page .smm-highlight-text{color:#2c1f5e;}
 #smm-page .eyebrow{color:#6c4fd6;}
 #smm-page .eyebrow::before{background:linear-gradient(90deg,#6c4fd6,#a78bfa);}
 #smm-page .page-header{border-bottom:1px solid #e2d9f7;}
@@ -168,11 +172,12 @@ $overview  = wf_smm_platform_overview();
   <div style="flex:1 1 300px; min-width:0; max-width:620px; width:100%;">
     <div class="ico"><svg><use href="#i-megaphone"/></svg></div>
     <span class="eyebrow">আপনার সোশ্যাল মিডিয়া গ্রোথ পার্টনার</span>
-    <h1>আপনার সোশ্যাল মিডিয়া পেজ আছে, কিন্তু আশানুরূপ রিচ, ফলোয়ার বা এনগেজমেন্ট পাচ্ছেন না?</h1>
-    <p>নতুন ব্যবসা শুরু করেছেন? নিয়মিত পোস্ট করছেন, কিন্তু আপনার পেজে কাঙ্ক্ষিত সাড়া মিলছে না? আপনার ব্র্যান্ডকে আরও বেশি মানুষের কাছে পরিচিত করতে চান? Women's Fight আছে আপনার পাশে! Facebook, Instagram, YouTube, TikTok সহ জনপ্রিয় সোশ্যাল মিডিয়া প্ল্যাটফর্মে ফলোয়ার, লাইক, ভিউ, কমেন্ট, শেয়ার ও প্রমোশন সংক্রান্ত বিভিন্ন সার্ভিস থেকে আপনার প্রয়োজন অনুযায়ী বেছে নিন।</p>
+    <h1>সোশ্যাল মিডিয়ায় <span class="smm-hl">লাইক</span>, <span class="smm-hl">ফলোয়ার</span> বা <span class="smm-hl">প্রমোশন</span> কম থাকায় কাস্টমার আপনার ব্যবসাকে বিশ্বাস করতে পারছেন না?</h1>
+    <p>আপনার ব্র্যান্ডের অনলাইন পরিচিতি বাড়াতে <span class="smm-hl">Women's Fight</span> দিচ্ছে সোশ্যাল মিডিয়া লাইক, ফলোয়ার, ভিউ ও প্রমোশন সার্ভিস।</p>
+    <p class="smm-highlight-text">আপনার ব্র্যান্ডের পরিচিতি বাড়ান, সঠিক অডিয়েন্সের কাছে পৌঁছান!</p>
     <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:26px;">
-      <a href="#smm-request-form" class="btn btn-primary">সার্ভিস রিকোয়েস্ট করুন</a>
-      <a href="#smm-platforms" class="btn btn-ghost">আমাদের সার্ভিসগুলো দেখুন</a>
+      <a href="#smm-request-form" class="btn btn-primary">এখনই সার্ভিস নিন</a>
+      <a href="#smm-platforms" class="btn btn-ghost">সার্ভিসগুলো দেখুন</a>
     </div>
     <div class="smm-trust-row">
       <span><svg><use href="#i-grid"/></svg>১০টি সোশ্যাল প্ল্যাটফর্ম</span>
@@ -200,7 +205,7 @@ $overview  = wf_smm_platform_overview();
 </div></div>
 
 <section class="tight wrap" id="smm-platforms">
-  <div class="section-head center"><span class="eyebrow">প্ল্যাটফর্ম</span><h2>আপনি কোন সোশ্যাল মিডিয়া প্ল্যাটফর্মে গ্রো করতে চান?</h2><p>আপনার পছন্দের প্ল্যাটফর্ম নির্বাচন করুন এবং প্রয়োজন অনুযায়ী উপলব্ধ সার্ভিসগুলো দেখুন।</p></div>
+  <div class="section-head center"><span class="eyebrow">প্ল্যাটফর্ম</span><h2>কোন প্ল্যাটফর্মে গ্রো করতে চান?</h2><p>Facebook, Instagram, YouTube, TikTok সহ জনপ্রিয় প্ল্যাটফর্মে আপনার প্রয়োজনীয় সার্ভিস বেছে নিন।</p></div>
   <div class="smm-platform-grid" id="smm-platform-grid">
     <?php foreach ( $platforms as $key => $label ) : ?>
       <div class="smm-platform-card" data-platform="<?php echo esc_attr( $key ); ?>">
@@ -228,11 +233,11 @@ $overview  = wf_smm_platform_overview();
 </section>
 
 <section class="tight wrap">
-  <div class="section-head center"><span class="eyebrow">প্রক্রিয়া</span><h2>মাত্র ৩টি সহজ ধাপে শুরু করুন</h2></div>
+  <div class="section-head center"><span class="eyebrow">প্রক্রিয়া</span><h2>মাত্র ৩ ধাপে সার্ভিস নিন</h2></div>
   <div class="smm-steps">
-    <div class="smm-step"><span class="num">১</span><h3>সার্ভিস নির্বাচন করুন</h3><p>আপনার প্রয়োজন অনুযায়ী সোশ্যাল মিডিয়া প্ল্যাটফর্ম ও সার্ভিস বেছে নিন।</p></div>
-    <div class="smm-step"><span class="num">২</span><h3>রিকোয়েস্ট জমা দিন</h3><p>আপনার নাম, মোবাইল নম্বর, প্রয়োজনীয় লিংক ও সার্ভিসের পরিমাণ দিয়ে ফর্ম পূরণ করুন।</p></div>
-    <div class="smm-step"><span class="num">৩</span><h3>আমাদের টিমের সঙ্গে কথা বলুন</h3><p>আপনার রিকোয়েস্ট পর্যালোচনা করে আমাদের টিম যোগাযোগ করবে এবং বিস্তারিত জানাবে।</p></div>
+    <div class="smm-step"><span class="num">১</span><h3>প্ল্যাটফর্ম নির্বাচন</h3><p>আপনার পছন্দের প্ল্যাটফর্ম নির্বাচন করুন।</p></div>
+    <div class="smm-step"><span class="num">২</span><h3>রিকোয়েস্ট জমা দিন</h3><p>সার্ভিস ও পরিমাণ দিয়ে রিকোয়েস্ট জমা দিন।</p></div>
+    <div class="smm-step"><span class="num">৩</span><h3>টিমের সঙ্গে আলোচনা</h3><p>আমাদের টিমের সঙ্গে খরচ ও বিস্তারিত আলোচনা করুন।</p></div>
   </div>
 </section>
 
@@ -246,7 +251,7 @@ $overview  = wf_smm_platform_overview();
 
   <?php else : ?>
 
-    <div class="section-head center"><span class="eyebrow">রিকোয়েস্ট ফর্ম</span><h2>আপনার সোশ্যাল মিডিয়া গ্রোথের যাত্রা শুরু হোক এখান থেকেই!</h2><p>আপনার প্রয়োজনীয় সার্ভিসের তথ্য দিয়ে রিকোয়েস্ট জমা দিন। আমাদের টিম আপনার সঙ্গে যোগাযোগ করে সার্ভিস ও খরচ সম্পর্কে বিস্তারিত জানাবে।</p></div>
+    <div class="section-head center"><span class="eyebrow">রিকোয়েস্ট ফর্ম</span><h2>আপনার পেজের গ্রোথ শুরু করতে প্রস্তুত?</h2><p>প্রয়োজনীয় সার্ভিস নির্বাচন করে রিকোয়েস্ট জমা দিন। আমাদের টিম আপনার সঙ্গে যোগাযোগ করবে।</p></div>
 
     <form class="wf-cform" id="smm-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate>
       <input type="hidden" name="action" value="wf_smm_submit_request">
@@ -305,8 +310,8 @@ $overview  = wf_smm_platform_overview();
         <textarea id="wf_smm_extra" name="wf_smm_extra" placeholder="আপনার অতিরিক্ত কোনো তথ্য থাকলে লিখুন"></textarea>
       </div>
 
-      <button class="btn btn-primary" type="submit" id="smm-submit-btn">আমার রিকোয়েস্ট জমা দিন</button>
-      <p class="smm-form-note">রিকোয়েস্ট জমা দেওয়া সম্পূর্ণ ফ্রি। বিস্তারিত আলোচনা ও সম্মতির পর কাজ শুরু হবে।</p>
+      <button class="btn btn-primary" type="submit" id="smm-submit-btn">রিকোয়েস্ট জমা দিন</button>
+      <p class="smm-form-note">রিকোয়েস্ট জমা দেওয়া সম্পূর্ণ ফ্রি।</p>
     </form>
 
   <?php endif; ?>
@@ -325,7 +330,7 @@ $overview  = wf_smm_platform_overview();
   </div>
 </section>
 
-<section class="tight wrap"><div class="cta-band"><div><h2>আপনার সোশ্যাল মিডিয়া পেজকে আরও পরিচিত করতে প্রস্তুত?</h2><p>আপনার প্রয়োজন অনুযায়ী সার্ভিস নির্বাচন করুন এবং Women's Fight টিমের সঙ্গে সরাসরি আলোচনা করুন।</p></div><a class="btn btn-primary" href="#smm-request-form">এখনই সার্ভিস রিকোয়েস্ট করুন</a></div></section>
+<section class="tight wrap"><div class="cta-band"><div><h2>আপনার ব্যবসাকে অনলাইনে আরও পরিচিত করতে চান?</h2><p>Women's Fight-এর সোশ্যাল মিডিয়া সার্ভিস সম্পর্কে জানতে আজই যোগাযোগ করুন।</p></div><a class="btn btn-primary" href="#smm-request-form">এখনই সার্ভিস নিন</a></div></section>
 
 </main>
 
