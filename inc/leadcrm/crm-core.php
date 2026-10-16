@@ -408,3 +408,4 @@ function wfa_crm_counselor_name( $user_id ) {
 require_once __DIR__ . '/crm-render.php';
 require_once __DIR__ . '/crm-handlers.php';
 require_once __DIR__ . '/crm-public-intake.php';
+require_once __DIR__ . '/crm-rest-api.php';
