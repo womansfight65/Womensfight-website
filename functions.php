@@ -307,6 +307,7 @@ function womensfight_page_definitions() {
 		'demo-library'         => 'Demo Website Library',
 		'auto-motion'          => 'Business Automation Service',
 		'smm-service'          => 'সোশ্যাল মিডিয়া সার্ভিস',
+		'menual'               => 'Menual Test',
 	);
 }
 
