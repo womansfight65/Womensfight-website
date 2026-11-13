@@ -9,6 +9,21 @@ return <<<'HTML'
 </div></div>
 
 <section class="tight wrap">
+  <div class="cta-band">
+    <div>
+      <div class="ico" style="background:rgba(255,255,255,.18); box-shadow:none; margin-bottom:14px;"><svg><use href="#i-target"/></svg></div>
+      <span class="eyebrow" style="color:#fff;">সীমিত সুযোগ — মাত্র ১০০ জন উদ্যোক্তার জন্য</span>
+      <h2>Growth Partnership Program</h2>
+      <p>আমরা মাত্র <strong>১০০ জন</strong> টার্গেট অডিয়েন্সের সাথে একটি বিশেষ রেজিস্ট্রেশন-ভিত্তিক পার্টনারশিপে কাজ করছি।</p>
+      <p>রেজিস্ট্রেশনের পর আমাদের টিম আপনার ব্যবসার সম্পূর্ণ দায়িত্ব নেবে — বিজনেস ডিল ও সেলস, ওয়েবসাইট/প্রোডাক্ট ডেভেলপমেন্ট, ল্যান্ডিং পেজ, ডোমেইন সেটআপ এবং সম্পূর্ণ মার্কেটিং কার্যক্রম।</p>
+      <p><strong>আমাদের অঙ্গীকার:</strong> আপনার ব্যবসা বাস্তবে বৃদ্ধি পেলে, ফলাফল দেখা গেলে — তখনই আমরা পেমেন্ট নেব। আগে কোনো পেমেন্ট নেই।</p>
+      <p style="opacity:.85; font-size:.88rem;">সীমিত ১০০টি স্লট — রেজিস্ট্রেশন করুন এখনই।</p>
+    </div>
+    <a class="btn btn-ghost" href="##LINK:contact##">রেজিস্ট্রেশন করুন →</a>
+  </div>
+</section>
+
+<section class="tight wrap">
   <div class="section-head"><span class="eyebrow">মূল্য তালিকা</span><h2>সার্ভিস প্রাইস</h2><p>প্রতিটি প্যাকেজের সাথে থাকছে <strong>ফ্রি বিজনেস কিট</strong>।</p></div>
   <div class="pkg-grid">
     <div class="pkg">
