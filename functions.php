@@ -308,6 +308,7 @@ function womensfight_page_definitions() {
 		'auto-motion'          => 'Business Automation Service',
 		'smm-service'          => 'সোশ্যাল মিডিয়া সার্ভিস',
 		'menual'               => 'Menual Test',
+		'price'                => 'Price',
 	);
 }
 
@@ -329,7 +330,13 @@ function womensfight_menu_structure() {
 		array( 'title' => 'Case Study', 'slug' => 'case-study' ),
 		array( 'title' => 'Portfolio', 'slug' => 'portfolio' ),
 		array( 'title' => 'Action Plan', 'slug' => 'action-plan' ),
-		array( 'title' => 'Package', 'slug' => 'package' ),
+		array(
+			'title'    => 'Package',
+			'children' => array(
+				array( 'title' => 'Package', 'slug' => 'package' ),
+				array( 'title' => 'Price', 'slug' => 'price' ),
+			),
+		),
 		array( 'title' => 'AI Agent', 'slug' => 'ai-agent' ),
 		array( 'title' => 'Contact Us', 'slug' => 'contact' ),
 	);
