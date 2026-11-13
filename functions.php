@@ -717,10 +717,12 @@ function womensfight_render_page_sync_screen() {
 		}
 	}
 
+	$commit_badge_style = 'display:inline-block; font-family:Consolas,Monaco,monospace; background:#dbeafe; color:#0969da; padding:2px 8px; border-radius:4px; font-weight:600;';
+
 	echo '<div class="notice notice-info" style="padding:12px 16px;"><p style="margin:.3em 0;"><strong>এই সার্ভারে এখন যে কোড চলছে:</strong></p>';
 	echo '<p style="margin:.3em 0;">Theme Version: <code>' . esc_html( $theme->get( 'Version' ) ) . '</code>';
 	if ( $commit_hash ) {
-		echo ' &middot; Git commit: <code>' . esc_html( $commit_hash ) . '</code>';
+		echo ' &middot; Git commit: <span style="' . esc_attr( $commit_badge_style ) . '">' . esc_html( $commit_hash ) . '</span>';
 	}
 	echo '</p>';
 	foreach ( $deploy_files as $label => $path ) {
