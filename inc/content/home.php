@@ -48,55 +48,55 @@ return <<<'HTML'
   </div>
   <div class="svc-grid">
     <a class="svc-card" href="##LINK:digital-marketing##">
-      <div class="ico"><svg><use href="#i-megaphone"/></svg></div>
+      <div class="ico"></div>
       <h3>ডিজিটাল মার্কেটিং</h3>
       <p>পেইড অ্যাড, SEO ও সোশ্যাল মিডিয়া ক্যাম্পেইন ম্যানেজমেন্ট।</p>
       <span class="go">বিস্তারিত দেখুন →</span>
     </a>
     <a class="svc-card" href="##LINK:website-development##">
-      <div class="ico"><svg><use href="#i-code"/></svg></div>
+      <div class="ico"></div>
       <h3>ওয়েবসাইট ডেভেলপমেন্ট</h3>
       <p>কাস্টম ওয়েবসাইট ও ই-কমার্স স্টোর তৈরি ও মেইনটেনেন্স।</p>
       <span class="go">বিস্তারিত দেখুন →</span>
     </a>
     <a class="svc-card" href="##LINK:landing-page##">
-      <div class="ico"><svg><use href="#i-cursor"/></svg></div>
+      <div class="ico"></div>
       <h3>ল্যান্ডিং পেজ</h3>
       <p>ক্যাম্পেইন বা প্রোডাক্ট লঞ্চের জন্য নির্দিষ্ট কনভার্সন-ফোকাসড পেজ।</p>
       <span class="go">বিস্তারিত দেখুন →</span>
     </a>
     <a class="svc-card" href="##LINK:video-production##">
-      <div class="ico"><svg><use href="#i-film"/></svg></div>
+      <div class="ico"></div>
       <h3>ভিডিও প্রোডাকশন</h3>
       <p>TVC, OVC ও প্রোমোশনাল ভিডিও — শুটিং থেকে এডিটিং।</p>
       <span class="go">বিস্তারিত দেখুন →</span>
     </a>
     <a class="svc-card" href="##LINK:smm-service##">
-      <div class="ico"><svg><use href="#i-share"/></svg></div>
+      <div class="ico"></div>
       <h3>সোশ্যাল মিডিয়া এনালাইসিস</h3>
       <p>ফেসবুক/ইনস্টাগ্রাম পেজ অপটিমাইজেশন ও গ্রোথ সার্ভিস।</p>
       <span class="go">বিস্তারিত দেখুন →</span>
     </a>
     <a class="svc-card" href="##LINK:auto-motion##">
-      <div class="ico"><svg><use href="#i-gear"/></svg></div>
+      <div class="ico"></div>
       <h3>বিজনেস অটোমেশন</h3>
       <p>লিড ট্র্যাকিং, CRM ও বিজনেস প্রসেস অটোমেশন সেটআপ।</p>
       <span class="go">বিস্তারিত দেখুন →</span>
     </a>
     <a class="svc-card" href="##LINK:ai-agency##">
-      <div class="ico"><svg><use href="#i-brain"/></svg></div>
+      <div class="ico"></div>
       <h3>AI Agency</h3>
       <p>চ্যাটবট, কনটেন্ট টুল ও AI-চালিত মার্কেটিং অটোমেশন।</p>
       <span class="go">বিস্তারিত দেখুন →</span>
     </a>
     <a class="svc-card" href="##LINK:ai-agent##">
-      <div class="ico"><svg><use href="#i-target"/></svg></div>
+      <div class="ico"></div>
       <h3>AI Agent</h3>
       <p>লোকেশন অনুযায়ী সম্ভাব্য অ্যাড অডিয়েন্স বিনামূল্যে হিসাব করুন।</p>
       <span class="go">এখনই হিসাব করুন →</span>
     </a>
     <a class="svc-card" href="##LINK:product##">
-      <div class="ico"><svg><use href="#i-cart"/></svg></div>
+      <div class="ico"></div>
       <h3>প্রোডাক্ট</h3>
       <p>আমাদের নিজস্ব SaaS প্রোডাক্ট লাইনআপ দেখুন।</p>
       <span class="go">বিস্তারিত দেখুন →</span>
