@@ -367,6 +367,10 @@ footer.site-footer{background:var(--bg-2); color:var(--ink); margin-top:40px; bo
 .wf-demo-shot img{width:100%; height:100%; object-fit:cover; display:block;}
 .wf-demo-shot-placeholder{width:100%; height:100%; display:flex; align-items:center; justify-content:center;}
 .wf-demo-shot-placeholder svg{width:48px; height:48px; stroke:var(--ink-faint); fill:none; stroke-width:1.5;}
+.wf-video-play-overlay{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(5,4,12,.25); transition:background .18s ease;}
+.wf-video-play-overlay svg{width:58px; height:58px; color:#fff; filter:drop-shadow(0 4px 14px rgba(0,0,0,.4)); transition:transform .18s ease;}
+.wf-demo-shot:hover .wf-video-play-overlay{background:rgba(5,4,12,.45);}
+.wf-demo-shot:hover .wf-video-play-overlay svg{transform:scale(1.1);}
 .wf-demo-tag{position:absolute; top:12px; left:12px; background:rgba(10,8,23,.75); backdrop-filter:blur(4px); color:#fff; font-size:.7rem; font-weight:700; padding:5px 12px; border-radius:999px;}
 .wf-demo-body{padding:20px; display:flex; flex-direction:column; gap:8px; flex:1;}
 .wf-demo-body h3{font-size:1.05rem;}

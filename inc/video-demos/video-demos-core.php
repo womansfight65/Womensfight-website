@@ -230,11 +230,14 @@ function womensfight_append_video_demo_gallery( $content ) {
 				$name        = get_the_title( $demo->ID );
 				?>
 				<div class="wf-demo-card">
-					<div class="wf-demo-shot">
+					<div class="wf-demo-shot"<?php echo $embed_url ? ' onclick="wfOpenVideoDemo(\'' . esc_js( $embed_url ) . '\');" style="cursor:pointer;"' : ''; ?>>
 						<?php if ( $thumb_id ) : ?>
 							<?php echo wp_get_attachment_image( $thumb_id, 'medium_large' ); ?>
 						<?php else : ?>
 							<div class="wf-demo-shot-placeholder"><svg><use href="#i-film"/></svg></div>
+						<?php endif; ?>
+						<?php if ( $embed_url ) : ?>
+							<div class="wf-video-play-overlay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
 						<?php endif; ?>
 						<?php if ( $cat ) : ?><span class="wf-demo-tag"><?php echo esc_html( $cat ); ?></span><?php endif; ?>
 					</div>
@@ -290,7 +293,7 @@ function womensfight_append_video_demo_gallery( $content ) {
 		$insert_at = $marker_pos + strlen( '</div></div>' );
 		$content   = substr( $content, 0, $insert_at ) . $gallery_html . substr( $content, $insert_at );
 	} else {
-		$content .= $gallery_html;
+		$content = $gallery_html . $content;
 	}
 
 	return $content . $modal_html;
