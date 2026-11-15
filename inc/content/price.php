@@ -24,10 +24,13 @@ return <<<'HTML'
       <h3>Growth Partnership</h3>
       <div class="price">৳৫,৯৯৯ <span>/ মাস</span></div>
       <ul>
-        <li><svg><use href="#i-check"/></svg>Women&rsquo;s Fight-এর সম্পূর্ণ টিম মাত্র এই টাকার বিনিময়ে আপনার কোম্পানিতে নিজস্ব স্টাফের মতো কাজ করবে</li>
-        <li><svg><use href="#i-check"/></svg>মার্কেটিং কস্ট ও ম্যানেজমেন্ট কস্ট — সব অন্তর্ভুক্ত</li>
-        <li><svg><use href="#i-check"/></svg>মাসিক পারফরম্যান্স মনিটরিং</li>
-        <li><svg><use href="#i-check"/></svg>ব্যবসা বৃদ্ধির সম্পূর্ণ দায়িত্ব আমাদের</li>
+        <li><svg><use href="#i-check"/></svg>ওয়েবসাইট তৈরি — লঞ্চের জন্য সম্পূর্ণ রেডি, একদম ফ্রি</li>
+        <li><svg><use href="#i-check"/></svg>ল্যান্ডিং পেজ</li>
+        <li><svg><use href="#i-check"/></svg>সম্পূর্ণ ডিজিটাল মার্কেটিং</li>
+        <li><svg><use href="#i-check"/></svg>সম্পূর্ণ সোশ্যাল মিডিয়া ম্যানেজমেন্ট</li>
+        <li><svg><use href="#i-check"/></svg>মাসিক মনিটরিং</li>
+        <li><svg><use href="#i-check"/></svg>Paid Ads চালালে আলাদা সার্ভিস চার্জ নেই — শুধু Ads Cost বহন করতে হবে</li>
+        <li><svg><use href="#i-check"/></svg>ডোমেইন ও হোস্টিং এই প্যাকেজে অন্তর্ভুক্ত নয়</li>
       </ul>
       <button type="button" class="btn btn-primary btn-block" onclick="wfOpenGrowthReg('Growth Partnership — ৳৫,৯৯৯/মাস');">এই প্যাকেজে রেজিস্ট্রেশন করুন</button>
     </div>
@@ -36,10 +39,12 @@ return <<<'HTML'
       <h3>Growth Partnership</h3>
       <div class="price">৳২,৯৯৯ <span>/ মাস</span></div>
       <ul>
-        <li><svg><use href="#i-check"/></svg>Women&rsquo;s Fight-এর সম্পূর্ণ টিম মাত্র এই টাকার বিনিময়ে আপনার কোম্পানিতে নিজস্ব স্টাফের মতো কাজ করবে</li>
-        <li><svg><use href="#i-check"/></svg>মার্কেটিং কস্ট ও ম্যানেজমেন্ট কস্ট — সব অন্তর্ভুক্ত</li>
-        <li><svg><use href="#i-check"/></svg>মাসিক পারফরম্যান্স মনিটরিং</li>
-        <li><svg><use href="#i-check"/></svg>ব্যবসা বৃদ্ধির সম্পূর্ণ দায়িত্ব আমাদের</li>
+        <li><svg><use href="#i-check"/></svg>সম্পূর্ণ সোশ্যাল মিডিয়া ম্যানেজমেন্ট</li>
+        <li><svg><use href="#i-check"/></svg>Google Profile ম্যানেজমেন্ট</li>
+        <li><svg><use href="#i-check"/></svg>Facebook Analysis</li>
+        <li><svg><use href="#i-check"/></svg>Problem Solution</li>
+        <li><svg><use href="#i-check"/></svg>অর্গানিক কনটেন্ট</li>
+        <li><svg><use href="#i-check"/></svg>বিজনেস ডেভেলপমেন্ট</li>
       </ul>
       <button type="button" class="btn btn-ghost btn-block" onclick="wfOpenGrowthReg('Growth Partnership — ৳২,৯৯৯/মাস');">এই প্যাকেজে রেজিস্ট্রেশন করুন</button>
     </div>
