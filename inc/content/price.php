@@ -7,11 +7,12 @@ return <<<'HTML'
       <div class="ico" style="background:rgba(255,255,255,.18); box-shadow:none; margin-bottom:14px;"><svg><use href="#i-target"/></svg></div>
       <span class="eyebrow" style="color:#fff;">সীমিত সুযোগ — মাত্র ১০০ জন উদ্যোক্তার জন্য</span>
       <h2>আপনার ব্যবসার জন্য একটি পূর্ণাঙ্গ গ্রোথ টিম — নিজের স্টাফ নিয়োগ না করেই</h2>
-      <p>আমরা মাত্র <strong>১০০ জন</strong> টার্গেট অডিয়েন্সের সাথে একটি বিশেষ রেজিস্ট্রেশন-ভিত্তিক পার্টনারশিপে কাজ করছি।</p>
-      <p>রেজিস্ট্রেশনের পর আমাদের টিম আপনার ব্যবসার সম্পূর্ণ দায়িত্ব নেবে — বিজনেস ডিল ও সেলস, ওয়েবসাইট/প্রোডাক্ট ডেভেলপমেন্ট, ল্যান্ডিং পেজ, ডোমেইন সেটআপ এবং সম্পূর্ণ মার্কেটিং কার্যক্রম।</p>
-      <p><strong>আমাদের অঙ্গীকার:</strong> আপনার ব্যবসা বাস্তবে বৃদ্ধি পেলে, ফলাফল দেখা গেলে — তখনই আমরা পেমেন্ট নেব। আগে কোনো পেমেন্ট নেই।</p>
-      <p>আমরা মাসিক মনিটরিং করব এবং আপনার ব্যবসার গ্রোথের সম্পূর্ণ দায়িত্ব নেব — মার্কেটিং কস্ট ও ম্যানেজমেন্ট কস্ট সব অন্তর্ভুক্ত।</p>
-      <p style="opacity:.85; font-size:.88rem;">সীমিত ১০০টি স্লট — রেজিস্ট্রেশন করুন এখনই।</p>
+      <p>মাত্র <span style="color:var(--blue-light); font-weight:800;">১০০ জন</span> টার্গেট অডিয়েন্সের সাথে একটি বিশেষ রেজিস্ট্রেশন-ভিত্তিক পার্টনারশিপ — সীমিত স্লট, রেজিস্ট্রেশন করুন এখনই।</p>
+      <ul style="list-style:none; padding:0; margin:18px 0 0; display:flex; flex-direction:column; gap:13px;">
+        <li style="display:flex; gap:10px; align-items:flex-start;"><svg style="width:19px; height:19px; stroke:var(--blue-light); fill:none; stroke-width:2; flex:none; margin-top:3px;"><use href="#i-check"/></svg><span>আমাদের টিম আপনার ব্যবসার <span style="color:var(--pink-light); font-weight:800;">সম্পূর্ণ দায়িত্ব</span> নেবে — বিজনেস ডিল, সেলস, ওয়েবসাইট/প্রোডাক্ট ডেভেলপমেন্ট, ল্যান্ডিং পেজ, ডোমেইন সেটআপ ও সম্পূর্ণ মার্কেটিং</span></li>
+        <li style="display:flex; gap:10px; align-items:flex-start;"><svg style="width:19px; height:19px; stroke:var(--blue-light); fill:none; stroke-width:2; flex:none; margin-top:3px;"><use href="#i-check"/></svg><span><span style="color:var(--pink-light); font-weight:800;">আমাদের অঙ্গীকার:</span> ব্যবসা বাস্তবে বৃদ্ধি পেলে, ফলাফল দেখা গেলে — তখনই পেমেন্ট। <span style="color:var(--blue-light); font-weight:800;">আগে কোনো পেমেন্ট নেই</span></span></li>
+        <li style="display:flex; gap:10px; align-items:flex-start;"><svg style="width:19px; height:19px; stroke:var(--blue-light); fill:none; stroke-width:2; flex:none; margin-top:3px;"><use href="#i-check"/></svg><span><span style="color:var(--pink-light); font-weight:800;">মাসিক মনিটরিং</span> ও গ্রোথের সম্পূর্ণ দায়িত্ব আমাদের — মার্কেটিং কস্ট ও ম্যানেজমেন্ট কস্ট <span style="color:var(--blue-light); font-weight:800;">সব অন্তর্ভুক্ত</span></span></li>
+      </ul>
     </div>
   </div>
 </section>
