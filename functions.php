@@ -74,6 +74,13 @@ require_once get_template_directory() . '/inc/smm/smm-core.php';
  */
 require_once get_template_directory() . '/inc/video-demos/video-demos-core.php';
 
+/**
+ * Growth Partnership Program registrations — fully isolated module (own
+ * CPT, own admin dashboard menu, separate from Contact Messages). See
+ * inc/growth-registration/growth-registration-core.php.
+ */
+require_once get_template_directory() . '/inc/growth-registration/growth-registration-core.php';
+
 /* ---------------------------------------------------------------------
  * Theme setup
  * ------------------------------------------------------------------- */

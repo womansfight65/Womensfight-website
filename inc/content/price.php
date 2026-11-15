@@ -1,14 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 return <<<'HTML'
-<div class="page-header wrap"><div class="inner">
-  <div class="ico"><svg><use href="#i-gift"/></svg></div>
-  <span class="eyebrow">প্রাইস</span>
-  <h1>সার্ভিস প্রাইস ও ডিটেইলস</h1>
-  <p>আমাদের প্রতিটি সার্ভিসের মূল্য, বিস্তারিত এবং বিজনেস পলিসি এখানে পাবেন।</p>
-</div></div>
-
-<section class="tight wrap">
+<section class="tight wrap" style="padding-top:40px;">
   <div class="cta-band">
     <div>
       <div class="ico" style="background:rgba(255,255,255,.18); box-shadow:none; margin-bottom:14px;"><svg><use href="#i-target"/></svg></div>
@@ -17,11 +10,43 @@ return <<<'HTML'
       <p>আমরা মাত্র <strong>১০০ জন</strong> টার্গেট অডিয়েন্সের সাথে একটি বিশেষ রেজিস্ট্রেশন-ভিত্তিক পার্টনারশিপে কাজ করছি।</p>
       <p>রেজিস্ট্রেশনের পর আমাদের টিম আপনার ব্যবসার সম্পূর্ণ দায়িত্ব নেবে — বিজনেস ডিল ও সেলস, ওয়েবসাইট/প্রোডাক্ট ডেভেলপমেন্ট, ল্যান্ডিং পেজ, ডোমেইন সেটআপ এবং সম্পূর্ণ মার্কেটিং কার্যক্রম।</p>
       <p><strong>আমাদের অঙ্গীকার:</strong> আপনার ব্যবসা বাস্তবে বৃদ্ধি পেলে, ফলাফল দেখা গেলে — তখনই আমরা পেমেন্ট নেব। আগে কোনো পেমেন্ট নেই।</p>
+      <p>আমরা মাসিক মনিটরিং করব এবং আপনার ব্যবসার গ্রোথের সম্পূর্ণ দায়িত্ব নেব — মার্কেটিং কস্ট ও ম্যানেজমেন্ট কস্ট সব অন্তর্ভুক্ত।</p>
       <p style="opacity:.85; font-size:.88rem;">সীমিত ১০০টি স্লট — রেজিস্ট্রেশন করুন এখনই।</p>
     </div>
-    <a class="btn btn-ghost" href="##LINK:contact##">রেজিস্ট্রেশন করুন →</a>
   </div>
 </section>
+
+<section class="tight wrap">
+  <div class="pkg-grid" style="grid-template-columns:repeat(2,1fr); max-width:760px; margin:0 auto;">
+    <div class="pkg feat-pkg">
+      <span class="pkg-badge">জনপ্রিয়</span>
+      <div class="ico sm"><svg><use href="#i-target"/></svg></div>
+      <h3>Growth Partnership</h3>
+      <div class="price">৳৫,৯৯৯ <span>/ মাস</span></div>
+      <ul>
+        <li><svg><use href="#i-check"/></svg>Women&rsquo;s Fight-এর সম্পূর্ণ টিম মাত্র এই টাকার বিনিময়ে আপনার কোম্পানিতে নিজস্ব স্টাফের মতো কাজ করবে</li>
+        <li><svg><use href="#i-check"/></svg>মার্কেটিং কস্ট ও ম্যানেজমেন্ট কস্ট — সব অন্তর্ভুক্ত</li>
+        <li><svg><use href="#i-check"/></svg>মাসিক পারফরম্যান্স মনিটরিং</li>
+        <li><svg><use href="#i-check"/></svg>ব্যবসা বৃদ্ধির সম্পূর্ণ দায়িত্ব আমাদের</li>
+      </ul>
+      <button type="button" class="btn btn-primary btn-block" onclick="wfOpenGrowthReg('Growth Partnership — ৳৫,৯৯৯/মাস');">এই প্যাকেজে রেজিস্ট্রেশন করুন</button>
+    </div>
+    <div class="pkg">
+      <div class="ico sm"><svg><use href="#i-bolt"/></svg></div>
+      <h3>Growth Partnership</h3>
+      <div class="price">৳২,৯৯৯ <span>/ মাস</span></div>
+      <ul>
+        <li><svg><use href="#i-check"/></svg>Women&rsquo;s Fight-এর সম্পূর্ণ টিম মাত্র এই টাকার বিনিময়ে আপনার কোম্পানিতে নিজস্ব স্টাফের মতো কাজ করবে</li>
+        <li><svg><use href="#i-check"/></svg>মার্কেটিং কস্ট ও ম্যানেজমেন্ট কস্ট — সব অন্তর্ভুক্ত</li>
+        <li><svg><use href="#i-check"/></svg>মাসিক পারফরম্যান্স মনিটরিং</li>
+        <li><svg><use href="#i-check"/></svg>ব্যবসা বৃদ্ধির সম্পূর্ণ দায়িত্ব আমাদের</li>
+      </ul>
+      <button type="button" class="btn btn-ghost btn-block" onclick="wfOpenGrowthReg('Growth Partnership — ৳২,৯৯৯/মাস');">এই প্যাকেজে রেজিস্ট্রেশন করুন</button>
+    </div>
+  </div>
+</section>
+
+<div id="wf-growth-reg"></div>
 
 <section class="tight wrap">
   <div class="section-head"><span class="eyebrow">মূল্য তালিকা</span><h2>সার্ভিস প্রাইস</h2><p>প্রতিটি প্যাকেজের সাথে থাকছে <strong>ফ্রি বিজনেস কিট</strong>।</p></div>
