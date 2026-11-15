@@ -33,6 +33,7 @@ return <<<'HTML'
         <li><svg><use href="#i-check"/></svg>মাসিক মনিটরিং</li>
         <li><svg><use href="#i-check"/></svg>Paid Ads চালালে আলাদা সার্ভিস চার্জ নেই — শুধু Ads Cost বহন করতে হবে</li>
         <li><svg><use href="#i-check"/></svg>ডোমেইন ও হোস্টিং এই প্যাকেজে অন্তর্ভুক্ত নয়</li>
+        <li><svg><use href="#i-check"/></svg><strong>Business Kit ফ্রি</strong></li>
       </ul>
       <button type="button" class="btn btn-primary btn-block" onclick="wfOpenGrowthReg('Growth Partnership — ৳৫,৯৯৯/মাস');">এই প্যাকেজে রেজিস্ট্রেশন করুন</button>
     </div>
@@ -48,6 +49,8 @@ return <<<'HTML'
         <li><svg><use href="#i-check"/></svg>Problem Solution</li>
         <li><svg><use href="#i-check"/></svg>অর্গানিক কনটেন্ট</li>
         <li><svg><use href="#i-check"/></svg>বিজনেস ডেভেলপমেন্ট</li>
+        <li><svg><use href="#i-check"/></svg>গ্রাফিক্স ডিজাইন (সীমিত সংখ্যক)</li>
+        <li><svg><use href="#i-check"/></svg>ভিডিও বিজ্ঞাপন (সীমিত সংখ্যক)</li>
       </ul>
       <button type="button" class="btn btn-ghost btn-block" onclick="wfOpenGrowthReg('Growth Partnership — ৳২,৯৯৯/মাস');">এই প্যাকেজে রেজিস্ট্রেশন করুন</button>
     </div>
