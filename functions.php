@@ -66,6 +66,14 @@ require_once get_template_directory() . '/inc/invoice/invoice-core.php';
  */
 require_once get_template_directory() . '/inc/smm/smm-core.php';
 
+/**
+ * Video Production demo gallery — fully isolated module (own CPT,
+ * own meta box). See inc/video-demos/video-demos-core.php; it appends
+ * the gallery to the existing Video Production page's own content via
+ * the_content filter, scoped to that one page slug only.
+ */
+require_once get_template_directory() . '/inc/video-demos/video-demos-core.php';
+
 /* ---------------------------------------------------------------------
  * Theme setup
  * ------------------------------------------------------------------- */
