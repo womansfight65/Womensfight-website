@@ -6,7 +6,7 @@ return <<<'HTML'
     <div>
       <div class="ico" style="background:rgba(255,255,255,.18); box-shadow:none; margin-bottom:14px;"><svg><use href="#i-target"/></svg></div>
       <span class="eyebrow" style="color:#fff;">সীমিত সুযোগ — মাত্র ১০০ জন উদ্যোক্তার জন্য</span>
-      <h2>Growth Partnership Program</h2>
+      <h2>আপনার ব্যবসার জন্য একটি পূর্ণাঙ্গ গ্রোথ টিম — নিজের স্টাফ নিয়োগ না করেই</h2>
       <p>আমরা মাত্র <strong>১০০ জন</strong> টার্গেট অডিয়েন্সের সাথে একটি বিশেষ রেজিস্ট্রেশন-ভিত্তিক পার্টনারশিপে কাজ করছি।</p>
       <p>রেজিস্ট্রেশনের পর আমাদের টিম আপনার ব্যবসার সম্পূর্ণ দায়িত্ব নেবে — বিজনেস ডিল ও সেলস, ওয়েবসাইট/প্রোডাক্ট ডেভেলপমেন্ট, ল্যান্ডিং পেজ, ডোমেইন সেটআপ এবং সম্পূর্ণ মার্কেটিং কার্যক্রম।</p>
       <p><strong>আমাদের অঙ্গীকার:</strong> আপনার ব্যবসা বাস্তবে বৃদ্ধি পেলে, ফলাফল দেখা গেলে — তখনই আমরা পেমেন্ট নেব। আগে কোনো পেমেন্ট নেই।</p>
@@ -22,6 +22,7 @@ return <<<'HTML'
       <span class="pkg-badge">জনপ্রিয়</span>
       <div class="ico sm"><svg><use href="#i-target"/></svg></div>
       <h3>Growth Partnership</h3>
+      <p style="opacity:.75; font-size:.82rem; margin-top:-10px;">সম্পূর্ণ সমাধান — ওয়েবসাইট থেকে মার্কেটিং, সবকিছু একসাথে</p>
       <div class="price">৳৫,৯৯৯ <span>/ মাস</span></div>
       <ul>
         <li><svg><use href="#i-check"/></svg>ওয়েবসাইট তৈরি — লঞ্চের জন্য সম্পূর্ণ রেডি, একদম ফ্রি</li>
@@ -37,6 +38,7 @@ return <<<'HTML'
     <div class="pkg">
       <div class="ico sm"><svg><use href="#i-bolt"/></svg></div>
       <h3>Growth Partnership</h3>
+      <p style="opacity:.75; font-size:.82rem; margin-top:-10px;">সোশ্যাল মিডিয়া গ্রোথ ও অনলাইন প্রেজেন্স স্পেশালিস্ট</p>
       <div class="price">৳২,৯৯৯ <span>/ মাস</span></div>
       <ul>
         <li><svg><use href="#i-check"/></svg>সম্পূর্ণ সোশ্যাল মিডিয়া ম্যানেজমেন্ট</li>
@@ -48,6 +50,12 @@ return <<<'HTML'
       </ul>
       <button type="button" class="btn btn-ghost btn-block" onclick="wfOpenGrowthReg('Growth Partnership — ৳২,৯৯৯/মাস');">এই প্যাকেজে রেজিস্ট্রেশন করুন</button>
     </div>
+  </div>
+  <div class="stat-row" style="max-width:760px; margin:36px auto 0;">
+    <div><b>০</b><span>হিডেন কস্ট</span></div>
+    <div><b>নির্দিষ্ট</b><span>দায়বদ্ধ টিম</span></div>
+    <div><b>ফলাফল-ভিত্তিক</b><span>পেমেন্ট মডেল</span></div>
+    <div><b>১০০%</b><span>স্বচ্ছ রিপোর্টিং</span></div>
   </div>
 </section>
 
