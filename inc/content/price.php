@@ -146,24 +146,5 @@ return <<<'HTML'
   </div>
 </section>
 
-<section class="tight alt"><div class="wrap">
-  <div class="section-head"><span class="eyebrow">বিস্তারিত</span><h2>সার্ভিস ডিটেইলস</h2></div>
-  <div class="feat-grid">
-    <div class="feat"><div class="ico sm"><svg><use href="#i-doc"/></svg></div><h3>[শিরোনাম লিখুন]</h3><p>[বিস্তারিত বর্ণনা এখানে লিখুন]</p></div>
-    <div class="feat"><div class="ico sm"><svg><use href="#i-doc"/></svg></div><h3>[শিরোনাম লিখুন]</h3><p>[বিস্তারিত বর্ণনা এখানে লিখুন]</p></div>
-    <div class="feat"><div class="ico sm"><svg><use href="#i-doc"/></svg></div><h3>[শিরোনাম লিখুন]</h3><p>[বিস্তারিত বর্ণনা এখানে লিখুন]</p></div>
-  </div>
-</div></section>
-
-<section class="tight wrap">
-  <div class="section-head"><span class="eyebrow">নীতিমালা</span><h2>বিজনেস পলিসি</h2></div>
-  <div class="feat-grid">
-    <div class="feat"><div class="ico sm"><svg><use href="#i-shield"/></svg></div><h3>পেমেন্ট পলিসি</h3><p>[পেমেন্ট সংক্রান্ত নীতি এখানে লিখুন — অগ্রিম/কিস্তি, পেমেন্ট মেথড ইত্যাদি]</p></div>
-    <div class="feat"><div class="ico sm"><svg><use href="#i-shield"/></svg></div><h3>রিফান্ড পলিসি</h3><p>[রিফান্ড সংক্রান্ত নীতি এখানে লিখুন]</p></div>
-    <div class="feat"><div class="ico sm"><svg><use href="#i-shield"/></svg></div><h3>ডেলিভারি টাইমলাইন</h3><p>[কাজ শুরু থেকে ডেলিভারি পর্যন্ত সময়সীমা এখানে লিখুন]</p></div>
-    <div class="feat"><div class="ico sm"><svg><use href="#i-shield"/></svg></div><h3>টার্মস অ্যান্ড কন্ডিশনস</h3><p>[অন্যান্য শর্তাবলী এখানে লিখুন]</p></div>
-  </div>
-</section>
-
 <section class="tight wrap"><div class="cta-band"><div><h2>মূল্য নিয়ে কথা বলতে চান?</h2><p>আপনার প্রয়োজন অনুযায়ী কাস্টম কোট পেতে যোগাযোগ করুন।</p></div><a class="btn btn-primary" href="##LINK:contact##">যোগাযোগ করুন</a></div></section>
 HTML;
