@@ -201,10 +201,10 @@ function womensfight_video_embed_url( $url ) {
 }
 
 /**
- * Append the video demo gallery to the Video Production page's own
- * content — scoped strictly to that one page slug, so every other page
- * (including the ones Elementor has fully rebuilt) is completely
- * untouched.
+ * Insert the video demo gallery into the Video Production page's own
+ * content, right after its page-header block — scoped strictly to that
+ * one page slug, so every other page (including the ones Elementor has
+ * fully rebuilt) is completely untouched.
  */
 function womensfight_append_video_demo_gallery( $content ) {
 	if ( ! is_page( 'video-production' ) || ! in_the_loop() || ! is_main_query() ) {
@@ -253,7 +253,11 @@ function womensfight_append_video_demo_gallery( $content ) {
 			<?php endforeach; ?>
 		</div>
 	</section>
+	<?php
+	$gallery_html = ob_get_clean();
 
+	ob_start();
+	?>
 	<div class="wf-modal-overlay" id="wfVideoDemoOverlay" onclick="if(event.target===this){wfCloseVideoDemo();}">
 		<div class="wf-modal" style="max-width:860px; padding:0; background:transparent; box-shadow:none;">
 			<button type="button" class="wf-modal-close" onclick="wfCloseVideoDemo();" aria-label="Close">&times;</button>
@@ -275,6 +279,20 @@ function womensfight_append_video_demo_gallery( $content ) {
 	}
 	</script>
 	<?php
-	return $content . ob_get_clean();
+	$modal_html = ob_get_clean();
+
+	/* Drop the gallery right after the page-header block (the first
+	   "</div></div>" closes it), so it shows near the top of the page
+	   instead of after every other section. Falls back to a plain
+	   append if that marker isn't found, so nothing ever disappears. */
+	$marker_pos = strpos( $content, '</div></div>' );
+	if ( false !== $marker_pos ) {
+		$insert_at = $marker_pos + strlen( '</div></div>' );
+		$content   = substr( $content, 0, $insert_at ) . $gallery_html . substr( $content, $insert_at );
+	} else {
+		$content .= $gallery_html;
+	}
+
+	return $content . $modal_html;
 }
 add_filter( 'the_content', 'womensfight_append_video_demo_gallery' );
