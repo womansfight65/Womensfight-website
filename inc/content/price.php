@@ -57,6 +57,16 @@ return <<<'HTML'
     <div><b>ফলাফল-ভিত্তিক</b><span>পেমেন্ট মডেল</span></div>
     <div><b>১০০%</b><span>স্বচ্ছ রিপোর্টিং</span></div>
   </div>
+
+  <div class="pkg feat-pkg" style="max-width:760px; margin:28px auto 0;">
+    <div class="ico sm"><svg><use href="#i-gift"/></svg></div>
+    <h3>প্রতিটি রেজিস্ট্রেশনের সাথে বোনাস</h3>
+    <ul>
+      <li><svg><use href="#i-check"/></svg>৳৩,০০০ সমমূল্যের <strong>Business Kit</strong> সম্পূর্ণ ফ্রি</li>
+      <li><svg><use href="#i-check"/></svg>আমাদের নিজস্ব <strong>Business Operating System</strong> বই একদম ফ্রি</li>
+      <li><svg><use href="#i-check"/></svg>এই দুইটা ফলো করলে আপনার ব্যবসা ১০০% গ্রোথ করবে — না করলে টাকা <strong>Refundable</strong></li>
+    </ul>
+  </div>
 </section>
 
 <div id="wf-growth-reg"></div>
